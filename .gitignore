@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Lock files (only pnpm-lock.yaml should be committed)
+package-lock.json
+yarn.lock
+
+# Build output
+dist/
+.lombok/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+
+# Temp files
+*.tmp
+*.temp
+

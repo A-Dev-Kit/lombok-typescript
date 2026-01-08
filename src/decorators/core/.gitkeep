@@ -1,0 +1,15 @@
+# Core decorators (Tier 1 & Tier 2)
+# - builder.decorator.ts
+# - data.decorator.ts
+# - value.decorator.ts
+# - non-null.decorator.ts
+# - to-string.decorator.ts
+# - log.decorator.ts
+# - with.decorator.ts
+# - accessor.decorator.ts
+# - accessors.decorator.ts
+# - utility-class.decorator.ts
+# - delegate.decorator.ts
+# - equals.decorator.ts
+# - field-defaults.decorator.ts
+
