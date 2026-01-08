@@ -1,0 +1,83 @@
+{
+  "name": "lombok-typescript",
+  "version": "0.1.0",
+  "description": "Lombok-like decorators and code generation for TypeScript - reduce boilerplate with powerful annotations",
+  "packageManager": "pnpm@9.15.4",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./decorators": {
+      "import": "./dist/decorators/index.mjs",
+      "require": "./dist/decorators/index.js",
+      "types": "./dist/decorators/index.d.ts"
+    },
+    "./codegen": {
+      "import": "./dist/codegen/index.mjs",
+      "require": "./dist/codegen/index.js",
+      "types": "./dist/codegen/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "build:watch": "tsup --watch",
+    "dev": "tsx watch src/index.ts",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist .lombok",
+    "prepublishOnly": "pnpm run build"
+  },
+  "keywords": [
+    "lombok",
+    "typescript",
+    "decorators",
+    "codegen",
+    "builder",
+    "data-class",
+    "boilerplate",
+    "annotations",
+    "getter",
+    "setter",
+    "immutable"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "eslint": "^8.55.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "tsup": "^8.0.1",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "dependencies": {
+    "reflect-metadata": "^0.2.1",
+    "ts-morph": "^21.0.1"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  }
+}
+
