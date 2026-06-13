@@ -111,7 +111,7 @@
     "bundle-require": "^5.1.0",
     "cac": "^6.7.14",
     "reflect-metadata": "^0.2.2",
-    "ts-morph": "^26.0.0"
+    "ts-morph": "^28.0.0"
   },
   "peerDependencies": {
     "typescript": ">=5.0.0"
