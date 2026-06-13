@@ -1,37 +1,34 @@
 /**
- * lombok-typescript
+ * `lombok-typescript`: a TypeScript port of Project Lombok plus GoF design
+ * patterns as decorators.
  *
- * Lombok-like decorators and code generation for TypeScript.
- * Reduce boilerplate with powerful annotations.
+ * Sub-paths:
+ * - `lombok-typescript/legacy`: legacy `experimentalDecorators` backend
+ * - `lombok-typescript/stage3`: Stage 3 ECMAScript decorators backend
+ * - `lombok-typescript/core`: backend-agnostic primitives
+ * - `lombok-typescript/codegen`: ts-morph powered code generation
  *
- * @example
- * ```typescript
- * import { Data, Builder, NonNull } from 'lombok-typescript';
- *
- * @Data
- * @Builder
- * class User {
- *   @NonNull name: string;
- *   age: number;
- * }
- *
- * const user = User.builder().name('John').age(25).build();
- * console.log(user.toString()); // User(name=John, age=25)
- * ```
+ * @see https://github.com/A-Dev-Kit/lombok-typescript
  */
 
-import 'reflect-metadata';
+export type {
+  Backend,
+  MetadataStore,
+  BackendKind,
+  DecoratorKind,
+  PropertyName,
+} from './core/index.js';
+export { MetadataKeys, METADATA_KEY_PREFIX, WeakMapMetadataStore } from './core/index.js';
+export type { MetadataKey } from './core/index.js';
 
-// Re-export all decorators
-export * from './decorators';
+export { defineConfig } from './config.js';
+export type {
+  LombokConfig,
+  LogConfig,
+  BuilderConfig,
+  ToStringConfig,
+  ValidateConfig,
+  CodegenConfig,
+} from './config.js';
 
-// Re-export codegen utilities
-export * from './codegen';
-
-// Re-export configuration
-export { defineConfig } from './config';
-export type { LombokConfig } from './config';
-
-// Version
-export const VERSION = '0.1.0';
-
+export const VERSION = '0.1.0-pre';
