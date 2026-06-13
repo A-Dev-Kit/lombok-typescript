@@ -1,0 +1,39 @@
+# Release workflow placeholder.
+#
+# Activate by:
+#   1. Removing the `if: false` gate below
+#   2. Adding NPM_TOKEN to repository secrets
+#   3. Pushing a git tag matching v*.*.* (e.g. `git tag v0.1.0 && git push --tags`)
+#
+# Uses npm provenance (npm 9.5+) for supply-chain trust.
+# Consider also enabling npm 2FA on the publishing account.
+
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: read
+  id-token: write # for npm provenance
+
+jobs:
+  publish:
+    if: false # Remove this line to activate the workflow
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: 'https://registry.npmjs.org'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+      - run: pnpm publish --no-git-checks --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
