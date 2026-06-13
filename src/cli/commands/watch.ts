@@ -7,5 +7,4 @@ export async function runWatch(opts: WatchCommandOptions = {}): Promise<void> {
   const log = opts.log ?? ((msg) => console.info(msg));
   log('Watch mode is not implemented yet (Phase 2).');
   log('Re-run `lombok-ts generate` after changes.');
-  log('See docs/MVP.md for the roadmap.');
 }
