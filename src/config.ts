@@ -1,101 +1,88 @@
-/**
- * Configuration
- *
- * Define configuration for lombok-typescript behavior.
- */
+import type { BackendKind } from './core/types.js';
 
 export interface LogConfig {
-  /**
-   * Logging provider to use
-   * @default 'console'
-   */
+  /** Logging provider. Default `'console'`. */
   provider: 'console' | 'winston' | 'pino' | 'bunyan';
 
-  /**
-   * Default log level
-   * @default 'info'
-   */
+  /** Default log level. Default `'info'`. */
   defaultLevel: 'debug' | 'info' | 'warn' | 'error';
 }
 
 export interface BuilderConfig {
-  /**
-   * Prefix for builder setter methods
-   * @default '' (no prefix, e.g., name() instead of withName())
-   */
+  /** Prefix for builder setter methods. Default `''` (so `name()`, not `withName()`). */
   prefix: string;
 
-  /**
-   * Name of the build method
-   * @default 'build'
-   */
+  /** Name of the build method. Default `'build'`. */
   buildMethodName: string;
 
-  /**
-   * Name of the static builder method
-   * @default 'builder'
-   */
+  /** Name of the static builder method. Default `'builder'`. */
   builderMethodName: string;
 }
 
 export interface ToStringConfig {
-  /**
-   * Output format
-   * @default 'pretty'
-   */
+  /** Output format. Default `'pretty'`. */
   format: 'pretty' | 'json' | 'compact';
 
-  /**
-   * Include class name in output
-   * @default true
-   */
+  /** Include the class name in output. Default `true`. */
   includeClassName: boolean;
 }
 
 export interface ValidateConfig {
-  /**
-   * Validation library to use
-   * @default 'zod'
-   */
+  /** Validation library. Default `'zod'`. */
   provider: 'zod' | 'yup' | 'class-validator';
 
-  /**
-   * Throw error on validation failure
-   * @default true
-   */
+  /** Throw on validation failure. Default `true`. */
   throwOnError: boolean;
 }
 
 export interface CodegenConfig {
-  /**
-   * Directory for generated files
-   * @default '.lombok'
-   */
+  /** Where to write generated companion files. Default `'.lombok'`. */
   outputDir: string;
 
-  /**
-   * Watch for changes
-   * @default false
-   */
+  /** Glob patterns for files to process. Default `['src/** /*.ts']`. */
+  include: string[];
+
+  /** Glob patterns for files to skip. Defaults exclude tests, `dist`, and `.lombok`. */
+  exclude: string[];
+
+  /** Path to the project's tsconfig. Default `'tsconfig.json'`. */
+  tsConfigPath: string;
+
+  /** Watch for source changes. Not implemented yet. Default `false`. */
   watch: boolean;
 }
 
+/**
+ * Top-level lombok-typescript config.
+ *
+ * `backend` chooses which decorator standard to assume:
+ * - `'legacy'`: `experimentalDecorators` (NestJS / class-validator ecosystem)
+ * - `'stage3'`: Stage 3 ECMAScript decorators (TS 5.0+)
+ * - `'auto'`: detect from the project's tsconfig
+ *
+ * The `@ToString` config field is named `formatToString` (not `toString`) so it
+ * doesn't clash with `Object.prototype.toString`.
+ */
 export interface LombokConfig {
+  /** Decorator backend. Default `'auto'`. */
+  backend?: BackendKind | 'auto';
+
   log?: Partial<LogConfig>;
   builder?: Partial<BuilderConfig>;
-  toString?: Partial<ToStringConfig>;
+  /** Settings for the `@ToString` decorator. */
+  formatToString?: Partial<ToStringConfig>;
   validate?: Partial<ValidateConfig>;
   codegen?: Partial<CodegenConfig>;
 }
 
 /**
- * Define lombok-typescript configuration
+ * Identity helper that gives you autocomplete in `lombok.config.ts`.
  *
  * @example
- * // lombok.config.ts
  * import { defineConfig } from 'lombok-typescript';
  *
  * export default defineConfig({
+ *   backend: 'legacy',
  *   log: { provider: 'winston' },
  *   builder: { prefix: 'with' },
  * });
@@ -103,4 +90,3 @@ export interface LombokConfig {
 export function defineConfig(config: LombokConfig): LombokConfig {
   return config;
 }
-
