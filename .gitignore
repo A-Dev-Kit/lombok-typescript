@@ -8,6 +8,7 @@ yarn.lock
 # Build output
 dist/
 .lombok/
+*.tsbuildinfo
 
 # IDE
 .idea/
@@ -22,6 +23,7 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+pnpm-debug.log*
 
 # Test coverage
 coverage/
@@ -30,3 +32,7 @@ coverage/
 *.tmp
 *.temp
 
+# Environment
+.env
+.env.local
+.env.*.local

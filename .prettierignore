@@ -1,0 +1,9 @@
+dist
+coverage
+.lombok
+node_modules
+pnpm-lock.yaml
+*.tsbuildinfo
+
+# Historical / external-format docs preserved as-is
+docs/FEATURES.md
