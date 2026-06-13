@@ -1,58 +1,24 @@
-/**
- * Code Generation Types
- */
-
 export interface GeneratorOptions {
-  /**
-   * Directory to output generated files
-   * @default '.lombok'
-   */
+  /** Where generated files go. Default `.lombok`. */
   outputDir: string;
 
-  /**
-   * Watch for file changes and regenerate
-   * @default false
-   */
+  /** Watch mode (not implemented yet). Default `false`. */
   watch: boolean;
 
-  /**
-   * Glob patterns for files to process
-   * @default ['src/** /*.ts']
-   */
+  /** Glob patterns for files to process. Default `['src/** /*.ts']`. */
   include: string[];
 
-  /**
-   * Glob patterns for files to exclude
-   * @default ['node_modules', '**\/*.test.ts', '**\/*.spec.ts']
-   */
+  /** Glob patterns for files to skip. Default excludes test files and `dist`. */
   exclude: string[];
 
-  /**
-   * TypeScript configuration file path
-   * @default 'tsconfig.json'
-   */
+  /** Path to the project's tsconfig. Default `tsconfig.json`. */
   tsConfigPath: string;
 }
 
 export interface GeneratedFile {
-  /**
-   * Original source file path
-   */
   sourcePath: string;
-
-  /**
-   * Generated file path
-   */
   outputPath: string;
-
-  /**
-   * Generated code content
-   */
   content: string;
-
-  /**
-   * Classes that were processed
-   */
   processedClasses: string[];
 }
 
@@ -93,4 +59,3 @@ export interface ParameterInfo {
   isOptional: boolean;
   decorators: DecoratorInfo[];
 }
-

@@ -1,10 +1,4 @@
-/**
- * Utility Functions
- */
-
-/**
- * Deep clone an object
- */
+/** Recursively clones primitives, arrays, and plain objects. */
 export function deepClone<T>(obj: T): T {
   if (obj === null || typeof obj !== 'object') {
     return obj;
@@ -23,9 +17,7 @@ export function deepClone<T>(obj: T): T {
   return cloned;
 }
 
-/**
- * Deep freeze an object (make it immutable)
- */
+/** Freezes an object and recursively freezes its nested objects. */
 export function deepFreeze<T extends object>(obj: T): Readonly<T> {
   Object.freeze(obj);
 
@@ -39,9 +31,7 @@ export function deepFreeze<T extends object>(obj: T): Readonly<T> {
   return obj;
 }
 
-/**
- * Deep equality check
- */
+/** Structural equality for primitives, arrays, and plain objects. */
 export function deepEquals(a: unknown, b: unknown): boolean {
   if (a === b) return true;
 
@@ -64,43 +54,34 @@ export function deepEquals(a: unknown, b: unknown): boolean {
   if (aKeys.length !== bKeys.length) return false;
 
   return aKeys.every((key) =>
-    deepEquals((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key])
+    deepEquals((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key]),
   );
 }
 
-/**
- * Generate a simple hash code for an object
- */
+/** djb2-ish 32-bit hash over the JSON-serialized value. */
 export function hashCode(obj: unknown): number {
   const str = JSON.stringify(obj);
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
     hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32bit integer
+    hash = hash & hash;
   }
   return hash;
 }
 
-/**
- * Capitalize first letter of a string
- */
+/** Uppercase the first letter. */
 export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-/**
- * Convert string to camelCase
- */
+/** Strip dashes/underscores, capitalize the next character. */
 export function toCamelCase(str: string): string {
   return str.replace(/[-_](.)/g, (_, char) => char.toUpperCase());
 }
 
-/**
- * Convert string to PascalCase
- */
+/** `toCamelCase` plus uppercase first letter. */
 export function toPascalCase(str: string): string {
   const camel = toCamelCase(str);
   return capitalize(camel);
 }
-
