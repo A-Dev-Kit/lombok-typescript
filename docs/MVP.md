@@ -1,295 +1,205 @@
-# MVP & Roadmap — `lombok-typescript`
+# Roadmap
 
-> **Mission:** Ship a public open-source npm package that brings the boilerplate-reducing magic of Java's Project Lombok to TypeScript, plus mechanical decorator implementations of all 23 Gang-of-Four design patterns. Framework-agnostic core, first-class NestJS interop. **Add a decorator, get the pattern.**
+What this is, what it isn't, and what gets built when. The full decorator catalog lives in [PATTERNS.md](./PATTERNS.md). Open architectural decisions are tracked under [docs/adr/](./adr/).
 
-This doc is the source of truth for **what ships when**. The full decorator catalog lives in [PATTERNS.md](./PATTERNS.md) and open architectural questions are tracked in [DECISIONS.md](./DECISIONS.md).
+## What it is
 
----
+A TypeScript port of Java's Project Lombok plus a clean implementation of the Gang-of-Four design patterns as decorators. Works in plain TS, NestJS, Express, and so on. Both legacy `experimentalDecorators` and Stage 3 ECMAScript decorators are supported side-by-side.
 
-## 1. Goals
+About 17 of the 23 GoF patterns translate cleanly into decorators. The remaining 6 ship as marker annotations (intent + types, no generated code). See [PATTERNS.md](./PATTERNS.md) for which is which.
 
-- **Lombok ergonomics:** eliminate getter/setter, builder, toString, equals, etc. boilerplate via decorators
-- **GoF patterns as decorators:** ~17 of 23 GoF patterns implemented mechanically; remainder shipped as marker-only annotations (see [PATTERNS.md §3, §4](./PATTERNS.md))
-- **Framework-agnostic core:** works in plain TS, NestJS, Express, Fastify, Next.js, Vite, etc.
-- **First-class NestJS interop:** zero friction with NestJS DI, modules, lifecycle (see §6)
-- **Production-ready:** comprehensive tests, docs site, clear migration paths, semver discipline
-- **Educational value:** junior devs should be able to learn each pattern from one decorator + one example
+## What it isn't
 
-## 2. Non-goals
+It's not a DI container. NestJS, Inversify, and tsyringe own that space. It's not a state-management library either; Redux/Zustand/MobX are fine. Not an ORM. Not a runtime polyfill, the target is TS 5.x and Node 22+.
 
-- Not a DI container (NestJS, Inversify, tsyringe own this space)
-- Not a state-management library (Redux, Zustand, MobX own this)
-- Not an ORM / data-access library
-- Not a runtime polyfill — we target TS ≥5.x and Node ≥18 only
-- Not committed to legacy `experimentalDecorators` forever (Stage 3 migration is a v1.x roadmap item — see ADR-01)
+The library is also not committed to legacy decorators forever. Both backends ship side-by-side, see [ADR-01](./adr/0001-decorator-standard.md).
 
-## 3. Personas
+## Who would use this
 
-| Persona | What they want | Top-3 decorators |
-|---|---|---|
-| **TS app dev** building business logic | Less boilerplate, clean classes | `@Data`, `@Builder`, `@NonNull` |
-| **NestJS dev** building services | Pattern decorators that play with `@Injectable` | `@Memoize`, `@Retry`, `@Singleton` (advisory) |
-| **TS library author** publishing typed APIs | Immutability, builders, equality | `@Value`, `@With`, `@Builder` |
-| **Junior dev** learning patterns | One decorator per GoF pattern with a clean example | `@Singleton`, `@Strategy`, `@Observer` |
-| **Migrant from Java/Spring** | Familiar Lombok semantics in TS | `@Data`, `@Log`, `@Builder`, `@UtilityClass` |
+The likely audiences are: TS app developers tired of writing getters and builders by hand, NestJS developers who want pattern decorators that don't fight `@Injectable()`, library authors needing immutability and value-class helpers, and folks coming from Java/Spring who miss `@Data` and `@Log`. Junior devs picking up GoF patterns for the first time should also find one decorator + one example for each pattern reasonably approachable.
 
----
+## Decorator scoring
 
-## 4. Decorator scoring matrix
+Each decorator is rated on three axes (1-5):
 
-Sourced from [PATTERNS.md](./PATTERNS.md). Three-axis evaluation guides phase placement.
+- Value: how useful it actually is in day-to-day code
+- Complexity: how hard it is to implement (5 is hardest)
+- Differentiation: how much it improves on what TS gives you out of the box
 
-- **Value** (1-5): user-perceived utility
-- **Complexity** (1-5): implementation cost (5 = hardest)
-- **Differentiation** (1-5): how much better than what TS gives you out of the box
+Higher value + lower complexity + higher differentiation lands a decorator in an earlier phase. Ties go to viability (Real beats Helper beats Marker) and persona impact.
 
-Higher Value × lower Complexity × higher Differentiation → earlier phase. Ties broken by viability (Real > Helper > Marker-only) and by Persona impact.
+| Decorator                   | Value | Complexity | Differentiation | Viability   | Phase |
+| --------------------------- | ----- | ---------- | --------------- | ----------- | ----- |
+| `@NonNull`                  | 5     | 1          | 4               | Real        | 1     |
+| `@ToString`                 | 4     | 2          | 4               | Real        | 1     |
+| `@Builder`                  | 5     | 4          | 5               | Real        | 1     |
+| `@Data`                     | 5     | 4          | 5               | Real        | 1     |
+| `@Singleton`                | 4     | 1          | 3               | Real        | 1     |
+| `@Prototype`                | 3     | 1          | 4               | Real        | 1     |
+| `@Factory`                  | 4     | 3          | 4               | Real        | 1     |
+| `@Memoize`                  | 5     | 2          | 4               | Real        | 1     |
+| `@Value`                    | 5     | 4          | 5               | Real        | 2     |
+| `@With`                     | 4     | 3          | 5               | Real        | 2     |
+| `@Equals`                   | 4     | 3          | 4               | Real        | 2     |
+| `@Getter` / `@Setter`       | 3     | 2          | 3               | Real        | 2     |
+| `@Log`                      | 4     | 2          | 3               | Real        | 2     |
+| `@Accessors`                | 3     | 3          | 3               | Real        | 2     |
+| `@UtilityClass`             | 3     | 2          | 4               | Real        | 2     |
+| `@FieldDefaults`            | 2     | 3          | 3               | Real        | 2     |
+| `@Delegate`                 | 4     | 4          | 5               | Real        | 2     |
+| `@Strategy`                 | 5     | 2          | 4               | Real        | 3     |
+| `@State`                    | 4     | 3          | 4               | Real        | 3     |
+| `@Command`                  | 3     | 2          | 3               | Real        | 3     |
+| `@Memento`                  | 3     | 2          | 4               | Real        | 3     |
+| `@Observer` / `@Observable` | 4     | 3          | 3               | Real        | 3     |
+| `@ChainOfResponsibility`    | 4     | 3          | 4               | Real        | 3     |
+| `@Iterable` / `@Iterator`   | 3     | 2          | 3               | Real        | 3     |
+| `@AbstractFactory`          | 2     | 4          | 3               | Helper      | 4     |
+| `@Flyweight`                | 3     | 3          | 4               | Real        | 4     |
+| `@Proxy`                    | 4     | 4          | 4               | Real        | 4     |
+| `@Composite`                | 3     | 3          | 4               | Real        | 4     |
+| `@Wraps` (GoF Decorator)    | 3     | 4          | 3               | Real        | 4     |
+| `@TemplateMethod`           | 3     | 4          | 4               | Real        | 4     |
+| `@Visitor` / `@Visitable`   | 3     | 5          | 5               | Real        | 4     |
+| `@Retry`                    | 5     | 2          | 4               | Real        | 5     |
+| `@Validate`                 | 5     | 4          | 3               | Real        | 5     |
+| `@Debounce` / `@Throttle`   | 4     | 2          | 3               | Real        | 5     |
+| `@Trace`                    | 4     | 2          | 4               | Real        | 5     |
+| `@Serializable`             | 4     | 4          | 4               | Real        | 5     |
+| `@DeepFreeze`               | 3     | 2          | 4               | Real        | 5     |
+| `@Adapter`                  | 1     | 1          | 1               | Marker-only | 6     |
+| `@Bridge`                   | 1     | 1          | 1               | Marker-only | 6     |
+| `@Facade`                   | 1     | 1          | 1               | Marker-only | 6     |
+| `@Mediator`                 | 1     | 1          | 1               | Marker-only | 6     |
+| `@Interpreter`              | 1     | 1          | 1               | Marker-only | 6     |
 
-| Decorator | Value | Complexity | Differentiation | Viability | Phase |
-|---|---|---|---|---|---|
-| `@NonNull` | 5 | 1 | 4 | Real | 1 |
-| `@ToString` | 4 | 2 | 4 | Real | 1 |
-| `@Builder` | 5 | 4 | 5 | Real | 1 |
-| `@Data` | 5 | 4 | 5 | Real | 1 |
-| `@Singleton` | 4 | 1 | 3 | Real | 1 |
-| `@Prototype` | 3 | 1 | 4 | Real | 1 |
-| `@Factory` | 4 | 3 | 4 | Real | 1 |
-| `@Memoize` | 5 | 2 | 4 | Real | 1 |
-| `@Value` | 5 | 4 | 5 | Real | 2 |
-| `@With` | 4 | 3 | 5 | Real | 2 |
-| `@Equals` | 4 | 3 | 4 | Real | 2 |
-| `@Getter` / `@Setter` | 3 | 2 | 3 | Real | 2 |
-| `@Log` | 4 | 2 | 3 | Real | 2 |
-| `@Accessors` | 3 | 3 | 3 | Real | 2 |
-| `@UtilityClass` | 3 | 2 | 4 | Real | 2 |
-| `@FieldDefaults` | 2 | 3 | 3 | Real | 2 |
-| `@Delegate` | 4 | 4 | 5 | Real | 2 |
-| `@Strategy` | 5 | 2 | 4 | Real | 3 |
-| `@State` | 4 | 3 | 4 | Real | 3 |
-| `@Command` | 3 | 2 | 3 | Real | 3 |
-| `@Memento` | 3 | 2 | 4 | Real | 3 |
-| `@Observer` / `@Observable` | 4 | 3 | 3 | Real | 3 |
-| `@ChainOfResponsibility` | 4 | 3 | 4 | Real | 3 |
-| `@Iterable` / `@Iterator` | 3 | 2 | 3 | Real | 3 |
-| `@AbstractFactory` | 2 | 4 | 3 | Helper | 4 |
-| `@Flyweight` | 3 | 3 | 4 | Real | 4 |
-| `@Proxy` | 4 | 4 | 4 | Real | 4 |
-| `@Composite` | 3 | 3 | 4 | Real | 4 |
-| `@Wraps` (GoF Decorator) | 3 | 4 | 3 | Real | 4 |
-| `@TemplateMethod` | 3 | 4 | 4 | Real | 4 |
-| `@Visitor` / `@Visitable` | 3 | 5 | 5 | Real | 4 |
-| `@Retry` | 5 | 2 | 4 | Real | 5 |
-| `@Validate` | 5 | 4 | 3 | Real | 5 |
-| `@Debounce` / `@Throttle` | 4 | 2 | 3 | Real | 5 |
-| `@Trace` | 4 | 2 | 4 | Real | 5 |
-| `@Serializable` | 4 | 4 | 4 | Real | 5 |
-| `@DeepFreeze` | 3 | 2 | 4 | Real | 5 |
-| `@Adapter` | 1 | 1 | 1 | Marker-only | 6 |
-| `@Bridge` | 1 | 1 | 1 | Marker-only | 6 |
-| `@Facade` | 1 | 1 | 1 | Marker-only | 6 |
-| `@Mediator` | 1 | 1 | 1 | Marker-only | 6 |
-| `@Interpreter` | 1 | 1 | 1 | Marker-only | 6 |
-
----
-
-## 5. Roadmap — 7 phases
+## Phases
 
 ```mermaid
 flowchart LR
-    P0["Phase 0<br/>Foundation"] --> P1["Phase 1<br/>v0.1 MVP<br/>Cross-cut preview"]
-    P1 --> P2["Phase 2<br/>v0.5 Lombok complete"]
-    P2 --> P3["Phase 3<br/>GoF Behavioral"]
-    P3 --> P4["Phase 4<br/>GoF Structural<br/>+ Creational tail"]
-    P4 --> P5["Phase 5<br/>v1.0 TS-Unique"]
-    P5 --> P6["Phase 6<br/>Marker decorators"]
-    P6 --> P7["Phase 7<br/>v1.1+ NestJS deep<br/>+ docs site"]
+    P0[Phase 0: Foundation] --> P1[Phase 1: v0.1 preview]
+    P1 --> P2[Phase 2: Lombok complete]
+    P2 --> P3[Phase 3: GoF Behavioral]
+    P3 --> P4[Phase 4: GoF Structural]
+    P4 --> P5[Phase 5: TS-only utilities]
+    P5 --> P6[Phase 6: Marker decorators]
+    P6 --> P7[Phase 7: NestJS deep dive]
 ```
 
-### Phase 0 — Foundation
+### Phase 0: Foundation
 
-No public release. Unblocks everything downstream.
+No public release. Just the plumbing.
 
-**Scope:**
-- Resolve **ADR-01** (Stage 3 vs `experimentalDecorators`) and **ADR-02** (metadata strategy)
-- Build out the decorator base infrastructure under `src/decorators/core/` and `src/decorators/unique/` (currently `.gitkeep` only)
-- Implement [src/codegen/analyzer.ts](../src/codegen/analyzer.ts) and [src/codegen/generator.ts](../src/codegen/generator.ts) end-to-end with ts-morph (currently throw "Not implemented")
-- Decide **ADR-04** (codegen execution model) and produce a working pipeline
-- Fix the broken re-exports in [src/decorators/index.ts](../src/decorators/index.ts) so `pnpm build` and `pnpm test` go green
-- Add `LICENSE` (MIT), populate `author` and `repository.url` in [package.json](../package.json), set up CI (GitHub Actions: typecheck, lint, test, build matrix on Node 18/20/22)
-- Set up Vitest test scaffolding with at least one passing test per layer (utils, metadata, codegen)
-- Confirm npm package name availability (`npm view lombok-typescript`)
+This is what's already in: dual decorator backend, ts-morph codegen analyzer + generator, the `lombok-ts` CLI, full test scaffolding, CI on GitHub Actions, the LICENSE, and the open ADRs split into individual files. ADR-01 (which decorator standard to use) is decided as Dual API. The other 16 are still open.
 
-**Exit criteria:** green CI; codegen can analyze a single decorated class and emit a generated companion file end-to-end.
+Done when: green CI, codegen can analyze a decorated class and emit a companion file end to end. Both are true now.
 
-### Phase 1 — Public Preview MVP (v0.1)
+### Phase 1: v0.1 preview
 
-The smallest cross-cutting set that proves the dual-purpose vision. Ships to npm as `0.1.0` with "preview" tag.
+The smallest cross-cutting set that proves the dual-purpose vision works. Ships to npm as `0.1.0` under a `preview` tag.
 
-**Decorators (8):**
+Eight decorators:
 
-| Decorator | Why in MVP |
-|---|---|
-| `@NonNull` | Smallest viable runtime-field decorator — proves the runtime metadata path |
-| `@ToString` | Smallest viable codegen-class decorator — proves the codegen pipeline |
-| `@Builder` | Highest-value Lombok feature; covers GoF Creational Builder simultaneously |
-| `@Data` | Highest-value composite decorator; demonstrates inter-decorator composition |
-| `@Singleton` | Smallest viable GoF runtime decorator |
-| `@Prototype` | Pairs with `@Singleton`; uses already-built `deepClone` helper |
-| `@Factory` | Most-asked GoF Creational pattern; demonstrates registry-based decorators |
-| `@Memoize` | Most-loved TS-unique decorator; proves the method-decorator path |
+| Decorator    | Why it's in v0.1                                                           |
+| ------------ | -------------------------------------------------------------------------- |
+| `@NonNull`   | Smallest viable runtime-field decorator. Proves the runtime metadata path. |
+| `@ToString`  | Smallest viable codegen-class decorator. Proves the codegen pipeline.      |
+| `@Builder`   | Highest-value Lombok feature. Also covers GoF Creational Builder.          |
+| `@Data`      | Highest-value composite. Demonstrates inter-decorator composition.         |
+| `@Singleton` | Smallest viable GoF runtime decorator.                                     |
+| `@Prototype` | Pairs with `@Singleton`. Uses the existing `deepClone` helper.             |
+| `@Factory`   | Most-asked GoF Creational pattern. Demonstrates registry-based decorators. |
+| `@Memoize`   | Most-loved TS-only decorator. Proves the method-decorator path.            |
 
-**Ships with:**
-- Working `pnpm build` and `pnpm test` with ≥80% coverage on these 8 decorators
-- Two example apps under `examples/`:
-  - `examples/plain-ts/` — proves framework-agnostic core
-  - `examples/nestjs/` — proves NestJS interop (and surfaces any issues early)
-- Docs site skeleton (recommend Astro Starlight or VitePress)
-- `CHANGELOG.md`, `CONTRIBUTING.md`, `LICENSE`, populated `package.json`
-- npm publish workflow (GitHub Actions on tag push)
-- README rewrite reflecting both Lombok and GoF positioning
+Also ships: example apps for plain TS and for NestJS, a docs site skeleton (Astro Starlight or VitePress, leaning Starlight), CHANGELOG, CONTRIBUTING, populated package.json, and an npm publish workflow on tag push.
 
-**Exit criteria:** v0.1.0 published to npm, all 8 decorators documented with runnable examples, NestJS example app demonstrates `@Memoize`, `@Singleton`, and `@Factory` working alongside `@Injectable()`.
+Done when: v0.1.0 is on npm, the 8 decorators have runnable examples, and the NestJS app shows `@Memoize`, `@Singleton`, and `@Factory` co-existing with `@Injectable()`.
 
-### Phase 2 — Lombok core complete (v0.5)
+### Phase 2: Lombok complete (v0.5)
 
-Round out Tier 1 + Tier 2 from [FEATURES.md](./FEATURES.md). Full Lombok parity story.
+Round out Tier 1 and Tier 2 from [FEATURES.md](./FEATURES.md). The full Lombok parity story.
 
-**Decorators (9):** `@Value`, `@With`, `@Equals`, `@Getter` / `@Setter`, `@Log`, `@Accessors`, `@UtilityClass`, `@FieldDefaults`, `@Delegate`
+Nine decorators: `@Value`, `@With`, `@Equals`, `@Getter`/`@Setter`, `@Log`, `@Accessors`, `@UtilityClass`, `@FieldDefaults`, `@Delegate`.
 
-**Notable challenges:**
-- `@Data` × `@Value` conflict resolution (ADR-07)
-- `@Log` backend resolution (ADR-09)
-- `@Delegate` introspecting field types via ts-morph
+Things to figure out along the way: `@Data` vs `@Value` conflict resolution ([ADR-07](./adr/0007-decorator-composition-rules.md)), how `@Log` resolves the chosen logger backend ([ADR-09](./adr/0009-logger-backend-dependency-strategy.md)), and how `@Delegate` introspects field types via ts-morph.
 
-**Exit criteria:** v0.5.0 published; complete data-class story; migration guide section "From Java Lombok" published.
+Done when: v0.5.0 is on npm with a "From Java Lombok" migration guide section.
 
-### Phase 3 — GoF Behavioral (high-value subset)
+### Phase 3: GoF Behavioral (high-value subset)
 
-Prioritize the patterns developers reach for daily.
+The patterns developers actually reach for: `@Strategy`, `@State`, `@Command`, `@Memento`, `@Observer`/`@Observable`, `@ChainOfResponsibility`, `@Iterable`/`@Iterator`.
 
-**Decorators (7):** `@Strategy`, `@State`, `@Command`, `@Memento`, `@Observer` / `@Observable`, `@ChainOfResponsibility`, `@Iterable` / `@Iterator`
+Open questions: how `@State` validates transitions (compile-time error vs runtime throw), and how `@Observer` integrates with RxJS / MobX (likely opt-in adapters).
 
-**Notable challenges:**
-- `@State` transition validation (codegen vs runtime errors)
-- `@Observer` integration with reactive ecosystems (RxJS, MobX) — likely opt-in adapters
+Done when: v0.7.0 is published.
 
-**Exit criteria:** v0.7.0 published; 7 most-used GoF Behavioral patterns shipped Real.
+### Phase 4: GoF Structural and remaining Creational
 
-### Phase 4 — GoF Structural & Creational completion
+Seven decorators: `@AbstractFactory`, `@Flyweight`, `@Proxy`, `@Composite`, `@Wraps`, `@TemplateMethod`, `@Visitor`/`@Visitable`.
 
-**Decorators (7):** `@AbstractFactory`, `@Flyweight`, `@Proxy`, `@Composite`, `@Wraps`, `@TemplateMethod`, `@Visitor` / `@Visitable`
+`@Wraps` is the renamed GoF "Decorator" pattern (the name had to change to avoid a vocabulary clash with TS decorator syntax, see [ADR-15](./adr/0015-gof-decorator-pattern-naming.md)). `@Visitor` is the highest-complexity decorator in the catalog: double-dispatch codegen needs careful API design.
 
-**Notable challenges:**
-- `@Wraps` naming and its relationship to TS decorator syntax (ADR-15) — must not confuse new users
-- `@Visitor` is the highest-complexity decorator; double-dispatch codegen needs careful API design
+Done when: v0.9.0 ships every mechanically-automatable GoF pattern.
 
-**Exit criteria:** v0.9.0 published; all mechanically-automatable GoF patterns shipped.
+### Phase 5: TypeScript-only utilities (v1.0)
 
-### Phase 5 — TypeScript-unique decorators (v1.0)
+Everything in FEATURES.md Tier 3 that doesn't have a Java analogue: `@Retry`, `@Validate`, `@Debounce`/`@Throttle`, `@Trace`, `@Serializable`, `@DeepFreeze`.
 
-The remaining items from FEATURES.md Tier 3, completing the "more than Lombok" story.
+Things to figure out: the `@Validate` adapter contract for Zod / Yup / class-validator ([ADR-10](./adr/0010-validation-library-coupling.md)), `@Trace` redaction for sensitive arguments, and `@Serializable` handling of circular references.
 
-**Decorators (6):** `@Retry`, `@Validate`, `@Debounce` / `@Throttle`, `@Trace`, `@Serializable`, `@DeepFreeze`
+Done when: v1.0.0 is published with a stable API and a full docs site.
 
-**Notable challenges:**
-- `@Validate` adapter contract for Zod / Yup / class-validator (ADR-10)
-- `@Trace` sensitive-arg redaction
-- `@Serializable` circular reference handling
+### Phase 6: Marker decorators
 
-**Exit criteria:** **v1.0.0 published.** Stable API. Full docs site. Public announcement (HN, Reddit r/typescript, dev.to).
+Cheap completion of GoF coverage: `@Adapter`, `@Bridge`, `@Facade`, `@Mediator`, `@Interpreter`. These don't generate code; they document intent and provide TypeScript typing aids (e.g. `@Adapter({ adapts: X, target: Y })` validates that the structural compatibility is what was claimed).
 
-### Phase 6 — Marker / advisory decorators
+Reason to ship them: complete GoF coverage is genuinely useful both for marketing the library and for teaching the patterns. And nothing here stops a future contributor from upgrading any of them to a Real implementation.
 
-Low-cost completion of GoF coverage. These don't generate code; they document intent and provide TypeScript typing aids.
+Done when: v1.1.0 is published.
 
-**Decorators (5):** `@Adapter`, `@Bridge`, `@Facade`, `@Mediator`, `@Interpreter`
+### Phase 7: NestJS deep integration and ongoing v1.x
 
-**Why ship them:**
-- Honest GoF coverage — having "all 23" is a marketing/educational story
-- Typing aids (e.g. `@Adapter({ adapts: X, target: Y })` validates structural compatibility)
-- Documentation for future contributors who might find a way to make them Real
+A separate `@lombok-typescript/nestjs` satellite package (per [ADR-14](./adr/0014-nestjs-compatibility-strategy.md)) ships NestJS-specific bindings: dynamic modules, lifecycle hook integration, and `@Injectable()` interop helpers for `@Singleton` and `@Memoize`. A plugin API for community-contributed decorators lands here too. So does `@Pool` (the Object Pool pattern, the most defensible candidate for a "24th GoF" if we ever want one, see [ADR-16](./adr/0016-23-vs-24-gof-patterns.md)). Plus a Java Lombok migration guide and a class-validator migration guide.
 
-**Exit criteria:** v1.1.0 published; "all 23 GoF patterns" tagline now technically accurate.
+This phase is open-ended; tracking moves to GitHub milestones from here.
 
-### Phase 7 — NestJS deep integration & community ramp (v1.x ongoing)
+## NestJS contract
 
-Beyond pattern parity. Make it the obvious choice for NestJS shops.
+NestJS is the largest TS server framework, and pretty much everything has to play nicely with it. Concretely:
 
-**Scope:**
-- Dedicated `@lombok-typescript/nestjs` satellite package (per ADR-14) with NestJS-specific bindings: dynamic modules, lifecycle hook integration, `@Injectable()` × `@Singleton`/`@Memoize` interop helpers
-- Plugin API allowing community-contributed decorators
-- Object Pool decorator (`@Pool`) — the "24th GoF" candidate from ADR-16
-- Migration guide from Java Lombok (annotation-by-annotation table)
-- Migration guide from `class-validator` (for users who choose `@Validate`)
-- Performance benchmarks page on docs site
-- Visual learning materials (one diagram per pattern)
+| NestJS feature                             | What lombok-typescript does                                                                                           |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| `@Injectable()` providers                  | Every Real decorator works on `@Injectable()` classes without conflict.                                               |
+| Provider scope (DEFAULT/REQUEST/TRANSIENT) | `@Singleton` is advisory inside Nest. Doc says which `@Injectable({ scope })` it implies.                             |
+| Module DI graph                            | The `@Factory` registry doesn't interfere with Nest's own provider tokens.                                            |
+| Logger                                     | `@Log` ships an adapter compatible with Nest's `Logger`.                                                              |
+| Lifecycle hooks                            | `@Memoize` exposes cache-invalidation hooks usable from `OnModuleInit` and friends.                                   |
+| Interceptors (AOP)                         | `@Trace`, `@Retry`, `@Memoize` document how they compose with NestJS interceptors.                                    |
+| Request scope                              | Decorators that hold class-level state may behave unexpectedly under request scope; this is documented per-decorator. |
 
-**Exit criteria:** ongoing; tracked via GitHub milestones from this point forward.
+The Phase 7 satellite ships `LombokModule.forRoot(config)` for global config, `@LogNest` (a `@Log` variant pre-configured for Nest's `Logger`), and interceptor-aware variants of `@Memoize` and `@Retry`.
 
----
+## Done criteria for any phase
 
-## 6. NestJS compatibility goals
+A phase ships when all of these are true:
 
-NestJS is the largest TS server framework and a primary persona. Concrete contract:
+- 80%+ line coverage on new and changed code via Vitest
+- Every new decorator has a runnable snippet in `examples/plain-ts/` (and `examples/nestjs/` from Phase 1 onward)
+- Every decorator has a docs-site page covering API, behavior, and caveats
+- CHANGELOG entry written in human English
+- CI green on Node 22 and 24
+- `tsc --noEmit` clean against the public API; type-tests via `tsd` or `expect-type` for any generic decorators
+- Bundle size tracked; >10% growth needs justification
+- Any behavior change has before/after migration notes
 
-| NestJS feature | Compatibility |
-|---|---|
-| `@Injectable()` providers | All `Real` decorators must work on `@Injectable()` classes without conflict |
-| Provider scope (DEFAULT/REQUEST/TRANSIENT) | `@Singleton` is advisory in NestJS context; document which `@Injectable({ scope })` setting it implies |
-| Module DI graph | `@Factory` registry must not interfere with NestJS's own provider tokens |
-| Logger | `@Log` must offer a NestJS-Logger-compatible adapter |
-| Lifecycle hooks (`OnModuleInit`, etc.) | `@Memoize` cache invalidation hooks should be exposable on lifecycle |
-| AOP via interceptors | `@Trace`, `@Retry`, `@Memoize` document equivalence/composition with NestJS interceptors |
-| HTTP context (request-scoped) | Document that decorators using `Symbol.iterator` / class-level state may behave unexpectedly under request scope |
+## Things still up in the air
 
-The dedicated NestJS satellite package (Phase 7) ships:
-- `LombokModule.forRoot(config)` — global config integration
-- `@LogNest` — `@Log` variant pre-configured for NestJS Logger
-- Interceptor-aware `@Memoize`/`@Retry` variants
+These block firm phase-1 planning and need decisions before code starts:
 
-See **ADR-14** for the architectural decision (built-in vs satellite).
+- [ADR-08](./adr/0008-mvp-release-scope.md): is the v0.1 set above the right cut, or smaller (e.g. `@ToString` only first)?
+- [ADR-12](./adr/0012-library-positioning.md): one unified package, or split into `@lombok-typescript/lombok` + `@lombok-typescript/patterns`?
+- [ADR-13](./adr/0013-gof-coverage-strategy.md): ship marker-only decorators at all?
+- [ADR-14](./adr/0014-nestjs-compatibility-strategy.md): NestJS as built-in vs satellite package?
+- [ADR-16](./adr/0016-23-vs-24-gof-patterns.md): ship 23 patterns, or include Object Pool from day one?
 
----
-
-## 7. Definition of done — per phase
-
-Every phase ships only when ALL of the following are true:
-
-- [ ] **Tests:** ≥80% line coverage for new/changed code via Vitest
-- [ ] **Examples:** every new decorator has a runnable snippet in `examples/plain-ts/` (and `examples/nestjs/` from Phase 1 onward)
-- [ ] **Docs:** every decorator has a docs-site page with API + behavior + caveats
-- [ ] **CHANGELOG:** human-readable summary of additions and breaking changes
-- [ ] **CI:** all checks green on Node 18 / 20 / 22, pnpm and npm install paths
-- [ ] **Type tests:** `tsc --noEmit` clean against the public API surface; `tsd` or `expect-type` checks for generic decorators
-- [ ] **Bundle size:** tracked per release; no >10% regression without justification
-- [ ] **Migration notes:** if any decorator's behavior changes, document with before/after
-
----
-
-## 8. Open scope questions
-
-These block firm phase planning until resolved. All tracked in [DECISIONS.md](./DECISIONS.md):
-
-- **ADR-08:** is the v0.1 set above the right cut, or should it be smaller (e.g. drop `@Data` to `@ToString`-only first)?
-- **ADR-12:** unified package vs split (`@lombok-typescript/lombok` + `@lombok-typescript/patterns`)?
-- **ADR-13:** ship marker-only decorators at all, or omit them and document them as "not provided"?
-- **ADR-14:** NestJS as built-in vs satellite package?
-- **ADR-16:** ship 23 patterns or include Object Pool from day one?
-
-Resolving these reshapes Phase 1 and Phase 7 specifically.
-
----
-
-## 9. Cross-references
-
-- Full decorator catalog with viability ratings → [PATTERNS.md](./PATTERNS.md)
-- Open architectural decisions (ADR-01 through ADR-17) → [DECISIONS.md](./DECISIONS.md)
-- Original Lombok-only spec → [FEATURES.md](./FEATURES.md)
-
----
-
-## 10. README snippet (copy when ready)
-
-When you update the project README to reflect the expanded vision, this paragraph is ready to drop in:
-
-> `lombok-typescript` is the open-source TypeScript answer to Java's Project Lombok — and more. It brings boilerplate-killing decorators (`@Data`, `@Builder`, `@NonNull`, `@Log`, ...) plus mechanical implementations of the Gang-of-Four design patterns (`@Singleton`, `@Strategy`, `@Observer`, `@Factory`, ...) to any TypeScript project, with a framework-agnostic core and first-class NestJS support. **Add a decorator, get the pattern.** See [docs/MVP.md](./docs/MVP.md) for the roadmap, [docs/PATTERNS.md](./docs/PATTERNS.md) for the full catalog, and [docs/DECISIONS.md](./docs/DECISIONS.md) for open architectural questions.
+Resolving them changes Phase 1 and Phase 7 specifically.
