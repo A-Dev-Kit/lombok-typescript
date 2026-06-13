@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "ES2023",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": ["ES2022"],
+    "lib": ["ES2023", "ESNext.Decorators"],
     "outDir": "./dist",
     "rootDir": "./src",
     "declaration": true,
@@ -16,23 +16,28 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "verbatimModuleSyntax": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "useDefineForClassFields": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@decorators/*": ["src/decorators/*"],
+      "@core/*": ["src/core/*"],
+      "@legacy/*": ["src/legacy/*"],
+      "@stage3/*": ["src/stage3/*"],
       "@codegen/*": ["src/codegen/*"],
+      "@cli/*": ["src/cli/*"],
       "@utils/*": ["src/utils/*"]
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+  "exclude": ["node_modules", "dist", "coverage", ".lombok"]
 }
-

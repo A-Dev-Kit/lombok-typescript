@@ -1,104 +1,50 @@
 # lombok-typescript
 
-> Lombok-like decorators and code generation for TypeScript. Reduce boilerplate with powerful annotations.
+A TypeScript take on Java's [Project Lombok](https://projectlombok.org/), with a few extras: Gang-of-Four design patterns exposed as decorators, and support for both the legacy `experimentalDecorators` standard and the modern Stage 3 ECMAScript decorators.
 
-## 🚀 Features
+It's not on npm yet. Right now what's in is the scaffolding, the codegen pipeline, the `lombok-ts` CLI, and tests. Actual decorator implementations come next.
 
-- **@Builder** - Fluent builder pattern for object creation
-- **@Data** - Complete data class (getters, setters, toString, equals)
-- **@Value** - Immutable data class
-- **@NonNull** - Runtime null validation
-- **@Log** - Auto-inject logger
-- **@Memoize** - Cache method results
-- **@Retry** - Automatic retry logic
-- And many more...
+## What it'll look like
 
-## 📦 Installation
-
-```bash
-# Using npm
-npm install lombok-typescript
-
-# Using yarn
-yarn add lombok-typescript
-
-# Using pnpm
-pnpm add lombok-typescript
-```
-
-> **Note:** This library requires Node.js >= 18.0.0
-
-## 🔧 Quick Start
-
-```typescript
-import { Data, Builder, NonNull, Log } from 'lombok-typescript';
+```ts
+import { Data, Builder, NonNull } from 'lombok-typescript/legacy';
+// or 'lombok-typescript/stage3' if you've moved on
 
 @Data
 @Builder
-@Log
 class User {
   @NonNull name: string;
   age: number;
-  email?: string;
 }
 
-// Builder pattern
-const user = User.builder()
-  .name('John')
-  .age(25)
-  .email('john@example.com')
-  .build();
-
-// Auto-generated toString
-console.log(user.toString());
-// Output: User(name=John, age=25, email=john@example.com)
-
-// Auto-generated equals
-const sameUser = User.builder().name('John').age(25).build();
-console.log(user.equals(sameUser)); // true
-
-// Logging
-this.log.info('User created', { user });
+const u = User.builder().name('John').age(25).build();
+console.log(u.toString()); // User(name=John, age=25)
 ```
 
-## 📚 Documentation
+## Docs
 
-See [docs/FEATURES.md](./docs/FEATURES.md) for the complete feature list and implementation details.
+- [docs/PATTERNS.md](./docs/PATTERNS.md) for the full decorator catalog (21 from Lombok, 23 GoF patterns, plus a few TS-only extras)
+- [docs/MVP.md](./docs/MVP.md) for the roadmap and what ships when
+- [docs/adr/](./docs/adr/) for the open architectural decisions (17 of them, mostly still up in the air)
+- [docs/FEATURES.md](./docs/FEATURES.md) was the original Lombok-only spec, kept around for history
 
-## 🏗️ Implementation Approach
+## Working on it
 
-This library uses a **hybrid approach**:
-
-1. **Decorators (Runtime)** - Mark classes/fields with metadata
-2. **Code Generation (Compile-time)** - Generate companion code using ts-morph
-
-This provides the best of both worlds:
-- Clean decorator syntax
-- Zero runtime overhead for generated code
-- Full TypeScript type support
-
-## 🛠️ Development
-
-> **Note:** Development uses Node.js 22 and pnpm. Use `nvm use` to switch to the correct Node version.
+Needs Node 22+ and pnpm 10. There's an `.nvmrc` pinned to 24.
 
 ```bash
-# Install dependencies (pnpm required for development)
 pnpm install
-
-# Build
-pnpm build
-
-# Test
 pnpm test
-
-# Type check
+pnpm test:coverage
 pnpm typecheck
-
-# Watch mode
-pnpm build:watch
+pnpm lint
+pnpm build
 ```
 
-## 📄 License
+## How it's organized
 
-MIT
+Two backend implementations live side-by-side under `src/legacy/` (wraps `reflect-metadata`) and `src/stage3/` (uses `Symbol.metadata`). Both implement a common `Backend` interface from `src/core/`, so once the actual decorators land they can be authored once and exposed under both paths. The codegen pipeline in `src/codegen/` uses ts-morph to read decorated classes and write companion files. The `lombok-ts` CLI in `src/cli/` wires it all up.
 
+## License
+
+[MIT](./LICENSE)
