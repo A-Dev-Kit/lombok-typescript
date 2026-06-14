@@ -1,188 +1,97 @@
 # lombok-typescript
 
 [![CI](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/ci.yml/badge.svg)](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/ci.yml)
+[![Docs](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/docs.yml/badge.svg)](https://a-dev-kit.github.io/lombok-typescript/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
-[![npm version](https://img.shields.io/npm/v/lombok-typescript.svg)](https://www.npmjs.com/package/lombok-typescript)
-[![npm downloads](https://img.shields.io/npm/dm/lombok-typescript.svg)](https://www.npmjs.com/package/lombok-typescript)
-[![coverage](https://img.shields.io/codecov/c/github/A-Dev-Kit/lombok-typescript/main)](https://codecov.io/gh/A-Dev-Kit/lombok-typescript)
+[![npm version](https://img.shields.io/npm/v/lombok-typescript.svg?label=npm)](https://www.npmjs.com/package/lombok-typescript)
+[![coverage](https://img.shields.io/codecov/c/github/A-Dev-Kit/lombok-typescript/main?label=coverage)](https://codecov.io/gh/A-Dev-Kit/lombok-typescript)
 [![Node](https://img.shields.io/badge/node-%E2%89%A522-brightgreen)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-%E2%89%A55.0-blue?logo=typescript)](https://www.typescriptlang.org/)
 
-A TypeScript port of Java's [Project Lombok](https://projectlombok.org/) with a few extras: Gang-of-Four design patterns exposed as decorators. Both the legacy `experimentalDecorators` standard and the modern Stage 3 ECMAScript decorators are supported, side-by-side.
+A TypeScript port of Java's [Project Lombok](https://projectlombok.org/) with Gang-of-Four design patterns as decorators. Legacy `experimentalDecorators` and Stage 3 ECMAScript decorators are supported side-by-side.
 
 ## Status
 
-Current version: `0.1.0-pre`. Not on npm yet.
+**Version `0.1.0` — code-complete, not on npm yet.** Batch publish is deferred until the full release queue is ready. See [CHANGELOG.md](./CHANGELOG.md).
 
-The plumbing is in place: dual decorator backend, ts-morph powered codegen, the `lombok-ts` CLI, configuration loader. The actual decorators (`@Data`, `@Builder`, `@NonNull`, `@Singleton`, and the rest) ship in v0.1.
+Phase 1 decorators are implemented: `@NonNull`, `@ToString`, `@Builder`, `@Data`, `@Singleton`, `@Prototype`, `@Factory`, `@Memoize`.
+
+Documentation site: [a-dev-kit.github.io/lombok-typescript](https://a-dev-kit.github.io/lombok-typescript/) (after GitHub Pages deploy).
 
 ## Install
 
-Once published you'll be able to install via any of these:
-
 ```bash
-npm install lombok-typescript
-pnpm add lombok-typescript
-yarn add lombok-typescript
-bun add lombok-typescript
-```
+# Not on npm yet — clone and link locally:
+git clone https://github.com/A-Dev-Kit/lombok-typescript.git
+cd lombok-typescript && pnpm install && pnpm build && pnpm link --global
 
-The package isn't on npm yet, so the commands above will fail until v0.1 ships.
+# When published (preview tag):
+npm install lombok-typescript@preview
+```
 
 ## Pick a decorator standard
 
-The library ships two backends. Pick whichever matches your project's tsconfig.
+### Legacy (`lombok-typescript/legacy`)
 
-### Legacy `experimentalDecorators`
-
-For NestJS, TypeORM, class-validator, and most existing TypeScript projects.
+For NestJS, TypeORM, and most existing decorator-based projects.
 
 ```jsonc
-// tsconfig.json
-{
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "target": "ES2022",
-  },
-}
+{ "compilerOptions": { "experimentalDecorators": true, "emitDecoratorMetadata": true } }
 ```
 
-Imports come from `lombok-typescript/legacy`:
+### Stage 3 (`lombok-typescript/stage3`)
 
-```ts
-import { Data, Builder, NonNull } from 'lombok-typescript/legacy';
-```
-
-### Stage 3 ECMAScript decorators
-
-For TS 5.0+ projects that have moved off `experimentalDecorators`.
+For TS 5.0+ projects without `experimentalDecorators`.
 
 ```jsonc
-// tsconfig.json
-{
-  "compilerOptions": {
-    "experimentalDecorators": false,
-    "target": "ES2023",
-  },
-}
+{ "compilerOptions": { "experimentalDecorators": false } }
 ```
 
-Imports come from `lombok-typescript/stage3`:
-
-```ts
-import { Data, Builder, NonNull } from 'lombok-typescript/stage3';
-```
-
-Stage 3 has no parameter decorators in the spec. Use the legacy backend if you need them.
-
-## Configure
-
-Drop a `lombok.config.ts` at the root of your project. The fastest way:
+## Quick start
 
 ```bash
 npx lombok-ts init
+npx lombok-ts generate
 ```
 
-That writes a starter file you can trim. Minimal configuration looks like:
-
 ```ts
-// lombok.config.ts
-import { defineConfig } from 'lombok-typescript';
-
-export default defineConfig({
-  backend: 'legacy', // or 'stage3', or 'auto' to detect from your tsconfig
-  codegen: {
-    outputDir: '.lombok',
-    include: ['src/**/*.ts'],
-    exclude: ['node_modules', '**/*.test.ts', '**/*.spec.ts'],
-    tsConfigPath: 'tsconfig.json',
-  },
-});
-```
-
-Every field is documented in [docs/example/02-lombok-config.md](./docs/example/02-lombok-config.md).
-
-## Use the decorators
-
-> **Phase 1+ preview.** The snippets below describe the planned API. None of these decorators are implemented yet; they ship in Phase 1.
-
-### Data classes
-
-```ts
-import { Data, Builder, NonNull } from 'lombok-typescript/legacy';
+import { Data, Builder, NonNull, Memoize, Singleton } from 'lombok-typescript/legacy';
 
 @Data
 @Builder
 class User {
-  @NonNull name: string;
-  age: number;
-  email?: string;
+  @NonNull name!: string;
+  age!: number;
 }
-
-const u = User.builder().name('John').age(25).build();
-console.log(u.toString()); // User(name=John, age=25)
-console.log(u.equals(User.builder().name('John').age(25).build())); // true
-```
-
-More on data classes in [docs/example/04-data-classes.md](./docs/example/04-data-classes.md).
-
-### Creational patterns
-
-```ts
-import { Singleton, Factory, Prototype } from 'lombok-typescript/legacy';
 
 @Singleton
-class AppConfig {
-  dbUrl = 'postgres://localhost/db';
-}
-new AppConfig() === new AppConfig(); // true
-
-@Factory('email')
-class EmailNotifier {}
-@Factory('sms')
-class SmsNotifier {}
-const notifier = Factory.create('email'); // EmailNotifier instance
-```
-
-More in [docs/example/06-creational-patterns.md](./docs/example/06-creational-patterns.md).
-
-### Method wrappers
-
-```ts
-import { Memoize, Retry } from 'lombok-typescript/legacy';
-
-class Api {
-  @Memoize({ ttl: 60_000 })
-  async fetchUser(id: string) {
-    return await fetch(`/users/${id}`).then((r) => r.json());
-  }
-
-  @Retry({ attempts: 3, backoff: 'exponential' })
-  async sendEmail(to: string) {
-    return await mailer.send(to);
+class Cache {
+  @Memoize()
+  get(key: string) {
+    return key;
   }
 }
 ```
 
-More in [docs/example/07-method-wrappers.md](./docs/example/07-method-wrappers.md).
+After codegen, import and call `applyAllGenerated` from the `.lombok/` companion file. See [docs-site/guide/getting-started.md](./docs-site/guide/getting-started.md).
 
 ## CLI
 
-The `lombok-ts` CLI ships with the package and runs against your project from `node_modules/.bin/lombok-ts` (or via `npx lombok-ts`).
+| Command              | Description                                   |
+| -------------------- | --------------------------------------------- |
+| `lombok-ts generate` | Emit `.lombok.ts` + `.lombok.d.ts` companions |
+| `lombok-ts init`     | Create `lombok.config.ts`                     |
+| `lombok-ts clean`    | Remove `.lombok/`, `dist/`, `coverage/`       |
+| `lombok-ts watch`    | Phase 2 stub                                  |
 
-| Command              | What it does                                                  |
-| -------------------- | ------------------------------------------------------------- |
-| `lombok-ts generate` | Run codegen against your source files                         |
-| `lombok-ts watch`    | Re-run on file change. Phase 2, currently a stub.             |
-| `lombok-ts init`     | Drop a starter `lombok.config.ts` in the current directory    |
-| `lombok-ts clean`    | Remove generated `.lombok/`, `dist/`, `coverage/` directories |
+## Examples
 
-Full walkthrough in [docs/example/03-cli.md](./docs/example/03-cli.md).
+- [examples/plain-ts](./examples/plain-ts/) — legacy backend + codegen
+- [examples/nestjs](./examples/nestjs/) — `@Injectable()` with `@Singleton`, `@Factory`, `@Memoize`
 
-## Documentation
+## Contributing
 
-- [docs/example/](./docs/example/) walkthroughs grouped by what you're trying to do
+See [CONTRIBUTING.md](./CONTRIBUTING.md). Tests require **95%+** coverage on changed code.
 
 ## License
 
