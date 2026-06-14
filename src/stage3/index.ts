@@ -31,6 +31,19 @@ export type {
   Stage3GetterLogic,
   Stage3SetterLogic,
 } from './decorate.js';
+export {
+  NonNull,
+  Singleton,
+  Prototype,
+  Memoize,
+  Factory,
+  Data,
+  Builder,
+  ToString,
+  createFromFactory,
+  getFactoryRegistry,
+  registerFactory,
+} from '../decorators/stage3/index.js';
 
 /** Read the Stage 3 `Symbol.metadata` object from a class, if present. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
