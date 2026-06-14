@@ -45,12 +45,60 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm test:coverage
-      - name: Upload coverage
+      - name: Upload coverage to Codecov
+        if: matrix.node == 24
+        uses: codecov/codecov-action@v4
+        continue-on-error: true
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+      - name: Upload coverage artifact
         if: matrix.node == 24
         uses: actions/upload-artifact@v4
         with:
           name: coverage
           path: coverage/
+
+  release-dry-run:
+    name: Release dry-run (pack validation)
+    runs-on: ubuntu-latest
+    needs: [quality, test]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm pack
+      - run: npm publish --dry-run
+      - run: node dist/cli/index.js --help
+
+  examples:
+    name: Examples (plain-ts + nestjs)
+    runs-on: ubuntu-latest
+    needs: [quality, test, build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: plain-ts example
+        working-directory: examples/plain-ts
+        run: |
+          node ../../dist/cli/index.js generate
+          pnpm exec tsc --noEmit
+      - name: nestjs example
+        working-directory: examples/nestjs
+        run: |
+          node ../../dist/cli/index.js generate
+          pnpm exec tsc --noEmit
 
   build:
     name: Build

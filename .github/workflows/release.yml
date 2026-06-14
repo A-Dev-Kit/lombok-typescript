@@ -1,12 +1,7 @@
-# Release workflow placeholder.
+# Release workflow — DISABLED until batch publish day.
 #
-# Activate by:
-#   1. Removing the `if: false` gate below
-#   2. Adding NPM_TOKEN to repository secrets
-#   3. Pushing a git tag matching v*.*.* (e.g. `git tag v0.1.0 && git push --tags`)
-#
-# Uses npm provenance (npm 9.5+) for supply-chain trust.
-# Consider also enabling npm 2FA on the publishing account.
+# See private RELEASE_QUEUE.md: publish only when 10 versions are code-ready.
+# Activate by removing the `if: false` gate and adding NPM_TOKEN.
 
 name: Release
 
