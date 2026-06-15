@@ -8,8 +8,7 @@
     "strict": true,
     "skipLibCheck": true,
     "outDir": "dist",
-    "rootDir": "src",
     "declaration": false
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", ".lombok/**/*.ts", ".lombok/**/*.d.ts"]
 }
