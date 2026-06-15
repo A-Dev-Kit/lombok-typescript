@@ -23,3 +23,17 @@ export type {
   MethodDecoratorLogic,
   ParameterDecoratorLogic,
 } from './decorate.js';
+export {
+  NonNull,
+  NonNullParam,
+  Singleton,
+  Prototype,
+  Memoize,
+  Factory,
+  Data,
+  Builder,
+  ToString,
+  createFromFactory,
+  getFactoryRegistry,
+  registerFactory,
+} from '../decorators/legacy/index.js';
