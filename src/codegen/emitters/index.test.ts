@@ -20,12 +20,17 @@ describe('codegen emitters', () => {
     `);
 
     expect(classes).toHaveLength(1);
-    const { ts, dts } = emitCompanionFile('/proj/src/user.ts', classes, '/proj');
-    expect(ts).toContain("import { User } from './src/user.js'");
+    const { ts, dts } = emitCompanionFile(
+      '/proj/src/user.ts',
+      '/proj/.lombok/src/user.lombok.ts',
+      classes,
+      '/proj',
+    );
+    expect(ts).toContain("import { User } from '../../src/user.js'");
     expect(ts).toContain('UserBuilder');
     expect(ts).toContain('applyUserGenerated');
     expect(ts).toContain('User_toString');
-    expect(dts).toContain("declare module './src/user.js'");
+    expect(dts).toContain("declare module '../../src/user.js'");
     expect(dts).toContain('UserBuilder');
   });
 
@@ -78,7 +83,12 @@ describe('codegen emitters', () => {
       @ToString
       class Label { text: string; }
     `);
-    const { dts } = emitCompanionFile('/proj/src/label.ts', classes, '/proj');
+    const { dts } = emitCompanionFile(
+      '/proj/src/label.ts',
+      '/proj/.lombok/src/label.lombok.ts',
+      classes,
+      '/proj',
+    );
     expect(dts).toContain('toString(): string');
   });
 

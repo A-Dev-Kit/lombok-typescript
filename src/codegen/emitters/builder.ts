@@ -22,8 +22,6 @@ export function emitBuilderClass(info: ClassInfo): string {
   }`.trim(),
   );
 
-  const buildArgs = info.fields.map((f) => `this._${f.name}!`).join(', ');
-
   return `
 export class ${builderName} {
 ${fieldLines.join('\n')}
@@ -35,7 +33,9 @@ ${fieldLines.join('\n')}
 ${setterMethods.join('\n\n')}
 
   build(): ${info.name} {
-    return new ${info.name}(${buildArgs});
+    const instance = new ${info.name}();
+${info.fields.map((f) => `    instance.${f.name} = this._${f.name}${f.isOptional ? '' : '!'};`).join('\n')}
+    return instance;
   }
 }`.trim();
 }

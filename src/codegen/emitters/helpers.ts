@@ -1,9 +1,9 @@
 import { relative } from 'node:path';
 import type { ClassInfo, FieldInfo } from '../types.js';
 
-/** ESM import path for a source file (NodeNext requires a `.js` extension). */
-export function toImportPath(sourcePath: string, cwd: string): string {
-  let rel = relative(cwd, sourcePath).replace(/\\/g, '/');
+/** ESM import path from `fromDir` to `sourcePath` (NodeNext requires a `.js` extension). */
+export function toImportPath(sourcePath: string, fromDir: string): string {
+  let rel = relative(fromDir, sourcePath).replace(/\\/g, '/');
   if (!rel.startsWith('.')) rel = './' + rel;
   return rel.replace(/\.tsx?$/u, '.js');
 }

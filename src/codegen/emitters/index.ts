@@ -1,7 +1,6 @@
-import { relative } from 'node:path';
+import { dirname, relative } from 'node:path';
 import type { ClassInfo } from '../types.js';
 import { emitBuilderClass } from './builder.js';
-import { emitDataConstructor } from './data.js';
 import { emitDeclarationShim } from './declaration.js';
 import {
   builderClassName,
@@ -56,7 +55,7 @@ function emitApplyMixin(info: ClassInfo): string {
 
   return `
 export function apply${info.name}Generated(ctor: typeof ${info.name}): void {
-  const prototype = ctor.prototype;
+  const prototype = ctor.prototype as unknown as Record<string, unknown>;
   ${assignments.join('\n  ')}
 }`.trim();
 }
@@ -65,15 +64,6 @@ function emitDataFns(info: ClassInfo): string {
   if (!hasClassDecorator(info, 'Data')) return '';
 
   const fns: string[] = [];
-
-  if (info.fields.length > 0) {
-    fns.push(
-      emitDataConstructor(info)
-        .replace(/^\s*constructor/m, `function ${info.name}_init`)
-        .replace(/\)$/m, ')'),
-    );
-    // Skip - constructor can't be assigned easily. Use generated constructor note in docs.
-  }
 
   for (const f of info.fields) {
     const g = `get${f.name.charAt(0).toUpperCase()}${f.name.slice(1)}`;
@@ -121,6 +111,7 @@ function ${info.name}_builder(): ${bName} {
 
 export function emitCompanionFile(
   sourcePath: string,
+  companionOutputPath: string,
   classes: readonly ClassInfo[],
   cwd: string,
 ): { ts: string; dts: string } {
@@ -131,7 +122,7 @@ export function emitCompanionFile(
     '',
   ].join('\n');
 
-  const importPath = toImportPath(sourcePath, cwd);
+  const importPath = toImportPath(sourcePath, dirname(companionOutputPath));
 
   const blocks: string[] = [];
 
@@ -166,7 +157,7 @@ export function emitCompanionFile(
 
   const imports = emitImports(classes, importPath);
   const ts = header + imports + blocks.join('\n\n') + applyAll;
-  const dts = emitDeclarationShim(sourcePath, classes, cwd);
+  const dts = emitDeclarationShim(sourcePath, companionOutputPath, classes);
 
   return { ts, dts };
 }

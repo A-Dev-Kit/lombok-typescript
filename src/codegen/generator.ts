@@ -48,7 +48,7 @@ export class CodeGenerator {
 
       const sourcePath = sourceFile.getFilePath();
       const outputPath = this.computeOutputPath(sourcePath);
-      const { ts, dts } = emitCompanionFile(sourcePath, classes, process.cwd());
+      const { ts, dts } = emitCompanionFile(sourcePath, outputPath, classes, process.cwd());
       const content = ts;
 
       this.writeOutput(outputPath, content);
@@ -76,7 +76,7 @@ export class CodeGenerator {
     if (classes.length === 0) return null;
 
     const outputPath = this.computeOutputPath(filePath);
-    const { ts, dts } = emitCompanionFile(filePath, classes, process.cwd());
+    const { ts, dts } = emitCompanionFile(filePath, outputPath, classes, process.cwd());
     const content = ts;
     this.writeOutput(outputPath, content);
     this.writeOutput(outputPath.replace(/\.lombok\.ts$/u, '.lombok.d.ts'), dts);
