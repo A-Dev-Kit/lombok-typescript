@@ -1,0 +1,16 @@
+{
+  "name": "plain-ts-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "generate": "node ../../dist/cli/index.js generate"
+  },
+  "dependencies": {
+    "lombok-typescript": "workspace:*",
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
