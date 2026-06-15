@@ -1,8 +1,6 @@
 # Method wrappers
 
-> **Phase 1+ preview.** `@Memoize` ships in Phase 1 (one of the eight v0.1 decorators). `@Retry`, `@Debounce`, `@Throttle`, and `@Trace` ship in Phase 5 alongside the rest of the TS-only utilities. Examples describe the planned API.
-
-These decorators wrap a method's implementation: cache its results, retry on failure, debounce or throttle its invocation, log its entry and exit. They're all pure runtime, no codegen involved.
+> **v0.1 shipped:** `@Memoize` — see [docs](https://a-dev-kit.github.io/lombok-typescript/decorators/memoize). **Preview:** `@Retry`, `@Debounce`, `@Throttle`, `@Trace` (Phase 5).
 
 ## `@Memoize`
 

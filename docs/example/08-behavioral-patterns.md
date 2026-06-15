@@ -1,8 +1,6 @@
 # Behavioral patterns
 
-> **Phase 1+ preview.** All decorators in this doc ship in Phase 3 (the GoF Behavioral batch). Examples describe the planned API.
-
-The Gang-of-Four behavioral patterns mapped to decorators. These are about how objects communicate and divide responsibility.
+> **Preview only (Phase 3).** Decorators in this doc are not implemented in v0.1. See [roadmap on GitHub](https://github.com/A-Dev-Kit/lombok-typescript) and the [docs site](https://a-dev-kit.github.io/lombok-typescript/) for what ships today.
 
 ## `@Strategy`
 

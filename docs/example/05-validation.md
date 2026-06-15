@@ -1,6 +1,6 @@
 # Validation
 
-> **Phase 1+ preview.** `@NonNull` ships in Phase 1 (it's one of the eight v0.1 decorators). `@Validate` lands in Phase 5 alongside the rest of the TS-only utilities. Examples below describe the planned API.
+> **v0.1 shipped:** `@NonNull` — see [docs](https://a-dev-kit.github.io/lombok-typescript/decorators/non-null). **Preview:** `@Validate` (Phase 5). Examples below may describe future API.
 
 Two decorators handle most input validation: `@NonNull` for the simple null/undefined check, `@Validate` for richer schema-based checks via Zod / Yup / class-validator.
 

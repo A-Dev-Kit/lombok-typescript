@@ -48,10 +48,10 @@ jobs:
       - name: Upload coverage to Codecov
         if: matrix.node == 24
         uses: codecov/codecov-action@v7
-        continue-on-error: true
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
+          fail_ci_if_error: false
       - name: Upload coverage artifact
         if: matrix.node == 24
         uses: actions/upload-artifact@v7
