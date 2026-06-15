@@ -1,6 +1,6 @@
 # Data classes
 
-> **Phase 1+ preview.** None of these decorators are implemented yet. They ship in Phase 1 (`@Data`, `@Builder`, `@NonNull`, `@ToString`) and Phase 2 (`@Value`, `@With`, `@Equals` on its own, `@Getter`/`@Setter`, `@Accessors`, `@FieldDefaults`, `@Delegate`). Examples describe the planned API.
+> **v0.1 shipped:** `@Data`, `@Builder`, `@ToString`, and field `@NonNull` are implemented — see [docs site](https://a-dev-kit.github.io/lombok-typescript/decorators/overview). **Preview below:** `@Value`, `@With`, standalone `@Equals`, `@Getter`/`@Setter`, etc. (Phase 2+). Examples may differ slightly from generated v0.1 output.
 
 The decorators in this section take care of the boilerplate around classes that mostly hold data: getters, setters, builders, equality, string representation, immutable copies.
 

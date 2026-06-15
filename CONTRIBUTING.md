@@ -14,6 +14,26 @@ pnpm build
 
 Requires Node 22+ and pnpm 10+.
 
+### Codecov (coverage badge)
+
+The README coverage badge uses [Codecov](https://about.codecov.io/) (free for public repos). One-time maintainer setup:
+
+1. Sign in at [codecov.io](https://codecov.io) with GitHub and add `A-Dev-Kit/lombok-typescript`.
+2. Copy the repository upload token.
+3. Add it as a GitHub Actions secret named `CODECOV_TOKEN` (Settings → Secrets and variables → Actions).
+
+CI uploads `coverage/lcov.info` on every push to `main`. Without the secret, tests still pass but the badge stays empty.
+
+### Documentation site
+
+```bash
+pnpm --dir docs-site install
+pnpm --dir docs-site dev    # local preview
+pnpm --dir docs-site build  # production build (also run in CI / GitHub Pages)
+```
+
+Source lives under `docs-site/`. Deployed to [a-dev-kit.github.io/lombok-typescript](https://a-dev-kit.github.io/lombok-typescript/).
+
 ## Pull request workflow
 
 1. Fork the repository and create a feature branch from `main`.

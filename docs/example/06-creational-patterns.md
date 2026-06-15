@@ -1,8 +1,6 @@
 # Creational patterns
 
-> **Phase 1+ preview.** `@Singleton`, `@Factory`, `@Prototype`, and `@Builder` all ship in Phase 1 (they're four of the eight v0.1 decorators). `@AbstractFactory` lands in Phase 4. Examples describe the planned API.
-
-The Gang-of-Four creational patterns, mapped to decorators. `@Builder` is covered in [04-data-classes.md](./04-data-classes.md) since it's also a Lombok feature.
+> **v0.1 shipped:** `@Singleton`, `@Factory`, `@Prototype`, `@Builder` — see [docs](https://a-dev-kit.github.io/lombok-typescript/decorators/overview). **Preview:** `@AbstractFactory` (Phase 4). `@Builder` is also covered in [04-data-classes.md](./04-data-classes.md).
 
 ## `@Singleton`
 
