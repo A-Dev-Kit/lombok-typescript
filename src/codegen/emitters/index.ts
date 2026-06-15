@@ -3,12 +3,18 @@ import type { ClassInfo } from '../types.js';
 import { emitBuilderClass } from './builder.js';
 import { emitDataConstructor } from './data.js';
 import { emitDeclarationShim } from './declaration.js';
-import { builderClassName, hasClassDecorator, visibleFields } from './helpers.js';
+import {
+  builderClassName,
+  hasClassDecorator,
+  hasCodegenClassDecorator,
+  toImportPath,
+  visibleFields,
+} from './helpers.js';
 
-function toImportPath(sourcePath: string, cwd: string): string {
-  let rel = relative(cwd, sourcePath).replace(/\\/g, '/');
-  if (!rel.startsWith('.')) rel = './' + rel;
-  return rel.replace(/\.ts$/u, '');
+function emitImports(classes: readonly ClassInfo[], importPath: string): string {
+  const names = classes.filter(hasCodegenClassDecorator).map((c) => c.name);
+  if (names.length === 0) return '';
+  return `import { ${names.join(', ')} } from '${importPath}';\n\n`;
 }
 
 function emitToStringFn(info: ClassInfo): string {
@@ -126,8 +132,6 @@ export function emitCompanionFile(
   ].join('\n');
 
   const importPath = toImportPath(sourcePath, cwd);
-  const typeImports = classes.map((c) => c.name).join(', ');
-  const imports = `import type { ${typeImports} } from '${importPath}';\n\n`;
 
   const blocks: string[] = [];
 
@@ -160,6 +164,7 @@ export function emitCompanionFile(
           .join('\n')}\n}\n`
       : '\nexport {};\n';
 
+  const imports = emitImports(classes, importPath);
   const ts = header + imports + blocks.join('\n\n') + applyAll;
   const dts = emitDeclarationShim(sourcePath, classes, cwd);
 

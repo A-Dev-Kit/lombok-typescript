@@ -1,4 +1,20 @@
+import { relative } from 'node:path';
 import type { ClassInfo, FieldInfo } from '../types.js';
+
+/** ESM import path for a source file (NodeNext requires a `.js` extension). */
+export function toImportPath(sourcePath: string, cwd: string): string {
+  let rel = relative(cwd, sourcePath).replace(/\\/g, '/');
+  if (!rel.startsWith('.')) rel = './' + rel;
+  return rel.replace(/\.tsx?$/u, '.js');
+}
+
+export function hasCodegenClassDecorator(info: ClassInfo): boolean {
+  return (
+    hasClassDecorator(info, 'Builder') ||
+    hasClassDecorator(info, 'Data') ||
+    hasClassDecorator(info, 'ToString')
+  );
+}
 
 export function hasClassDecorator(info: ClassInfo, name: string): boolean {
   return info.decorators.some((d) => d.name === name);

@@ -1,13 +1,12 @@
-import { relative } from 'node:path';
 import type { ClassInfo } from '../types.js';
-import { builderClassName, hasClassDecorator } from './helpers.js';
+import { builderClassName, hasClassDecorator, toImportPath } from './helpers.js';
 
 export function emitDeclarationShim(
   sourcePath: string,
   classes: readonly ClassInfo[],
   cwd: string,
 ): string {
-  const relSource = './' + relative(cwd, sourcePath).replace(/\\/g, '/').replace(/\.ts$/u, '');
+  const relSource = toImportPath(sourcePath, cwd);
   const lines: string[] = [
     '// Auto-generated type augmentation by lombok-typescript.',
     '// Do not edit. Regenerate via `lombok-ts generate`.',

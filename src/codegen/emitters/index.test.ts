@@ -21,10 +21,11 @@ describe('codegen emitters', () => {
 
     expect(classes).toHaveLength(1);
     const { ts, dts } = emitCompanionFile('/proj/src/user.ts', classes, '/proj');
+    expect(ts).toContain("import { User } from './src/user.js'");
     expect(ts).toContain('UserBuilder');
     expect(ts).toContain('applyUserGenerated');
     expect(ts).toContain('User_toString');
-    expect(dts).toContain("declare module './src/user'");
+    expect(dts).toContain("declare module './src/user.js'");
     expect(dts).toContain('UserBuilder');
   });
 

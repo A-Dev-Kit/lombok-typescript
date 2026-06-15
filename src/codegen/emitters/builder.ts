@@ -8,13 +8,15 @@ export function emitBuilderClass(info: ClassInfo): string {
 
   const builderName = builderClassName(info.name);
   const fieldLines = info.fields.map((f) => {
-    const optional = f.isOptional ? '?' : '';
-    return `  private _${f.name}${optional}: ${f.type};`;
+    if (f.isOptional) {
+      return `  private _${f.name}?: ${f.type};`;
+    }
+    return `  private _${f.name}!: ${f.type};`;
   });
 
   const setterMethods = info.fields.map((f) =>
     `
-  ${f.name}(value: ${f.type}): this {
+  ${f.name}(value: ${f.type}): ${builderName} {
     this._${f.name} = value;
     return this;
   }`.trim(),
