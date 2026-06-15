@@ -1,28 +1,32 @@
 version: 2
 updates:
+  # One weekly PR for all npm bumps (root + docs-site workspace).
   - package-ecosystem: npm
+    directories:
+      - '/'
+      - '/docs-site'
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: 'Etc/UTC'
+    open-pull-requests-limit: 1
+    versioning-strategy: increase-if-necessary
+    groups:
+      all-dependencies:
+        patterns:
+          - '*'
+
+  # One weekly PR for all GitHub Actions bumps.
+  - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
       day: monday
       time: '06:00'
       timezone: 'Etc/UTC'
-    open-pull-requests-limit: 10
-    versioning-strategy: increase-if-necessary
+    open-pull-requests-limit: 1
     groups:
-      vitest:
+      all-actions:
         patterns:
-          - 'vitest'
-          - '@vitest/*'
-      eslint:
-        patterns:
-          - 'eslint'
-          - 'typescript-eslint'
-          - '@typescript-eslint/*'
-          - 'globals'
-
-  - package-ecosystem: github-actions
-    directory: /
-    schedule:
-      interval: weekly
-      day: monday
+          - '*'
