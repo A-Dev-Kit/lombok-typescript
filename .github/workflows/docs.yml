@@ -1,5 +1,8 @@
 name: Docs
 
+# Requires GitHub Pages enabled with source "GitHub Actions":
+# https://github.com/A-Dev-Kit/lombok-typescript/settings/pages
+
 on:
   push:
     branches: [main]
