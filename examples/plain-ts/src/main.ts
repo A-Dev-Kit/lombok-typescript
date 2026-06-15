@@ -10,7 +10,7 @@ class UserService {
 }
 
 const service = new UserService();
-console.log('singleton same', service === new UserService());
-console.log('memoized', service.loadUser('1') === service.loadUser('1'));
+console.info('singleton same', service === new UserService());
+console.info('memoized', service.loadUser('1') === service.loadUser('1'));
 
 export { UserService };

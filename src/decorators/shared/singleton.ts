@@ -4,15 +4,16 @@ import type { AnyClass } from '../../legacy/decorate.js';
 
 export function singletonClassLegacy(backend: Backend, target: AnyClass): AnyClass {
   backend.metadata.set(MetadataKeys.SINGLETON, target, undefined, true);
-  let instance: object | undefined;
 
   const Singleton = class extends target {
+    static #instance: object | undefined;
+
     constructor(...args: unknown[]) {
-      if (instance) {
-        return instance;
+      if (Singleton.#instance) {
+        return Singleton.#instance;
       }
       super(...args);
-      instance = this;
+      Singleton.#instance = this as object;
     }
   };
 
@@ -25,15 +26,16 @@ export function singletonClassStage3(
   context: ClassDecoratorContext,
 ): AnyClass {
   backend.metadata.set(MetadataKeys.SINGLETON, context.metadata as object, undefined, true);
-  let instance: object | undefined;
 
   const Singleton = class extends value {
+    static #instance: object | undefined;
+
     constructor(...args: unknown[]) {
-      if (instance) {
-        return instance;
+      if (Singleton.#instance) {
+        return Singleton.#instance;
       }
       super(...args);
-      instance = this;
+      Singleton.#instance = this as object;
     }
   };
 
