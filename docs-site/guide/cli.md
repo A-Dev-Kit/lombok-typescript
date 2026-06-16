@@ -9,7 +9,7 @@ The `lombok-ts` binary ships with the package (`pnpm build` produces `dist/cli`)
 | `lombok-ts generate` | `gen` | Run codegen once against configured sources          |
 | `lombok-ts init`     | —     | Create a starter `lombok.config.ts`                  |
 | `lombok-ts clean`    | —     | Remove `.lombok`, `dist`, `coverage` (default paths) |
-| `lombok-ts watch`    | —     | **Phase 2 stub** — throws "not implemented yet"      |
+| `lombok-ts watch`    | —     | Watch sources and regenerate companions on change    |
 
 Global flags: `--help`, `--version`.
 
@@ -27,7 +27,15 @@ lombok-ts generate --output-dir .lombok --ts-config tsconfig.json
 3. Write one companion pair per source file that contains decorated classes.
 4. Print paths of generated files.
 
-**When to run:** After adding or changing `@Data`, `@Builder`, or `@ToString` on a class. Add to CI before `tsc` (see repository `examples/` jobs).
+**When to run:** After adding or changing codegen decorators (`@Data`, `@Value`, `@Builder`, `@ToString`, `@Equals`, `@Getter`, `@Setter`, `@With`, `@Delegate`, …). Add to CI before `tsc` (see repository `examples/` jobs).
+
+## `watch`
+
+```bash
+lombok-ts watch
+```
+
+Runs an initial `generate`, then watches matched source files and regenerates companions on change. Press Ctrl+C to stop (or pass an `AbortSignal` when calling programmatically).
 
 ## `init`
 
@@ -66,6 +74,6 @@ Skips paths that do not exist. Does not delete your source.
 | No files generated                  | Check `include` globs; ensure classes have lombok decorators                           |
 | `tsc` cannot find `.lombok` imports | Add `.lombok/**/*.ts` and `.lombok/**/*.d.ts` to `include`; avoid `rootDir: src` alone |
 | `TS2834` missing `.js` extension    | Use `moduleResolution: NodeNext` and match import style in companions                  |
-| Watch fails                         | Expected until Phase 2 — use `generate` in a watch script or CI                        |
+| Watch fails                         | Ensure source files are writable; check `include` / `exclude` globs                     |
 
 See [Getting started](/guide/getting-started) and [Examples](/guide/examples).

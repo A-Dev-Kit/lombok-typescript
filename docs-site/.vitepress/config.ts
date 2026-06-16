@@ -36,6 +36,20 @@ export default defineConfig({
           { text: '@Memoize', link: '/decorators/memoize' },
         ],
       },
+      {
+        text: 'Decorators (Phase 2)',
+        items: [
+          { text: '@Value', link: '/decorators/value' },
+          { text: '@With', link: '/decorators/with' },
+          { text: '@Equals', link: '/decorators/equals' },
+          { text: '@Getter / @Setter', link: '/decorators/getter-setter' },
+          { text: '@Log', link: '/decorators/log' },
+          { text: '@Accessors', link: '/decorators/accessors' },
+          { text: '@UtilityClass', link: '/decorators/utility-class' },
+          { text: '@FieldDefaults', link: '/decorators/field-defaults' },
+          { text: '@Delegate', link: '/decorators/delegate' },
+        ],
+      },
     ],
     socialLinks: [{ icon: 'github', link: 'https://github.com/A-Dev-Kit/lombok-typescript' }],
     editLink: {
