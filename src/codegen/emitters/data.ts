@@ -1,5 +1,5 @@
 import type { ClassInfo } from '../types.js';
-import { getterName, hasClassDecorator, setterName } from './helpers.js';
+import { equalsFields, getterName, hasClassDecorator, setterName } from './helpers.js';
 import { emitToStringMethod } from './toString.js';
 
 export function emitDataAccessors(info: ClassInfo): string {
@@ -30,7 +30,9 @@ export function emitDataEquals(info: ClassInfo): string {
     return '';
   }
 
-  const checks = info.fields.map((f) => `this.${f.name} === other.${f.name}`).join(' &&\n      ');
+  const checks = equalsFields(info)
+    .map((f) => `this.${f.name} === other.${f.name}`)
+    .join(' &&\n      ');
 
   return `
   equals(other: ${info.name} | null | undefined): boolean {

@@ -89,14 +89,65 @@ export class CodeGenerator {
     };
   }
 
-  /** Watch mode is not implemented yet. Re-run `lombok-ts generate` for now. */
-  async watch(): Promise<void> {
-    throw new Error(
-      'Watch mode is not implemented yet. Re-run `lombok-ts generate` after changes.',
-    );
+  /** Watch for source changes and regenerate companion files. */
+  async watch(options: { log?: (message: string) => void; signal?: AbortSignal } = {}): Promise<void> {
+    const log = options.log ?? ((msg: string) => console.info(msg));
+    const generated = await this.generate();
+    log(`Generated ${generated.length} companion file(s). Watching for changes…`);
+
+    const { watch } = await import('node:fs');
+    const watchers: ReturnType<typeof watch>[] = [];
+    const debounceTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+    const project = this.createProject();
+    const paths = project
+      .getSourceFiles()
+      .map((sf) => sf.getFilePath())
+      .filter((p) => this.shouldProcess(p));
+
+    const scheduleRegenerate = (filePath: string) => {
+      const existing = debounceTimers.get(filePath);
+      if (existing) clearTimeout(existing);
+      debounceTimers.set(
+        filePath,
+        setTimeout(() => {
+          void this.generateForFile(filePath).then((result) => {
+            if (result) {
+              log(`Regenerated ${relative(process.cwd(), result.outputPath)}`);
+            }
+          });
+        }, 100),
+      );
+    };
+
+    for (const filePath of paths) {
+      try {
+        const watcher = watch(filePath, { persistent: true }, (event) => {
+          if (event === 'change') scheduleRegenerate(filePath);
+        });
+        watchers.push(watcher);
+      } catch {
+        // File may have been removed; skip.
+      }
+    }
+
+    await new Promise<void>((resolve) => {
+      const onAbort = () => {
+        for (const w of watchers) w.close();
+        for (const t of debounceTimers.values()) clearTimeout(t);
+        resolve();
+      };
+      if (options.signal) {
+        if (options.signal.aborted) {
+          onAbort();
+          return;
+        }
+        options.signal.addEventListener('abort', onAbort, { once: true });
+      }
+    });
   }
 
-  // Internal helpers
+  // Internal helpers — previously threw for watch stub
 
   protected createProject(): Project {
     const tsConfig = resolve(this.options.tsConfigPath);

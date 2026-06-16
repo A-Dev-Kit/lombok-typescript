@@ -1,6 +1,20 @@
 import { dirname } from 'node:path';
 import type { ClassInfo } from '../types.js';
-import { builderClassName, hasClassDecorator, toImportPath } from './helpers.js';
+import {
+  builderClassName,
+  fieldHasDecorator,
+  getterName,
+  getDelegateMethods,
+  hasClassDecorator,
+  setterName,
+  wantsEquals,
+  wantsGetter,
+  wantsSetter,
+  wantsToString,
+  wantsWithMethods,
+  withMethodName,
+  toImportPath,
+} from './helpers.js';
 
 export function emitDeclarationShim(
   sourcePath: string,
@@ -39,18 +53,28 @@ export function emitDeclarationShim(
     }
 
     const augments: string[] = [];
-    if (hasClassDecorator(info, 'Data')) {
-      for (const f of info.fields) {
-        const g = `get${f.name.charAt(0).toUpperCase()}${f.name.slice(1)}`;
-        augments.push(`    ${g}(): ${f.type};`);
-        if (!f.isReadonly) {
-          const s = `set${f.name.charAt(0).toUpperCase()}${f.name.slice(1)}`;
-          augments.push(`    ${s}(value: ${f.type}): void;`);
+    for (const f of info.fields) {
+      if (wantsGetter(info, f)) {
+        augments.push(`    ${getterName(f.name)}(): ${f.type};`);
+      }
+      if (wantsSetter(info, f)) {
+        const ret = hasClassDecorator(info, 'Accessors') ? info.name : 'void';
+        augments.push(`    ${setterName(f.name)}(value: ${f.type}): ${ret};`);
+      }
+      if (wantsWithMethods(info, f)) {
+        augments.push(`    ${withMethodName(f.name)}(value: ${f.type}): ${info.name};`);
+      }
+      if (fieldHasDecorator(f, 'Delegate')) {
+        for (const method of getDelegateMethods(f)) {
+          augments.push(`    ${method}(...args: unknown[]): unknown;`);
         }
       }
+    }
+
+    if (wantsEquals(info)) {
       augments.push(`    equals(other: ${info.name} | null | undefined): boolean;`);
-      augments.push(`    toString(): string;`);
-    } else if (hasClassDecorator(info, 'ToString')) {
+    }
+    if (wantsToString(info)) {
       augments.push('    toString(): string;');
     }
 
@@ -58,6 +82,15 @@ export function emitDeclarationShim(
       lines.push(`  interface ${info.name} {`);
       lines.push(...augments);
       lines.push('  }');
+    }
+
+    if (hasClassDecorator(info, 'Equals')) {
+      lines.push(`  export class ${info.name} {`);
+      lines.push(
+        `    static equals(a: ${info.name} | null | undefined, b: ${info.name} | null | undefined): boolean;`,
+      );
+      lines.push('  }');
+      lines.push('');
     }
   }
 

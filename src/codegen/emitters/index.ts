@@ -1,14 +1,26 @@
 import { dirname, relative } from 'node:path';
+import { validateAllClassCompositions } from '../../decorators/shared/composition.js';
 import type { ClassInfo } from '../types.js';
+import {
+  emitAccessorApplyAssignments,
+  emitAccessorFns,
+} from './accessors-emit.js';
 import { emitBuilderClass } from './builder.js';
 import { emitDeclarationShim } from './declaration.js';
+import { emitDelegateApplyAssignments, emitDelegateFns } from './delegate-emit.js';
+import { emitEqualsFn, emitEqualsStaticFn } from './equals-emit.js';
 import {
   builderClassName,
   hasClassDecorator,
   hasCodegenClassDecorator,
   toImportPath,
   visibleFields,
+  wantsEquals,
+  wantsToString,
+  wantsWithMethods,
+  withMethodName,
 } from './helpers.js';
+import { emitWithFns } from './with-emit.js';
 
 function emitImports(classes: readonly ClassInfo[], importPath: string): string {
   const names = classes.filter(hasCodegenClassDecorator).map((c) => c.name);
@@ -17,7 +29,7 @@ function emitImports(classes: readonly ClassInfo[], importPath: string): string 
 }
 
 function emitToStringFn(info: ClassInfo): string {
-  if (!hasClassDecorator(info, 'ToString') && !hasClassDecorator(info, 'Data')) return '';
+  if (!wantsToString(info)) return '';
   const fields = visibleFields(info);
   const parts = fields.map((f) => `${f.name}=\${String(this.${f.name})}`).join(', ');
   return `
@@ -29,25 +41,35 @@ function ${info.name}_toString(this: ${info.name}): string {
 function emitApplyMixin(info: ClassInfo): string {
   const assignments: string[] = [];
 
-  if (hasClassDecorator(info, 'Data')) {
-    for (const f of info.fields) {
-      const g = `get${f.name.charAt(0).toUpperCase()}${f.name.slice(1)}`;
-      assignments.push(`prototype.${g} = ${info.name}_${g};`);
-      if (!f.isReadonly) {
-        const s = `set${f.name.charAt(0).toUpperCase()}${f.name.slice(1)}`;
-        assignments.push(`prototype.${s} = ${info.name}_${s};`);
-      }
-    }
+  assignments.push(...emitAccessorApplyAssignments(info));
+  assignments.push(...emitDelegateApplyAssignments(info));
+
+  if (wantsEquals(info)) {
     assignments.push(`prototype.equals = ${info.name}_equals;`);
+  }
+
+  if (wantsToString(info)) {
     assignments.push(`prototype.toString = ${info.name}_toString;`);
-  } else if (hasClassDecorator(info, 'ToString')) {
-    assignments.push(`prototype.toString = ${info.name}_toString;`);
+  }
+
+  for (const field of info.fields) {
+    if (wantsWithMethods(info, field)) {
+      assignments.push(
+        `prototype.${withMethodName(field.name)} = ${info.name}_${withMethodName(field.name)};`,
+      );
+    }
   }
 
   if (hasClassDecorator(info, 'Builder')) {
     const bName = builderClassName(info.name);
     assignments.push(
       `(ctor as typeof ${info.name} & { builder(): ${bName} }).builder = ${info.name}_builder;`,
+    );
+  }
+
+  if (hasClassDecorator(info, 'Equals')) {
+    assignments.push(
+      `(ctor as typeof ${info.name} & { equals(a: ${info.name} | null | undefined, b: ${info.name} | null | undefined): boolean }).equals = ${info.name}_equalsStatic;`,
     );
   }
 
@@ -60,46 +82,6 @@ export function apply${info.name}Generated(ctor: typeof ${info.name}): void {
 }`.trim();
 }
 
-function emitDataFns(info: ClassInfo): string {
-  if (!hasClassDecorator(info, 'Data')) return '';
-
-  const fns: string[] = [];
-
-  for (const f of info.fields) {
-    const g = `get${f.name.charAt(0).toUpperCase()}${f.name.slice(1)}`;
-    fns.push(
-      `
-function ${info.name}_${g}(this: ${info.name}): ${f.type} {
-  return this.${f.name};
-}`.trim(),
-    );
-    if (!f.isReadonly) {
-      const s = `set${f.name.charAt(0).toUpperCase()}${f.name.slice(1)}`;
-      fns.push(
-        `
-function ${info.name}_${s}(this: ${info.name}, value: ${f.type}): void {
-  this.${f.name} = value;
-}`.trim(),
-      );
-    }
-  }
-
-  const equalsBody = info.fields.map((f) => `this.${f.name} === other.${f.name}`).join(' &&\n    ');
-
-  fns.push(
-    `
-function ${info.name}_equals(this: ${info.name}, other: ${info.name} | null | undefined): boolean {
-  if (other === null || other === undefined) return false;
-  if (!(other instanceof (this.constructor as typeof ${info.name}))) return false;
-  return ${equalsBody || 'true'};
-}`.trim(),
-  );
-
-  fns.push(emitToStringFn(info));
-
-  return fns.filter(Boolean).join('\n\n');
-}
-
 function emitBuilderFn(info: ClassInfo): string {
   if (!hasClassDecorator(info, 'Builder')) return '';
   const bName = builderClassName(info.name);
@@ -109,12 +91,47 @@ function ${info.name}_builder(): ${bName} {
 }`.trim();
 }
 
+function emitClassCompanionBlocks(info: ClassInfo): string {
+  const blocks: string[] = [];
+
+  const builder = emitBuilderClass(info);
+  if (builder) blocks.push(builder);
+
+  const accessors = emitAccessorFns(info);
+  if (accessors) blocks.push(accessors);
+
+  const withFns = emitWithFns(info);
+  if (withFns) blocks.push(withFns);
+
+  const equalsFn = emitEqualsFn(info);
+  if (equalsFn) blocks.push(equalsFn);
+
+  const equalsStatic = emitEqualsStaticFn(info);
+  if (equalsStatic) blocks.push(equalsStatic);
+
+  const toString = emitToStringFn(info);
+  if (toString) blocks.push(toString);
+
+  const delegate = emitDelegateFns(info);
+  if (delegate) blocks.push(delegate);
+
+  const builderFn = emitBuilderFn(info);
+  if (builderFn) blocks.push(builderFn);
+
+  const apply = emitApplyMixin(info);
+  if (apply) blocks.push(apply);
+
+  return blocks.filter(Boolean).join('\n\n');
+}
+
 export function emitCompanionFile(
   sourcePath: string,
   companionOutputPath: string,
   classes: readonly ClassInfo[],
   cwd: string,
 ): { ts: string; dts: string } {
+  validateAllClassCompositions(classes);
+
   const header = [
     '// Auto-generated by lombok-typescript.',
     '// Source: ' + relative(cwd, sourcePath).replace(/\\/g, '/'),
@@ -123,34 +140,19 @@ export function emitCompanionFile(
   ].join('\n');
 
   const importPath = toImportPath(sourcePath, dirname(companionOutputPath));
-
   const blocks: string[] = [];
 
   for (const info of classes) {
-    const builder = emitBuilderClass(info);
-    if (builder) blocks.push(builder);
-
-    if (hasClassDecorator(info, 'Data')) {
-      blocks.push(emitDataFns(info));
-    } else {
-      const ts = emitToStringFn(info);
-      if (ts) blocks.push(ts);
-    }
-
-    const builderFn = emitBuilderFn(info);
-    if (builderFn) blocks.push(builderFn);
-
-    const apply = emitApplyMixin(info);
-    if (apply) blocks.push(apply);
+    const chunk = emitClassCompanionBlocks(info);
+    if (chunk) blocks.push(chunk);
   }
 
+  const classesWithApply = classes.filter((c) => emitApplyMixin(c).length > 0);
   const applyAll =
-    classes.filter((c) => emitApplyMixin(c)).length > 0
-      ? `\n\nexport function applyAllGenerated(handlers: {\n${classes
-          .filter((c) => emitApplyMixin(c))
+    classesWithApply.length > 0
+      ? `\n\nexport function applyAllGenerated(handlers: {\n${classesWithApply
           .map((c) => `  ${c.name}: typeof ${c.name};`)
-          .join('\n')}\n}): void {\n${classes
-          .filter((c) => emitApplyMixin(c))
+          .join('\n')}\n}): void {\n${classesWithApply
           .map((c) => `  apply${c.name}Generated(handlers.${c.name});`)
           .join('\n')}\n}\n`
       : '\nexport {};\n';

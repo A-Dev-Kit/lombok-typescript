@@ -5,7 +5,7 @@ import { runInit } from './commands/init.js';
 import { runWatch } from './commands/watch.js';
 
 export const CLI_NAME = 'lombok-ts';
-export const CLI_VERSION = '0.1.0-pre';
+export const CLI_VERSION = '0.4.0-pre';
 
 /**
  * Build a fresh cac CLI instance. Exposed as a function (rather than a
@@ -29,7 +29,7 @@ export function buildCli() {
       });
     });
 
-  cli.command('watch', 'Watch source files and regenerate on change (Phase 2)').action(async () => {
+  cli.command('watch', 'Watch source files and regenerate on change').action(async () => {
     await runWatch();
   });
 

@@ -2,7 +2,7 @@ export interface GeneratorOptions {
   /** Where generated files go. Default `.lombok`. */
   outputDir: string;
 
-  /** Watch mode (not implemented yet). Default `false`. */
+  /** Watch mode. Default `false`. */
   watch: boolean;
 
   /** Glob patterns for files to process. Default `['src/** /*.ts']`. */

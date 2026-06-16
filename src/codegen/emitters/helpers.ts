@@ -1,5 +1,5 @@
 import { relative } from 'node:path';
-import type { ClassInfo, FieldInfo } from '../types.js';
+import type { ClassInfo, DecoratorInfo, FieldInfo } from '../types.js';
 
 /** ESM import path from `fromDir` to `sourcePath` (NodeNext requires a `.js` extension). */
 export function toImportPath(sourcePath: string, fromDir: string): string {
@@ -8,16 +8,34 @@ export function toImportPath(sourcePath: string, fromDir: string): string {
   return rel.replace(/\.tsx?$/u, '.js');
 }
 
+const CODEGEN_CLASS_DECORATORS = [
+  'Builder',
+  'Data',
+  'ToString',
+  'Value',
+  'Equals',
+  'With',
+] as const;
+
 export function hasCodegenClassDecorator(info: ClassInfo): boolean {
   return (
-    hasClassDecorator(info, 'Builder') ||
-    hasClassDecorator(info, 'Data') ||
-    hasClassDecorator(info, 'ToString')
+    CODEGEN_CLASS_DECORATORS.some((name) => hasClassDecorator(info, name)) ||
+    info.fields.some(
+      (f) =>
+        fieldHasDecorator(f, 'Getter') ||
+        fieldHasDecorator(f, 'Setter') ||
+        fieldHasDecorator(f, 'With') ||
+        fieldHasDecorator(f, 'Delegate'),
+    )
   );
 }
 
 export function hasClassDecorator(info: ClassInfo, name: string): boolean {
   return info.decorators.some((d) => d.name === name);
+}
+
+export function fieldHasDecorator(field: FieldInfo, name: string): boolean {
+  return field.decorators.some((d) => d.name === name);
 }
 
 export function fieldExcludesToString(field: FieldInfo): boolean {
@@ -26,11 +44,21 @@ export function fieldExcludesToString(field: FieldInfo): boolean {
   );
 }
 
+export function fieldExcludesEquals(field: FieldInfo): boolean {
+  return field.decorators.some(
+    (d) => d.name === 'EqualsExclude' || d.name === 'Equals.Exclude',
+  );
+}
+
 export function visibleFields(info: ClassInfo): FieldInfo[] {
-  if (hasClassDecorator(info, 'ToString')) {
+  if (hasClassDecorator(info, 'ToString') || hasClassDecorator(info, 'Data') || hasClassDecorator(info, 'Value')) {
     return info.fields.filter((f) => !fieldExcludesToString(f));
   }
   return info.fields;
+}
+
+export function equalsFields(info: ClassInfo): FieldInfo[] {
+  return info.fields.filter((f) => !fieldExcludesEquals(f));
 }
 
 export function getterName(fieldName: string): string {
@@ -41,6 +69,109 @@ export function setterName(fieldName: string): string {
   return `set${fieldName.charAt(0).toUpperCase()}${fieldName.slice(1)}`;
 }
 
+export function withMethodName(fieldName: string): string {
+  return `with${fieldName.charAt(0).toUpperCase()}${fieldName.slice(1)}`;
+}
+
 export function builderClassName(className: string): string {
   return `${className}Builder`;
+}
+
+export function hasDataOrValue(info: ClassInfo): boolean {
+  return hasClassDecorator(info, 'Data') || hasClassDecorator(info, 'Value');
+}
+
+export function wantsWithMethods(info: ClassInfo, field: FieldInfo): boolean {
+  return (
+    hasClassDecorator(info, 'Value') ||
+    hasClassDecorator(info, 'With') ||
+    fieldHasDecorator(field, 'With')
+  );
+}
+
+export function wantsGetter(info: ClassInfo, field: FieldInfo): boolean {
+  return hasDataOrValue(info) || fieldHasDecorator(field, 'Getter');
+}
+
+export function wantsSetter(info: ClassInfo, field: FieldInfo): boolean {
+  if (hasClassDecorator(info, 'Value')) return false;
+  if (hasClassDecorator(info, 'Data')) return !effectiveReadonly(info, field);
+  return fieldHasDecorator(field, 'Setter');
+}
+
+export function wantsEquals(info: ClassInfo): boolean {
+  return hasClassDecorator(info, 'Data') || hasClassDecorator(info, 'Value') || hasClassDecorator(info, 'Equals');
+}
+
+export function wantsToString(info: ClassInfo): boolean {
+  return (
+    hasClassDecorator(info, 'ToString') ||
+    hasClassDecorator(info, 'Data') ||
+    hasClassDecorator(info, 'Value')
+  );
+}
+
+export function effectiveReadonly(info: ClassInfo, field: FieldInfo): boolean {
+  if (field.isReadonly) return true;
+  const defaults = getFieldDefaultsOptions(info);
+  return defaults?.makeFinal === true;
+}
+
+export function getFieldDefaultsOptions(
+  info: ClassInfo,
+): { level: string; makeFinal: boolean } | undefined {
+  const dec = info.decorators.find((d) => d.name === 'FieldDefaults');
+  if (!dec) return undefined;
+  const [first] = dec.arguments;
+  if (typeof first === 'string' && first.startsWith('{')) {
+    try {
+      const parsed = JSON.parse(
+        first.replace(/(\w+):/g, '"$1":').replace(/'/g, '"'),
+      ) as { level?: string; makeFinal?: boolean };
+      return {
+        level: parsed.level ?? 'public',
+        makeFinal: parsed.makeFinal ?? false,
+      };
+    } catch {
+      return { level: 'public', makeFinal: false };
+    }
+  }
+  return { level: 'public', makeFinal: false };
+}
+
+export function hasFluentAccessors(info: ClassInfo): boolean {
+  const dec = info.decorators.find((d) => d.name === 'Accessors');
+  if (!dec) return false;
+  const [first] = dec.arguments;
+  if (typeof first === 'string') {
+    return first.includes('chain') || first.includes('fluent');
+  }
+  return false;
+}
+
+export function getDelegateMethods(field: FieldInfo): string[] {
+  const dec = field.decorators.find((d) => d.name === 'Delegate');
+  if (!dec || dec.arguments.length === 0) return [];
+  if (dec.arguments.length === 1 && String(dec.arguments[0]).startsWith('[')) {
+    try {
+      return JSON.parse(String(dec.arguments[0]).replace(/'/g, '"')) as string[];
+    } catch {
+      return [];
+    }
+  }
+  return dec.arguments.map((a) => String(a).replace(/^['"]|['"]$/g, ''));
+}
+
+export function parseDecoratorObjectArg(dec: DecoratorInfo | undefined): Record<string, unknown> {
+  if (!dec || dec.arguments.length === 0) return {};
+  const [first] = dec.arguments;
+  if (typeof first !== 'string' || !first.startsWith('{')) return {};
+  try {
+    return JSON.parse(first.replace(/(\w+):/g, '"$1":').replace(/'/g, '"')) as Record<
+      string,
+      unknown
+    >;
+  } catch {
+    return {};
+  }
 }
