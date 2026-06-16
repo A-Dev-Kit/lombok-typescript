@@ -168,9 +168,27 @@ class Solo {
   });
 
   describe('watch()', () => {
-    it('throws a clear "not implemented yet" error', async () => {
-      const gen = new CodeGenerator();
-      await expect(gen.watch()).rejects.toThrow(/Watch mode is not implemented yet/);
+    function writeSrc(rel: string, content: string) {
+      const full = join(tmpDir, rel);
+      mkdirSync(join(tmpDir, rel.split('/').slice(0, -1).join('/')), { recursive: true });
+      writeFileSync(full, content, 'utf8');
+      return full;
+    }
+
+    it('generates companions and resolves when aborted', async () => {
+      writeSrc(
+        'src/watch-me.ts',
+        `@Data
+class WatchMe { id: string; }`,
+      );
+      const gen = new CodeGenerator({ tsConfigPath: 'no-such-tsconfig.json' });
+      const controller = new AbortController();
+      const logs: string[] = [];
+      const promise = gen.watch({ log: (m) => logs.push(m), signal: controller.signal });
+      controller.abort();
+      await promise;
+      expect(logs.join('\n')).toMatch(/Watching for changes/i);
+      expect(existsSync(join(tmpDir, '.lombok', 'src', 'watch-me.lombok.ts'))).toBe(true);
     });
   });
 });
