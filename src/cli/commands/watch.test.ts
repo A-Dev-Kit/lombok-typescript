@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -59,6 +59,26 @@ describe('runWatch', () => {
       expect(logs.join('\n')).toMatch(/No lombok.config/);
       expect(logs.join('\n')).toMatch(/Watching for changes/i);
     } finally {
+      process.chdir(prev);
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('uses the default console logger when log is omitted', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'lombok-watch-'));
+    const prev = process.cwd();
+    process.chdir(dir);
+    mkdirSync(join(dir, 'src'), { recursive: true });
+    writeFileSync(join(dir, 'src', 'a.ts'), 'class A {}', 'utf8');
+    const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
+    const controller = new AbortController();
+    try {
+      const promise = runWatch({ signal: controller.signal });
+      controller.abort();
+      await promise;
+      expect(spy).toHaveBeenCalled();
+    } finally {
+      spy.mockRestore();
       process.chdir(prev);
       rmSync(dir, { recursive: true, force: true });
     }

@@ -69,6 +69,22 @@ describe('emitter helpers (phase 2)', () => {
     expect(getDelegateMethods(info!.fields[0]!)).toEqual(['a', 'b']);
   });
 
+  it('getDelegateMethods returns empty array for invalid JSON array literal', () => {
+    const [info] = analyzeSourceString(`
+      class X {
+        @Delegate([broken])
+        inner: unknown;
+      }
+    `);
+    expect(getDelegateMethods(info!.fields[0]!)).toEqual([]);
+  });
+
+  it('parseDecoratorObjectArg parses object literal arguments', () => {
+    expect(parseDecoratorObjectArg({ name: 'X', arguments: ['{ chain: true }'] })).toEqual({
+      chain: true,
+    });
+  });
+
   it('getFieldDefaultsOptions handles invalid decorator object', () => {
     const [info] = analyzeSourceString(`
       @FieldDefaults({ broken })

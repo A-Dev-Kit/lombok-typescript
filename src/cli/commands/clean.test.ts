@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { runClean } from './clean.js';
 
 describe('runClean', () => {
@@ -36,6 +36,14 @@ describe('runClean', () => {
     expect(result.removed).toEqual([]);
     expect(result.skipped).toContain('.lombok');
     expect(logs).toContainEqual(expect.stringContaining('Nothing to clean'));
+  });
+
+  it('uses default paths and console logger when options are omitted', async () => {
+    const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
+    const result = await runClean({ cwd: tmpDir });
+    expect(result.skipped.length).toBeGreaterThan(0);
+    expect(spy).toHaveBeenCalled();
+    spy.mockRestore();
   });
 
   it('removes custom paths when supplied', async () => {

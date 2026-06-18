@@ -73,8 +73,11 @@ describe('shared markers and phase2 logic', () => {
     expect(new Svc().run()).toBe(1);
 
     const desc = Object.getOwnPropertyDescriptor(Svc.prototype, 'run')!;
-    logMethodLegacy(legacyBackend, Svc.prototype, 'run', desc);
-    expect(typeof Svc.prototype.run).toBe('function');
+    const wrapped = logMethodLegacy(legacyBackend, Svc.prototype, 'run', desc);
+    expect(wrapped).toBeDefined();
+    Object.defineProperty(Svc.prototype, 'run', wrapped!);
+    expect(new Svc().run()).toBe(1);
+    expect(spy).toHaveBeenCalled();
 
     const badDesc = { value: 'not-a-fn', writable: true, enumerable: true, configurable: true };
     expect(logMethodLegacy(legacyBackend, Svc.prototype, 'noop', badDesc)).toBeUndefined();

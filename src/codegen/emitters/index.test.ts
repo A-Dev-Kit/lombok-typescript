@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { analyzeSourceString } from '../analyzer.js';
 import { emitBuilderClass, emitBuilderStaticMethod } from './builder.js';
-import { emitDataAccessors, emitDataEquals, emitDataMethods } from './data.js';
+import { emitDataAccessors, emitDataConstructor, emitDataEquals, emitDataMethods } from './data.js';
 import { emitCompanionFile } from './index.js';
-import { emitToStringMixin } from './toString.js';
+import { emitToStringMethod, emitToStringMixin } from './toString.js';
 
 describe('codegen emitters', () => {
   it('emits builder and data mixins for decorated classes', () => {
@@ -55,6 +55,27 @@ describe('codegen emitters', () => {
     const info = classes[0]!;
     expect(emitBuilderClass(info)).toContain('OrderBuilder');
     expect(emitBuilderStaticMethod(info)).toContain('static builder');
+  });
+
+  it('emitBuilderClass marks optional builder fields', () => {
+    const classes = analyzeSourceString(`
+      @Builder
+      class Order { item?: string; }
+    `);
+    expect(emitBuilderClass(classes[0]!)).toContain('private _item?: string');
+  });
+
+  it('emitDataConstructor generates an all-args constructor', () => {
+    const classes = analyzeSourceString(`
+      @Data
+      class User { name: string; age?: number; }
+    `);
+    expect(emitDataConstructor(classes[0]!)).toContain('constructor(name: string, age?: number)');
+  });
+
+  it('emitToStringMethod returns empty for undecorated classes', () => {
+    const classes = analyzeSourceString(`class Plain { x: number; }`);
+    expect(emitToStringMethod(classes[0]!)).toBe('');
   });
 
   it('emitToStringMixin generates toString for @Value', () => {
