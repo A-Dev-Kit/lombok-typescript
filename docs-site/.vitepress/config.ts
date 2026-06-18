@@ -4,6 +4,14 @@ export default defineConfig({
   title: 'lombok-typescript',
   description: 'Lombok-like decorators and Gang-of-Four patterns for TypeScript',
   base: '/lombok-typescript/',
+  vite: {
+    build: {
+      target: 'esnext',
+    },
+    esbuild: {
+      target: 'esnext',
+    },
+  },
   themeConfig: {
     nav: [
       { text: 'Guide', link: '/guide/introduction' },
