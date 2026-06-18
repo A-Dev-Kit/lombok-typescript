@@ -16,13 +16,14 @@ Requires Node 22+ and pnpm 10+.
 
 ### Codecov (coverage badge)
 
-The README coverage badge uses [Codecov](https://about.codecov.io/) (free for public repos). One-time maintainer setup:
+The README coverage badge uses [Codecov](https://about.codecov.io/) (free for public repos).
 
-1. Sign in at [codecov.io](https://codecov.io) with GitHub and add `A-Dev-Kit/lombok-typescript`.
-2. Copy the repository upload token.
-3. Add it as a GitHub Actions secret named `CODECOV_TOKEN` (Settings → Secrets and variables → Actions).
+**One-time setup (repo admin):**
 
-CI uploads `coverage/lcov.info` on every push to `main`. Without the secret, tests still pass but the badge stays empty.
+1. Sign in at [codecov.io](https://codecov.io) with GitHub and enable `A-Dev-Kit/lombok-typescript`.
+2. CI uploads `coverage/lcov.info` on every push to `main` via GitHub OIDC (`use_oidc: true` in `.github/workflows/ci.yml`) — no `CODECOV_TOKEN` secret is required for public repos.
+
+If uploads still fail, add a repository upload token as the GitHub Actions secret `CODECOV_TOKEN` (Codecov repo settings → copy token).
 
 ### Documentation site
 
