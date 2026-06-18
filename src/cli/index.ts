@@ -1,3 +1,5 @@
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { cac } from 'cac';
 import { runClean } from './commands/clean.js';
 import { runGenerate } from './commands/generate.js';
@@ -62,7 +64,7 @@ const isMain =
   typeof process !== 'undefined' &&
   typeof import.meta.url === 'string' &&
   process.argv[1] !== undefined &&
-  import.meta.url.endsWith(process.argv[1].split('/').pop() ?? '');
+  fileURLToPath(import.meta.url) === resolve(process.argv[1]);
 
 if (isMain) {
   runCli().catch((err: unknown) => {

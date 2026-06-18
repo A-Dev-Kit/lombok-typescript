@@ -52,7 +52,10 @@ export class CodeGenerator {
       const content = ts;
 
       this.writeOutput(outputPath, content);
-      this.writeOutput(outputPath.replace(/\.lombok\.ts$/u, '.lombok.d.ts'), dts);
+      this.writeOutput(
+        outputPath.replace(/\.lombok\.ts$/u, '.lombok.augment.d.ts'),
+        dts,
+      );
 
       generated.push({
         sourcePath,
@@ -79,7 +82,10 @@ export class CodeGenerator {
     const { ts, dts } = emitCompanionFile(filePath, outputPath, classes, process.cwd());
     const content = ts;
     this.writeOutput(outputPath, content);
-    this.writeOutput(outputPath.replace(/\.lombok\.ts$/u, '.lombok.d.ts'), dts);
+    this.writeOutput(
+      outputPath.replace(/\.lombok\.ts$/u, '.lombok.augment.d.ts'),
+      dts,
+    );
 
     return {
       sourcePath: filePath,

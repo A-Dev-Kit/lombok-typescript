@@ -16,20 +16,11 @@ import {
   toImportPath,
 } from './helpers.js';
 
-export function emitDeclarationShim(
-  sourcePath: string,
-  companionOutputPath: string,
+function emitDeclarationModuleBlock(
+  relSource: string,
   classes: readonly ClassInfo[],
 ): string {
-  const relSource = toImportPath(sourcePath, dirname(companionOutputPath));
-  const lines: string[] = [
-    '// Auto-generated type augmentation by lombok-typescript.',
-    '// Do not edit. Regenerate via `lombok-ts generate`.',
-    '',
-    'export {};',
-    '',
-    `declare module '${relSource}' {`,
-  ];
+  const lines: string[] = [`declare module '${relSource}' {`];
 
   for (const info of classes) {
     if (hasClassDecorator(info, 'Builder')) {
@@ -46,8 +37,8 @@ export function emitDeclarationShim(
 
     if (hasClassDecorator(info, 'Builder')) {
       const builderName = builderClassName(info.name);
-      lines.push(`  export class ${info.name} {`);
-      lines.push(`    static builder(): ${builderName};`);
+      lines.push(`  namespace ${info.name} {`);
+      lines.push(`    export function builder(): ${builderName};`);
       lines.push('  }');
       lines.push('');
     }
@@ -85,9 +76,9 @@ export function emitDeclarationShim(
     }
 
     if (hasClassDecorator(info, 'Equals')) {
-      lines.push(`  export class ${info.name} {`);
+      lines.push(`  namespace ${info.name} {`);
       lines.push(
-        `    static equals(a: ${info.name} | null | undefined, b: ${info.name} | null | undefined): boolean;`,
+        `    export function equals(a: ${info.name} | null | undefined, b: ${info.name} | null | undefined): boolean;`,
       );
       lines.push('  }');
       lines.push('');
@@ -95,6 +86,24 @@ export function emitDeclarationShim(
   }
 
   lines.push('}');
-  lines.push('');
   return lines.join('\n');
+}
+
+/** Standalone augmentation file (no sibling `.ts`, so TypeScript loads it). */
+export function emitDeclarationShim(
+  sourcePath: string,
+  companionOutputPath: string,
+  classes: readonly ClassInfo[],
+): string {
+  const relSource = toImportPath(sourcePath, dirname(companionOutputPath));
+  const moduleBlock = emitDeclarationModuleBlock(relSource, classes);
+  return [
+    '// Auto-generated type augmentation by lombok-typescript.',
+    '// Do not edit. Regenerate via `lombok-ts generate`.',
+    '',
+    'export {};',
+    '',
+    moduleBlock,
+    '',
+  ].join('\n');
 }
