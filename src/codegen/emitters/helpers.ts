@@ -45,13 +45,15 @@ export function fieldExcludesToString(field: FieldInfo): boolean {
 }
 
 export function fieldExcludesEquals(field: FieldInfo): boolean {
-  return field.decorators.some(
-    (d) => d.name === 'EqualsExclude' || d.name === 'Equals.Exclude',
-  );
+  return field.decorators.some((d) => d.name === 'EqualsExclude' || d.name === 'Equals.Exclude');
 }
 
 export function visibleFields(info: ClassInfo): FieldInfo[] {
-  if (hasClassDecorator(info, 'ToString') || hasClassDecorator(info, 'Data') || hasClassDecorator(info, 'Value')) {
+  if (
+    hasClassDecorator(info, 'ToString') ||
+    hasClassDecorator(info, 'Data') ||
+    hasClassDecorator(info, 'Value')
+  ) {
     return info.fields.filter((f) => !fieldExcludesToString(f));
   }
   return info.fields;
@@ -100,7 +102,11 @@ export function wantsSetter(info: ClassInfo, field: FieldInfo): boolean {
 }
 
 export function wantsEquals(info: ClassInfo): boolean {
-  return hasClassDecorator(info, 'Data') || hasClassDecorator(info, 'Value') || hasClassDecorator(info, 'Equals');
+  return (
+    hasClassDecorator(info, 'Data') ||
+    hasClassDecorator(info, 'Value') ||
+    hasClassDecorator(info, 'Equals')
+  );
 }
 
 export function wantsToString(info: ClassInfo): boolean {
@@ -125,9 +131,10 @@ export function getFieldDefaultsOptions(
   const [first] = dec.arguments;
   if (typeof first === 'string' && first.startsWith('{')) {
     try {
-      const parsed = JSON.parse(
-        first.replace(/(\w+):/g, '"$1":').replace(/'/g, '"'),
-      ) as { level?: string; makeFinal?: boolean };
+      const parsed = JSON.parse(first.replace(/(\w+):/g, '"$1":').replace(/'/g, '"')) as {
+        level?: string;
+        makeFinal?: boolean;
+      };
       return {
         level: parsed.level ?? 'public',
         makeFinal: parsed.makeFinal ?? false,

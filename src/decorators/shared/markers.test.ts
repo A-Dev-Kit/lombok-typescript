@@ -6,7 +6,12 @@ import { getterFieldLegacy, getterFieldStage3 } from './getter.js';
 import { setterFieldLegacy, setterFieldStage3 } from './setter.js';
 import { valueClassLegacy, valueClassStage3 } from './value.js';
 import { withClassLegacy, withFieldLegacy, withClassStage3, withFieldStage3 } from './with.js';
-import { equalsClassLegacy, equalsClassStage3, equalsExcludeFieldLegacy, equalsExcludeFieldStage3 } from './equals.js';
+import {
+  equalsClassLegacy,
+  equalsClassStage3,
+  equalsExcludeFieldLegacy,
+  equalsExcludeFieldStage3,
+} from './equals.js';
 import { accessorsClassLegacy, normalizeAccessorsOptions } from './accessors.js';
 import { fieldDefaultsClassLegacy, normalizeFieldDefaultsOptions } from './field-defaults.js';
 import { delegateFieldLegacy, parseDelegateMethods } from './delegate.js';
@@ -159,11 +164,11 @@ describe('shared markers and phase2 logic', () => {
     warnSpy.mockRestore();
 
     class Base {}
-    const Wrapped = utilityClassStage3(
-      stage3Backend,
-      Base,
-      { kind: 'class', name: 'Base', metadata: {} } as ClassDecoratorContext,
-    ) as typeof Base;
+    const Wrapped = utilityClassStage3(stage3Backend, Base, {
+      kind: 'class',
+      name: 'Base',
+      metadata: {},
+    } as ClassDecoratorContext) as typeof Base;
     class Child extends Wrapped {}
     expect(() => new Child()).not.toThrow();
 

@@ -14,12 +14,7 @@ function wrapPrototypeMethods(target: AnyClass, options: LogOptions = {}): void 
   const proto = target.prototype as Record<string, unknown>;
   const loggerName = options.name ?? target.name;
   const level = options.level ?? 'info';
-  const logFn =
-    level === 'warn'
-      ? console.warn
-      : level === 'error'
-        ? console.error
-        : console.info;
+  const logFn = level === 'warn' ? console.warn : level === 'error' ? console.error : console.info;
 
   for (const key of Object.getOwnPropertyNames(proto)) {
     if (key === 'constructor') continue;
@@ -34,11 +29,7 @@ function wrapPrototypeMethods(target: AnyClass, options: LogOptions = {}): void 
   }
 }
 
-export function logClassLegacy(
-  backend: Backend,
-  target: AnyClass,
-  options: LogOptions = {},
-): void {
+export function logClassLegacy(backend: Backend, target: AnyClass, options: LogOptions = {}): void {
   backend.metadata.set(MetadataKeys.LOG, target, undefined, options);
   wrapPrototypeMethods(target, options);
 }
@@ -66,12 +57,7 @@ export function logMethodLegacy(
   const methodName = String(propertyKey);
   const loggerName = options.name ?? 'Method';
   const level = options.level ?? 'info';
-  const logFn =
-    level === 'warn'
-      ? console.warn
-      : level === 'error'
-        ? console.error
-        : console.info;
+  const logFn = level === 'warn' ? console.warn : level === 'error' ? console.error : console.info;
   return {
     ...descriptor,
     value: function logWrapper(this: unknown, ...args: unknown[]) {
@@ -91,12 +77,7 @@ export function logMethodStage3<This, Args extends unknown[], Return>(
   const methodName = String(context.name);
   const loggerName = options.name ?? 'Method';
   const level = options.level ?? 'info';
-  const logFn =
-    level === 'warn'
-      ? console.warn
-      : level === 'error'
-        ? console.error
-        : console.info;
+  const logFn = level === 'warn' ? console.warn : level === 'error' ? console.error : console.info;
   return function logWrapper(this: This, ...args: Args): Return {
     logFn.call(console, `[${loggerName}] ${methodName}`, ...args);
     return value.apply(this, args);

@@ -2,10 +2,10 @@
 
 Controls generated setter style. With `chain: true` (or `fluent: true`), setters return `this`.
 
-|                         |                    |
-| ----------------------- | ------------------ |
-| **Kind**                | Codegen metadata   |
-| **Backends**            | `legacy`, `stage3` |
+|                         |                      |
+| ----------------------- | -------------------- |
+| **Kind**                | Codegen metadata     |
+| **Backends**            | `legacy`, `stage3`   |
 | **Requires `generate`** | Yes (with `@Setter`) |
 
 ## Example

@@ -74,6 +74,6 @@ Skips paths that do not exist. Does not delete your source.
 | No files generated                  | Check `include` globs; ensure classes have lombok decorators                           |
 | `tsc` cannot find `.lombok` imports | Add `.lombok/**/*.ts` and `.lombok/**/*.d.ts` to `include`; avoid `rootDir: src` alone |
 | `TS2834` missing `.js` extension    | Use `moduleResolution: NodeNext` and match import style in companions                  |
-| Watch fails                         | Ensure source files are writable; check `include` / `exclude` globs                     |
+| Watch fails                         | Ensure source files are writable; check `include` / `exclude` globs                    |
 
 See [Getting started](/guide/getting-started) and [Examples](/guide/examples).

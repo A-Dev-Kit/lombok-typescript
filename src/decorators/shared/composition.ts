@@ -5,10 +5,7 @@ export const CONFLICTING_CLASS_DECORATOR_PAIRS: readonly (readonly [string, stri
   ['Data', 'Value'],
 ];
 
-export function classHasDecorator(
-  info: Pick<ClassInfo, 'decorators'>,
-  name: string,
-): boolean {
+export function classHasDecorator(info: Pick<ClassInfo, 'decorators'>, name: string): boolean {
   return info.decorators.some((d) => d.name === name);
 }
 
@@ -19,9 +16,7 @@ export function classHasDecorator(
 export function validateClassComposition(info: ClassInfo): void {
   for (const [a, b] of CONFLICTING_CLASS_DECORATOR_PAIRS) {
     if (classHasDecorator(info, a) && classHasDecorator(info, b)) {
-      throw new Error(
-        `Class "${info.name}": @${a} and @${b} cannot be used together.`,
-      );
+      throw new Error(`Class "${info.name}": @${a} and @${b} cannot be used together.`);
     }
   }
 }

@@ -36,5 +36,10 @@ export function fieldDefaultsClassStage3(
   options: FieldDefaultsOptions = {},
 ): void {
   const normalized = normalizeFieldDefaultsOptions(options);
-  backend.metadata.set(MetadataKeys.FIELD_DEFAULTS, context.metadata as object, undefined, normalized);
+  backend.metadata.set(
+    MetadataKeys.FIELD_DEFAULTS,
+    context.metadata as object,
+    undefined,
+    normalized,
+  );
 }

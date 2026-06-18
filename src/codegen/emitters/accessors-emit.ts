@@ -1,11 +1,5 @@
 import type { ClassInfo, FieldInfo } from '../types.js';
-import {
-  getterName,
-  hasFluentAccessors,
-  setterName,
-  wantsGetter,
-  wantsSetter,
-} from './helpers.js';
+import { getterName, hasFluentAccessors, setterName, wantsGetter, wantsSetter } from './helpers.js';
 
 function emitGetterFn(info: ClassInfo, field: FieldInfo): string {
   const g = getterName(field.name);
@@ -44,10 +38,14 @@ export function emitAccessorApplyAssignments(info: ClassInfo): string[] {
   const assignments: string[] = [];
   for (const field of info.fields) {
     if (wantsGetter(info, field)) {
-      assignments.push(`prototype.${getterName(field.name)} = ${info.name}_${getterName(field.name)};`);
+      assignments.push(
+        `prototype.${getterName(field.name)} = ${info.name}_${getterName(field.name)};`,
+      );
     }
     if (wantsSetter(info, field)) {
-      assignments.push(`prototype.${setterName(field.name)} = ${info.name}_${setterName(field.name)};`);
+      assignments.push(
+        `prototype.${setterName(field.name)} = ${info.name}_${setterName(field.name)};`,
+      );
     }
   }
   return assignments;

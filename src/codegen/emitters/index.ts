@@ -1,10 +1,7 @@
 import { dirname, relative } from 'node:path';
 import { validateAllClassCompositions } from '../../decorators/shared/composition.js';
 import type { ClassInfo } from '../types.js';
-import {
-  emitAccessorApplyAssignments,
-  emitAccessorFns,
-} from './accessors-emit.js';
+import { emitAccessorApplyAssignments, emitAccessorFns } from './accessors-emit.js';
 import { emitBuilderClass } from './builder.js';
 import { emitDeclarationShim } from './declaration.js';
 import { emitDelegateApplyAssignments, emitDelegateFns } from './delegate-emit.js';

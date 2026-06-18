@@ -25,9 +25,6 @@ export function withFieldLegacy(
   fieldMarkerLegacy(backend, targetPrototype, propertyKey, MetadataKeys.WITH);
 }
 
-export function withFieldStage3(
-  backend: Backend,
-  context: ClassFieldDecoratorContext,
-): void {
+export function withFieldStage3(backend: Backend, context: ClassFieldDecoratorContext): void {
   fieldMarkerStage3(backend, context, MetadataKeys.WITH);
 }

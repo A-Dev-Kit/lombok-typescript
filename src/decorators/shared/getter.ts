@@ -11,9 +11,6 @@ export function getterFieldLegacy(
   fieldMarkerLegacy(backend, targetPrototype, propertyKey, MetadataKeys.GETTER);
 }
 
-export function getterFieldStage3(
-  backend: Backend,
-  context: ClassFieldDecoratorContext,
-): void {
+export function getterFieldStage3(backend: Backend, context: ClassFieldDecoratorContext): void {
   fieldMarkerStage3(backend, context, MetadataKeys.GETTER);
 }

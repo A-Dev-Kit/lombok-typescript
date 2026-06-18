@@ -8,11 +8,13 @@ export function emitDelegateFns(info: ClassInfo): string {
     if (!fieldHasDecorator(field, 'Delegate')) continue;
     const methods = getDelegateMethods(field);
     for (const method of methods) {
-      fns.push(`
+      fns.push(
+        `
 function ${info.name}_${method}(this: ${info.name}, ...args: unknown[]): unknown {
   const target = this.${field.name} as { ${method}: (...a: unknown[]) => unknown };
   return target.${method}(...args);
-}`.trim());
+}`.trim(),
+      );
     }
   }
 

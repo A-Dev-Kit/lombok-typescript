@@ -76,7 +76,7 @@ describe('Phase 2 legacy decorators', () => {
 
   it('@FieldDefaults sets metadata', () => {
     @FieldDefaults({ makeFinal: true })
-  class Row {
+    class Row {
       id!: string;
     }
     expect(legacyBackend.metadata.get(MetadataKeys.FIELD_DEFAULTS, Row)).toEqual({
@@ -109,12 +109,12 @@ describe('Phase 2 legacy decorators', () => {
   });
 
   it('@With works at class and field level', () => {
-    @With
+    @With()
     class A {
       x!: number;
     }
     class B {
-      @With
+      @With()
       y!: number;
     }
     expect(A).toBeDefined();
@@ -262,7 +262,9 @@ describe('Phase 2 stage3 decorators', () => {
     class Row {}
     const rowCtx = makeClassContext('Row');
     FieldDefaultsS3({ makeFinal: true })(Row, rowCtx);
-    expect(stage3Backend.metadata.get(MetadataKeys.FIELD_DEFAULTS, rowCtx.metadata as object)).toBeTruthy();
+    expect(
+      stage3Backend.metadata.get(MetadataKeys.FIELD_DEFAULTS, rowCtx.metadata as object),
+    ).toBeTruthy();
 
     class Account {}
     AccessorsS3({ chain: true })(Account, makeClassContext('Account'));

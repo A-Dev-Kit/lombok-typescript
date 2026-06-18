@@ -90,10 +90,14 @@ export class CodeGenerator {
   }
 
   /** Watch for source changes and regenerate companion files. */
-  async watch(options: { log?: (message: string) => void; signal?: AbortSignal } = {}): Promise<void> {
+  async watch(
+    options: { log?: (message: string) => void; signal?: AbortSignal } = {},
+  ): Promise<void> {
     const log = options.log ?? ((msg: string) => console.info(msg));
+
     const generated = await this.generate();
     log(`Generated ${generated.length} companion file(s). Watching for changes…`);
+    if (options.signal?.aborted) return;
 
     const { watch } = await import('node:fs');
     const watchers: ReturnType<typeof watch>[] = [];
@@ -143,7 +147,9 @@ export class CodeGenerator {
           return;
         }
         options.signal.addEventListener('abort', onAbort, { once: true });
+        return;
       }
+      // CLI mode: keep process alive until externally terminated.
     });
   }
 

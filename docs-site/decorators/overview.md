@@ -17,17 +17,17 @@ All decorators are exported from **`lombok-typescript/legacy`** and **`lombok-ty
 
 ## Phase 2 (v0.2.0–0.4.0)
 
-| Decorator                                           | Kind              | Codegen? | Summary                              |
-| --------------------------------------------------- | ----------------- | -------- | ------------------------------------ |
-| [`@Value`](/decorators/value)                       | Codegen composite | Yes      | Immutable `@Data` + `with*`          |
-| [`@With`](/decorators/with)                         | Codegen           | Yes      | Per-field immutable copy helpers     |
-| [`@Equals`](/decorators/equals)                     | Codegen           | Yes      | Structural `equals` + static helper  |
-| [`@Getter` / `@Setter`](/decorators/getter-setter) | Codegen field     | Yes      | Single-field accessors               |
-| [`@Log`](/decorators/log)                           | Runtime           | No       | Method entry logging                 |
-| [`@Accessors`](/decorators/accessors)               | Codegen metadata  | Yes      | Fluent/chained setter style          |
-| [`@UtilityClass`](/decorators/utility-class)         | Runtime           | No       | Uninstantiable utility holder        |
-| [`@FieldDefaults`](/decorators/field-defaults)       | Codegen metadata  | Yes      | Default readonly for generated code  |
-| [`@Delegate`](/decorators/delegate)                 | Codegen field     | Yes      | Forward methods to a field           |
+| Decorator                                          | Kind              | Codegen? | Summary                             |
+| -------------------------------------------------- | ----------------- | -------- | ----------------------------------- |
+| [`@Value`](/decorators/value)                      | Codegen composite | Yes      | Immutable `@Data` + `with*`         |
+| [`@With`](/decorators/with)                        | Codegen           | Yes      | Per-field immutable copy helpers    |
+| [`@Equals`](/decorators/equals)                    | Codegen           | Yes      | Structural `equals` + static helper |
+| [`@Getter` / `@Setter`](/decorators/getter-setter) | Codegen field     | Yes      | Single-field accessors              |
+| [`@Log`](/decorators/log)                          | Runtime           | No       | Method entry logging                |
+| [`@Accessors`](/decorators/accessors)              | Codegen metadata  | Yes      | Fluent/chained setter style         |
+| [`@UtilityClass`](/decorators/utility-class)       | Runtime           | No       | Uninstantiable utility holder       |
+| [`@FieldDefaults`](/decorators/field-defaults)     | Codegen metadata  | Yes      | Default readonly for generated code |
+| [`@Delegate`](/decorators/delegate)                | Codegen field     | Yes      | Forward methods to a field          |
 
 `@Data` and `@Value` **cannot** be combined — codegen enforces this at generation time.
 

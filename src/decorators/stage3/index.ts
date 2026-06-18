@@ -20,10 +20,7 @@ import {
 import type { MemoizeOptions } from '../shared/memoize.js';
 import type { AccessorsOptions } from '../shared/accessors.js';
 import { accessorsClassStage3 } from '../shared/accessors.js';
-import {
-  delegateFieldStage3,
-  parseDelegateMethods,
-} from '../shared/delegate.js';
+import { delegateFieldStage3, parseDelegateMethods } from '../shared/delegate.js';
 import { equalsClassStage3, equalsExcludeFieldStage3 } from '../shared/equals.js';
 import type { FieldDefaultsOptions } from '../shared/field-defaults.js';
 import { fieldDefaultsClassStage3 } from '../shared/field-defaults.js';
@@ -121,10 +118,7 @@ export function Log(options: LogOptions = {}) {
     }
     return defineMethodDecorator((backend, method, ctx) =>
       logMethodStage3(backend, method, ctx, options),
-    )(
-      value as (...args: unknown[]) => unknown,
-      context as ClassMethodDecoratorContext,
-    );
+    )(value as (...args: unknown[]) => unknown, context as ClassMethodDecoratorContext);
   };
 }
 

@@ -22,10 +22,7 @@ import {
 import type { MemoizeOptions } from '../shared/memoize.js';
 import type { AccessorsOptions } from '../shared/accessors.js';
 import { accessorsClassLegacy } from '../shared/accessors.js';
-import {
-  delegateFieldLegacy,
-  parseDelegateMethods,
-} from '../shared/delegate.js';
+import { delegateFieldLegacy, parseDelegateMethods } from '../shared/delegate.js';
 import { equalsClassLegacy, equalsExcludeFieldLegacy } from '../shared/equals.js';
 import type { FieldDefaultsOptions } from '../shared/field-defaults.js';
 import { fieldDefaultsClassLegacy } from '../shared/field-defaults.js';
@@ -87,7 +84,9 @@ export const ToString = defineClassDecorator((backend, target) =>
 export const Equals = defineClassDecorator((backend, target) => equalsClassLegacy(backend, target));
 
 /** Immutable copy helpers — class or field level `with*` methods. */
-const withClassDecorator = defineClassDecorator((backend, target) => withClassLegacy(backend, target));
+const withClassDecorator = defineClassDecorator((backend, target) =>
+  withClassLegacy(backend, target),
+);
 const withFieldDecorator = defineFieldDecorator(withFieldLegacy);
 
 export function With(): ClassDecorator & PropertyDecorator {
@@ -107,7 +106,9 @@ export const Setter = defineFieldDecorator(setterFieldLegacy);
 
 /** Logs method entry via the configured provider (default `console`). */
 export function Log(options: LogOptions = {}): ClassDecorator & MethodDecorator {
-  const classDec = defineClassDecorator((backend, target) => logClassLegacy(backend, target, options));
+  const classDec = defineClassDecorator((backend, target) =>
+    logClassLegacy(backend, target, options),
+  );
   const methodDec = defineMethodDecorator((backend, target, key, descriptor) =>
     logMethodLegacy(backend, target, key, descriptor, options),
   );
@@ -131,7 +132,9 @@ export const UtilityClass = defineClassDecorator((backend, target) =>
 
 /** Default field visibility and finality for codegen. */
 export function FieldDefaults(options: FieldDefaultsOptions = {}): ClassDecorator {
-  return defineClassDecorator((backend, target) => fieldDefaultsClassLegacy(backend, target, options));
+  return defineClassDecorator((backend, target) =>
+    fieldDefaultsClassLegacy(backend, target, options),
+  );
 }
 
 /** Delegates methods to a field. Pass method names as decorator arguments. */
