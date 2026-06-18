@@ -16,10 +16,7 @@ import {
   toImportPath,
 } from './helpers.js';
 
-function emitDeclarationModuleBlock(
-  relSource: string,
-  classes: readonly ClassInfo[],
-): string {
+function emitDeclarationModuleBlock(relSource: string, classes: readonly ClassInfo[]): string {
   const lines: string[] = [`declare module '${relSource}' {`];
 
   for (const info of classes) {
