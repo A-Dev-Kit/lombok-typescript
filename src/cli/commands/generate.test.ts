@@ -1,7 +1,7 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { runGenerate } from './generate.js';
 
 describe('runGenerate', () => {
@@ -68,6 +68,17 @@ describe('runGenerate', () => {
     });
 
     expect(result.outputDir).toBe('override-out');
+  });
+
+  it('uses the default console logger when log is omitted', async () => {
+    mkdirSync('src', { recursive: true });
+    writeFileSync('src/foo.ts', '@A\nclass Foo {}', 'utf8');
+    const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
+
+    await runGenerate({ overrides: { tsConfigPath: 'no-such.json' } });
+
+    expect(spy).toHaveBeenCalled();
+    spy.mockRestore();
   });
 
   it('reports zero generated files for an empty src tree', async () => {

@@ -5,6 +5,19 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { CodeGenerator } from './generator.js';
 import { LombokTransformer } from './transformer.js';
 
+class ExposedGenerator extends CodeGenerator {
+  shouldProcessPublic(filePath: string): boolean {
+    return this.shouldProcess(filePath);
+  }
+
+  renderCompanionPublic(
+    sourcePath: string,
+    classes: Parameters<CodeGenerator['renderCompanion']>[1],
+  ) {
+    return this.renderCompanion(sourcePath, classes);
+  }
+}
+
 describe('CodeGenerator', () => {
   let tmpDir: string;
   let prevCwd: string;
@@ -190,6 +203,86 @@ class WatchMe { id: string; }`,
       expect(logs.join('\n')).toMatch(/Watching for changes/i);
       expect(existsSync(join(tmpDir, '.lombok', 'src', 'watch-me.lombok.ts'))).toBe(true);
     });
+
+    it('returns before watching when the abort signal is already set', async () => {
+      writeSrc('src/early-abort.ts', 'class EarlyAbort {}');
+      const gen = new CodeGenerator({ tsConfigPath: 'no-such-tsconfig.json' });
+      const controller = new AbortController();
+      controller.abort();
+      await gen.watch({ signal: controller.signal });
+    });
+
+    it('regenerates companions when a watched file changes', async () => {
+      const srcPath = writeSrc(
+        'src/live.ts',
+        `@Data
+class Live { id: string; }`,
+      );
+      const outPath = join(tmpDir, '.lombok', 'src', 'live.lombok.ts');
+      const gen = new CodeGenerator({ tsConfigPath: 'no-such-tsconfig.json' });
+      const controller = new AbortController();
+      const logs: string[] = [];
+      const done = gen.watch({ log: (m) => logs.push(m), signal: controller.signal });
+
+      await new Promise((resolve) => setTimeout(resolve, 150));
+
+      expect(readFileSync(outPath, 'utf8')).toContain('getId');
+      expect(readFileSync(outPath, 'utf8')).not.toContain('getName');
+
+      writeFileSync(
+        srcPath,
+        `@Data
+class Live { id: string; name: string; }`,
+        'utf8',
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 400));
+
+      expect(readFileSync(outPath, 'utf8')).toContain('getName');
+      expect(logs.some((line) => /Regenerated/i.test(line))).toBe(true);
+
+      controller.abort();
+      await done;
+    }, 10_000);
+  });
+
+  describe('shouldProcess() and renderCompanion()', () => {
+    it('respects include and exclude globs', () => {
+      const gen = new ExposedGenerator({
+        include: ['src/**/*.ts'],
+        exclude: ['**/*.test.ts', 'dist'],
+      });
+      expect(gen.shouldProcessPublic(join(tmpDir, 'src', 'app.ts'))).toBe(true);
+      expect(gen.shouldProcessPublic(join(tmpDir, 'src', 'app.test.ts'))).toBe(false);
+      expect(gen.shouldProcessPublic(join(tmpDir, 'dist', 'app.js'))).toBe(false);
+      expect(gen.shouldProcessPublic(join(tmpDir, 'other', 'app.ts'))).toBe(false);
+    });
+
+    it('allows all files when include is empty', () => {
+      const gen = new ExposedGenerator({ include: [], exclude: [] });
+      expect(gen.shouldProcessPublic(join(tmpDir, 'anywhere.ts'))).toBe(true);
+    });
+
+    it('renderCompanion returns a stub export', () => {
+      const gen = new ExposedGenerator();
+      expect(gen.renderCompanionPublic('src/x.ts', [])).toBe('export {};\n');
+    });
+  });
+
+  it('loads source files from an existing tsconfig', async () => {
+    mkdirSync(join(tmpDir, 'src'), { recursive: true });
+    writeFileSync(join(tmpDir, 'src', 'from-tsconfig.ts'), 'class FromTs {}', 'utf8');
+    writeFileSync(
+      join(tmpDir, 'tsconfig.json'),
+      JSON.stringify({ compilerOptions: { target: 'ES2022' }, include: ['src/**/*.ts'] }),
+      'utf8',
+    );
+
+    const gen = new CodeGenerator({ tsConfigPath: 'tsconfig.json' });
+    const generated = await gen.generate();
+
+    expect(generated).toHaveLength(1);
+    expect(generated[0]!.processedClasses).toEqual(['FromTs']);
   });
 });
 
