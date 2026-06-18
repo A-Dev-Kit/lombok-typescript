@@ -57,11 +57,10 @@ describe('codegen emitters', () => {
     expect(emitBuilderStaticMethod(info)).toContain('static builder');
   });
 
-  it('emitToStringMixin generates toString body', () => {
+  it('emitToStringMixin generates toString for @Value', () => {
     const classes = analyzeSourceString(`
-      import { ToString } from 'lombok-typescript/legacy';
-      @ToString
-      class Point { x: number; y: number; }
+      @Value
+      class Label { text: string; }
     `);
     expect(emitToStringMixin(classes[0]!)).toContain('toString');
   });

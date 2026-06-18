@@ -1,6 +1,8 @@
-# Decorator overview (v0.1)
+# Decorator overview
 
-Phase 1 ships eight decorators. All are exported from **`lombok-typescript/legacy`** and **`lombok-typescript/stage3`**.
+All decorators are exported from **`lombok-typescript/legacy`** and **`lombok-typescript/stage3`**.
+
+## Phase 1 (v0.1)
 
 | Decorator                             | Kind              | Codegen? | Summary                                   |
 | ------------------------------------- | ----------------- | -------- | ----------------------------------------- |
@@ -13,12 +15,30 @@ Phase 1 ships eight decorators. All are exported from **`lombok-typescript/legac
 | [`@Factory`](/decorators/factory)     | Hybrid            | Partial  | Named factory registry                    |
 | [`@Memoize`](/decorators/memoize)     | Runtime method    | No       | Cache method results by arguments         |
 
+## Phase 2 (v0.2.0–0.4.0)
+
+| Decorator                                          | Kind              | Codegen? | Summary                             |
+| -------------------------------------------------- | ----------------- | -------- | ----------------------------------- |
+| [`@Value`](/decorators/value)                      | Codegen composite | Yes      | Immutable `@Data` + `with*`         |
+| [`@With`](/decorators/with)                        | Codegen           | Yes      | Per-field immutable copy helpers    |
+| [`@Equals`](/decorators/equals)                    | Codegen           | Yes      | Structural `equals` + static helper |
+| [`@Getter` / `@Setter`](/decorators/getter-setter) | Codegen field     | Yes      | Single-field accessors              |
+| [`@Log`](/decorators/log)                          | Runtime           | No       | Method entry logging                |
+| [`@Accessors`](/decorators/accessors)              | Codegen metadata  | Yes      | Fluent/chained setter style         |
+| [`@UtilityClass`](/decorators/utility-class)       | Runtime           | No       | Uninstantiable utility holder       |
+| [`@FieldDefaults`](/decorators/field-defaults)     | Codegen metadata  | Yes      | Default readonly for generated code |
+| [`@Delegate`](/decorators/delegate)                | Codegen field     | Yes      | Forward methods to a field          |
+
+`@Data` and `@Value` **cannot** be combined — codegen enforces this at generation time.
+
 ## Codegen decorators
 
 Run after changing decorated classes:
 
 ```bash
 lombok-ts generate
+# or watch for changes:
+lombok-ts watch
 ```
 
 Then call `applyAllGenerated` (or per-class `apply*Generated`) from the `.lombok.ts` companion.
@@ -27,14 +47,14 @@ Then call `applyAllGenerated` (or per-class `apply*Generated`) from the `.lombok
 
 ```ts
 // Legacy
-import { Data } from 'lombok-typescript/legacy';
+import { Data, Value } from 'lombok-typescript/legacy';
 
 // Stage 3
-import { Data } from 'lombok-typescript/stage3';
+import { Data, Value } from 'lombok-typescript/stage3';
 ```
 
 See [Getting started](/guide/getting-started) for tsconfig requirements.
 
 ## Roadmap
 
-Future phases add `@Value`, `@Log`, GoF behavioral patterns, and more. v0.1 is intentionally small and stable.
+Phase 3 adds GoF behavioral patterns (`@Strategy`, `@State`, …). See the repository planning docs for the full catalog.
