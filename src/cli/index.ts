@@ -1,3 +1,5 @@
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { cac } from 'cac';
 import { runClean } from './commands/clean.js';
 import { runGenerate } from './commands/generate.js';
@@ -5,7 +7,7 @@ import { runInit } from './commands/init.js';
 import { runWatch } from './commands/watch.js';
 
 export const CLI_NAME = 'lombok-ts';
-export const CLI_VERSION = '0.1.0-pre';
+export const CLI_VERSION = '0.4.0-pre';
 
 /**
  * Build a fresh cac CLI instance. Exposed as a function (rather than a
@@ -29,7 +31,7 @@ export function buildCli() {
       });
     });
 
-  cli.command('watch', 'Watch source files and regenerate on change (Phase 2)').action(async () => {
+  cli.command('watch', 'Watch source files and regenerate on change').action(async () => {
     await runWatch();
   });
 
@@ -62,7 +64,7 @@ const isMain =
   typeof process !== 'undefined' &&
   typeof import.meta.url === 'string' &&
   process.argv[1] !== undefined &&
-  import.meta.url.endsWith(process.argv[1].split('/').pop() ?? '');
+  fileURLToPath(import.meta.url) === resolve(process.argv[1]);
 
 if (isMain) {
   runCli().catch((err: unknown) => {

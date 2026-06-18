@@ -1,6 +1,6 @@
 {
   "name": "lombok-typescript",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "description": "Lombok-like decorators and code generation for TypeScript - reduce boilerplate with powerful annotations and Gang-of-Four design patterns",
   "packageManager": "pnpm@10.34.3",
   "type": "module",

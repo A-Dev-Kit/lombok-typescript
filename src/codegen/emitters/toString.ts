@@ -1,8 +1,8 @@
 import type { ClassInfo } from '../types.js';
-import { hasClassDecorator, visibleFields } from './helpers.js';
+import { visibleFields, wantsToString } from './helpers.js';
 
 export function emitToStringMethod(info: ClassInfo): string {
-  if (!hasClassDecorator(info, 'ToString') && !hasClassDecorator(info, 'Data')) {
+  if (!wantsToString(info)) {
     return '';
   }
 

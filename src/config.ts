@@ -48,7 +48,7 @@ export interface CodegenConfig {
   /** Path to the project's tsconfig. Default `'tsconfig.json'`. */
   tsConfigPath: string;
 
-  /** Watch for source changes. Not implemented yet. Default `false`. */
+  /** Watch for source changes and regenerate companions. Default `false`. */
   watch: boolean;
 }
 
