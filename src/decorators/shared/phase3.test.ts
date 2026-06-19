@@ -13,6 +13,7 @@ import {
   IterateOver,
   Memento,
   Observable,
+  Observer,
   State,
   Strategy,
   StrategyRegistry,
@@ -27,6 +28,7 @@ import {
   IterateOver as IterateOverS3,
   Memento as MementoS3,
   Observable as ObservableS3,
+  Observer as ObserverS3,
   State as StateS3,
   Strategy as StrategyS3,
   Transition as TransitionS3,
@@ -233,6 +235,32 @@ describe('Phase 3 legacy @Memento', () => {
     expect(editor.cache.hits).toBe(0);
   });
 
+  it('excludes prototype fields registered via metadata', () => {
+    @Memento
+    class Editor {
+      content = '';
+    }
+
+    Memento.Exclude(Editor.prototype, 'cache');
+    (Editor.prototype as unknown as { cache: { hits: number } }).cache = { hits: 1 };
+
+    type EditorWithMemento = Editor & {
+      save(): MementoSnapshot;
+      restore(snapshot: MementoSnapshot): void;
+      cache: { hits: number };
+    };
+
+    const editor = new Editor() as EditorWithMemento;
+    editor.content = 'A';
+    editor.cache.hits = 99;
+    const snap = editor.save();
+    editor.content = 'B';
+    editor.cache.hits = 0;
+    editor.restore(snap);
+    expect(editor.content).toBe('A');
+    expect(editor.cache.hits).toBe(0);
+  });
+
   it('restore rejects invalid snapshots', () => {
     @Memento
     class Note {
@@ -295,6 +323,46 @@ describe('Phase 3 legacy @Observable', () => {
     cart.subscribe('total', listener);
     cart.items = [1, 2];
     expect(listener).toHaveBeenCalled();
+  });
+
+  it('ignores symbol property assignments', () => {
+    @Observable
+    class Box {
+      value = 1;
+    }
+
+    const sym = Symbol('meta');
+    const box = new Box() as Box & ObservableInstance & Record<symbol, unknown>;
+    const listener = vi.fn();
+    box.subscribe('value', listener);
+    box[sym] = 'hidden';
+    expect(listener).not.toHaveBeenCalled();
+  });
+
+  it('rejects @Observable.Derived without a getter', () => {
+    const derived = Observable.Derived as (
+      target: object,
+      propertyKey: string | symbol,
+      descriptor?: PropertyDescriptor,
+    ) => void;
+    expect(() => {
+      derived({}, 'total', { value: 1 } as PropertyDescriptor);
+    }).toThrow(/requires a getter/);
+  });
+});
+
+describe('Phase 3 legacy @Observer', () => {
+  it('alias behaves like @Observable', () => {
+    @Observer
+    class Watch {
+      n = 0;
+    }
+
+    const watch = new Watch() as Watch & ObservableInstance;
+    const listener = vi.fn();
+    watch.subscribe('n', listener);
+    watch.n = 1;
+    expect(listener).toHaveBeenCalledWith(1, 0);
   });
 });
 
@@ -496,6 +564,32 @@ describe('Phase 3 stage3 decorators', () => {
     expect(note.text).toBe('hi');
   });
 
+  it('@Memento.Exclude on stage3', () => {
+    class Note {
+      text = '';
+      secret = 'hidden';
+    }
+    const ctx = makeClassContext('Note');
+    MementoS3.Exclude(undefined, {
+      ...makeFieldContext('secret'),
+      metadata: ctx.metadata,
+    });
+    type NoteWithMemento = InstanceType<typeof Note> & {
+      save(): MementoSnapshot;
+      restore(snapshot: MementoSnapshot): void;
+    };
+    const WrappedNote = MementoS3()(Note, ctx) as new () => NoteWithMemento;
+    const note = new WrappedNote();
+    note.text = 'hello';
+    note.secret = 'hidden';
+    const snap = note.save();
+    note.text = 'bye';
+    note.secret = 'changed';
+    note.restore(snap);
+    expect(note.text).toBe('hello');
+    expect(note.secret).toBe('changed');
+  });
+
   it('@Observable notifies on stage3', () => {
     class Box {
       value = 0;
@@ -507,6 +601,63 @@ describe('Phase 3 stage3 decorators', () => {
     box.subscribe('value', spy);
     box.value = 1;
     expect(spy).toHaveBeenCalledWith(1, 0);
+  });
+
+  function makeGetterContext(name: string): ClassGetterDecoratorContext & { metadata: object } {
+    const metadata: Record<PropertyKey, unknown> = {};
+    return {
+      kind: 'getter',
+      name,
+      metadata,
+      static: false,
+      private: false,
+      access: { get: () => undefined, has: () => false },
+      addInitializer: () => {},
+    } as unknown as ClassGetterDecoratorContext & { metadata: object };
+  }
+
+  it('@Observable.Derived on stage3', () => {
+    let computeCount = 0;
+    class Cart {
+      items: number[] = [];
+    }
+    const ctx = makeClassContext('Cart');
+    const wrappedTotal = ObservableS3.Derived(
+      function total(this: Cart) {
+        computeCount += 1;
+        return this.items.reduce((sum, n) => sum + n, 0);
+      },
+      { ...makeGetterContext('total'), metadata: ctx.metadata } as ClassGetterDecoratorContext,
+    ) as (this: Cart) => number;
+    Object.defineProperty(Cart.prototype, 'total', {
+      get: wrappedTotal,
+      configurable: true,
+      enumerable: false,
+    });
+    type CartWithTotal = Cart & ObservableInstance & { total: number; items: number[] };
+    const WrappedCart = ObservableS3()(Cart, ctx) as new () => CartWithTotal;
+    const cart = new WrappedCart();
+    const spy = vi.fn();
+    cart.subscribe('total', spy);
+    expect(cart.total).toBe(0);
+    expect(cart.total).toBe(0);
+    expect(computeCount).toBe(1);
+    cart.items = [1, 2];
+    expect(cart.total).toBe(3);
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('@Observer alias on stage3', () => {
+    class Watch {
+      value = 0;
+    }
+    const WrappedWatch = ObserverS3(Watch, makeClassContext('Watch')) as new () => Watch &
+      ObservableInstance;
+    const watch = new WrappedWatch();
+    const spy = vi.fn();
+    watch.subscribe('value', spy);
+    watch.value = 2;
+    expect(spy).toHaveBeenCalledWith(2, 0);
   });
 
   it('@ChainOfResponsibility @Handler on stage3', () => {
