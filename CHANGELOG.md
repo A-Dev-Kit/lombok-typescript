@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-06-18
+
+Phase 3b — **not published to npm** (batch queue slot 6).
+
+### Added
+
+- `@Memento` / `@Memento.Exclude` — snapshot and restore instance state
+- `@Observable` / `@Observer` / `@Observable.Derived` — reactive property subscriptions
+- `@ChainOfResponsibility` / `@Handler` — ordered handler dispatch via `handle()`
+- `@Iterable` / `@IterateOver` — `Symbol.iterator` over a collection field
+- RxJS adapter: `lombok-typescript/observers/rxjs` (`toObservable`)
+- MobX adapter: `lombok-typescript/observers/mobx` (`makeLombokObservable`, `toMobxObservable`)
+
+## [0.5.0] - 2026-06-18
+
+Phase 3a — **not published to npm** (batch queue slot 5).
+
+### Added
+
+- `@Strategy` / `StrategyRegistry` — two-level swappable algorithm registry
+- `@State` / `@Transition` — finite state machine with runtime transition guards
+- `@Command` / `CommandHistory` — command objects with execute/undo/redo stacks
+
 ## [0.4.0] - 2026-06-16
 
 Phase 2c — **not published to npm** (batch queue slot 4).

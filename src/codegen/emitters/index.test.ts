@@ -112,6 +112,38 @@ describe('codegen emitters', () => {
     expect(dts).toContain('toString(): string');
   });
 
+  it('declaration shim covers Phase 3 runtime decorators', () => {
+    const classes = analyzeSourceString(`
+      import { State, Memento, Observable, ChainOfResponsibility, Iterable } from 'lombok-typescript/legacy';
+      @State({ states: ['a'], initial: 'a' })
+      class Task {}
+      @Memento
+      class Editor {}
+      @Observable
+      class Counter {}
+      @ChainOfResponsibility
+      class Auth {}
+      @Iterable
+      class Playlist {}
+    `);
+    const { dts } = emitCompanionFile(
+      '/proj/src/behavioral.ts',
+      '/proj/.lombok/src/behavioral.lombok.ts',
+      classes,
+      '/proj',
+    );
+    expect(dts).toContain('interface Task');
+    expect(dts).toContain('readonly state: string');
+    expect(dts).toContain('interface Editor');
+    expect(dts).toContain('save(): unknown');
+    expect(dts).toContain('interface Counter');
+    expect(dts).toContain('subscribe(');
+    expect(dts).toContain('interface Auth');
+    expect(dts).toContain('handle(context: unknown): boolean');
+    expect(dts).toContain('interface Playlist');
+    expect(dts).toContain('[Symbol.iterator]()');
+  });
+
   it('data helpers return empty string without @Data', () => {
     const classes = analyzeSourceString(`class Plain { x: number; }`);
     expect(emitDataAccessors(classes[0]!)).toBe('');

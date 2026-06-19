@@ -31,4 +31,4 @@ export type {
   CodegenConfig,
 } from './config.js';
 
-export const VERSION = '0.4.0-pre';
+export const VERSION = '0.6.0-pre';

@@ -41,6 +41,7 @@ export const MetadataKeys = {
   ITERABLE: `${PREFIX}iterable`,
   MEDIATOR: `${PREFIX}mediator`,
   MEMENTO: `${PREFIX}memento`,
+  MEMENTO_EXCLUDE: `${PREFIX}memento:exclude`,
   STATE: `${PREFIX}state`,
   STRATEGY: `${PREFIX}strategy`,
   TEMPLATE_METHOD: `${PREFIX}templateMethod`,

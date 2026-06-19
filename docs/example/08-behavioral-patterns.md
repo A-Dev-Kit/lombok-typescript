@@ -1,6 +1,6 @@
 # Behavioral patterns
 
-> **Preview only (Phase 3).** Decorators in this doc are not implemented in v0.1. See [roadmap on GitHub](https://github.com/A-Dev-Kit/lombok-typescript) and the [docs site](https://a-dev-kit.github.io/lombok-typescript/) for what ships today.
+> Phase 3 (v0.5.0–v0.6.0). Implemented decorators are documented on the [docs site](https://a-dev-kit.github.io/lombok-typescript/decorators/overview.html).
 
 ## `@Strategy`
 
@@ -251,8 +251,6 @@ class Editor {
 
 Patterns NOT in this batch:
 
-- `@ChainOfResponsibility` / `@Handler` (later phase, not detailed here yet)
-- `@Iterable` / `@Iterator` (later phase, not detailed here yet)
-- `@TemplateMethod` (later phase)
-- `@Visitor` / `@Visitable` (later phase)
+- `@TemplateMethod` (Phase 4)
+- `@Visitor` / `@Visitable` (Phase 4)
 - Marker-only patterns (`@Mediator`, `@Interpreter`): documentation aids only, no generated code

@@ -7,7 +7,7 @@ import { runInit } from './commands/init.js';
 import { runWatch } from './commands/watch.js';
 
 export const CLI_NAME = 'lombok-ts';
-export const CLI_VERSION = '0.4.0-pre';
+export const CLI_VERSION = '0.6.0-pre';
 
 /**
  * Build a fresh cac CLI instance. Exposed as a function (rather than a

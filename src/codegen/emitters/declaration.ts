@@ -66,6 +66,25 @@ function emitDeclarationModuleBlock(relSource: string, classes: readonly ClassIn
       augments.push('    toString(): string;');
     }
 
+    if (hasClassDecorator(info, 'State')) {
+      augments.push('    readonly state: string;');
+    }
+    if (hasClassDecorator(info, 'Memento')) {
+      augments.push('    save(): unknown;');
+      augments.push('    restore(snapshot: unknown): void;');
+    }
+    if (hasClassDecorator(info, 'Observable') || hasClassDecorator(info, 'Observer')) {
+      augments.push(
+        '    subscribe(key: string | symbol, listener: (next: unknown, prev: unknown) => void): () => void;',
+      );
+    }
+    if (hasClassDecorator(info, 'ChainOfResponsibility')) {
+      augments.push('    handle(context: unknown): boolean;');
+    }
+    if (hasClassDecorator(info, 'Iterable')) {
+      augments.push('    [Symbol.iterator](): IterableIterator<unknown>;');
+    }
+
     if (augments.length > 0) {
       lines.push(`  interface ${info.name} {`);
       lines.push(...augments);
