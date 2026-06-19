@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import {
   ChainOfResponsibility,
   Command,
-  CommandHistory,
   Handler,
   Iterable,
   IterateOver,
@@ -10,31 +9,29 @@ import {
   Observable,
   State,
   Strategy,
-  StrategyRegistry,
   Transition,
 } from 'lombok-typescript/legacy';
-import { toObservable } from 'lombok-typescript/observers/rxjs';
 
 interface Compressor {
   compress(data: string): string;
 }
 
 @Strategy('compression', 'gzip')
-class GzipCompressor implements Compressor {
+export class GzipCompressor implements Compressor {
   compress(data: string) {
     return `gzip:${data}`;
   }
 }
 
 @Strategy('compression', 'none')
-class NoCompressor implements Compressor {
+export class NoCompressor implements Compressor {
   compress(data: string) {
     return data;
   }
 }
 
 @State({ states: ['draft', 'done'], initial: 'draft' })
-class Task {
+export class Task {
   @Transition({ from: 'draft', to: 'done' })
   complete() {
     return 'ok';
@@ -42,7 +39,7 @@ class Task {
 }
 
 @Command
-class AppendText {
+export class AppendText {
   constructor(
     private readonly target: { text: string },
     private readonly chunk: string,
@@ -58,17 +55,17 @@ class AppendText {
 }
 
 @Memento
-class Editor {
+export class Editor {
   content = '';
 }
 
 @Observable
-class Counter {
+export class Counter {
   count = 0;
 }
 
 @ChainOfResponsibility
-class Auth {
+export class Auth {
   @Handler({ order: 1 })
   checkToken(req: { token?: string }) {
     return Boolean(req.token);
@@ -76,39 +73,9 @@ class Auth {
 }
 
 @Iterable
-class Playlist {
+export class Playlist {
   @IterateOver
   songs: string[] = ['a', 'b'];
 }
 
-console.info('strategies', StrategyRegistry.list('compression'));
-const compressor = StrategyRegistry.get<Compressor>('compression', 'gzip');
-console.info('strategy', compressor.compress('data'));
-void GzipCompressor;
-void NoCompressor;
-
-const task = new Task();
-task.complete();
-console.info('state', task.state);
-
-const doc = { text: '' };
-const history = new CommandHistory();
-history.execute(new AppendText(doc, 'Hi'));
-history.undo();
-console.info('command', doc.text);
-
-const editor = new Editor();
-editor.content = 'save me';
-const snap = editor.save();
-editor.content = 'lost';
-editor.restore(snap);
-console.info('memento', editor.content);
-
-const counter = new Counter();
-toObservable<number>(counter, 'count').subscribe((n) => console.info('rxjs count', n));
-counter.count = 1;
-
-const auth = new Auth();
-console.info('chain handled', auth.handle({ token: 'x' }));
-
-console.info('iterable', [...new Playlist()]);
+export type { Compressor };
