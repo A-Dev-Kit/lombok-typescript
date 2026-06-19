@@ -4,6 +4,10 @@ import type { AnyClass } from '../../legacy/decorate.js';
 import type { PropertyName } from '../../core/types.js';
 
 export type ObservableListener = (next: unknown, prev: unknown) => void;
+
+export interface ObservableInstance {
+  subscribe(key: string | symbol, listener: ObservableListener): () => void;
+}
 export type ObservableWildcardListener = (
   key: string | symbol,
   next: unknown,

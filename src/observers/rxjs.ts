@@ -1,9 +1,5 @@
 import { Observable } from 'rxjs';
-import type { ObservableListener } from '../decorators/shared/observable.js';
-
-export interface ObservableInstance {
-  subscribe(key: string | symbol, listener: ObservableListener): () => void;
-}
+import type { ObservableInstance } from '../decorators/shared/observable.js';
 
 /**
  * Bridge a `@Observable` property to an RxJS `Observable`.

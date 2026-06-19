@@ -81,8 +81,11 @@ class Playlist {
   songs: string[] = ['a', 'b'];
 }
 
+console.info('strategies', StrategyRegistry.list('compression'));
 const compressor = StrategyRegistry.get<Compressor>('compression', 'gzip');
 console.info('strategy', compressor.compress('data'));
+void GzipCompressor;
+void NoCompressor;
 
 const task = new Task();
 task.complete();

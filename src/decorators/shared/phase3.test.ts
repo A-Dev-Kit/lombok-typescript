@@ -17,6 +17,7 @@ import {
   Strategy,
   StrategyRegistry,
   Transition,
+  getStrategyRegistry,
 } from '../../legacy/index.js';
 import {
   ChainOfResponsibility as ChainS3,
@@ -31,26 +32,24 @@ import {
   Transition as TransitionS3,
 } from '../../stage3/index.js';
 
-type Stateful<T> = T & { state: string };
-type MementoInstance<T> = T & { save(): MementoSnapshot; restore(snapshot: MementoSnapshot): void };
-type ChainInstance<T> = T & { handle(context: unknown): boolean };
-type IterableInstance = Iterable<unknown>;
-
 describe('Phase 3 legacy @Strategy', () => {
   it('registers and resolves strategies by family and name', () => {
     @Strategy('compression', 'gzip')
-    class _Gzip {
+    class Gzip {
       tag = 'gzip';
     }
 
     @Strategy('compression', 'brotli')
-    class _Brotli {
+    class Brotli {
       tag = 'brotli';
     }
 
+    expect(Gzip).toBeDefined();
+    expect(Brotli).toBeDefined();
     const gzip = StrategyRegistry.get<{ tag: string }>('compression', 'gzip');
     expect(gzip.tag).toBe('gzip');
     expect(StrategyRegistry.list('compression').sort()).toEqual(['brotli', 'gzip']);
+    expect(getStrategyRegistry().get('compression')?.get('gzip')).toBe(Gzip);
   });
 
   it('throws when strategy is missing', () => {
@@ -73,7 +72,7 @@ describe('Phase 3 legacy @State', () => {
       }
     }
 
-    const app = new Application() as InstanceType<typeof Application> & { state: string };
+    const app = new Application() as Application & { state: string };
     expect(app.state).toBe('draft');
     expect(app.submit()).toBe('ok');
     expect(app.state).toBe('submitted');
@@ -108,6 +107,25 @@ describe('Phase 3 legacy @State', () => {
     new Job().start();
     expect(onTransition).toHaveBeenCalledWith('idle', 'running');
   });
+
+  it('rejects invalid initial state at decoration time', () => {
+    expect(() => {
+      @State({ states: ['a', 'b'], initial: 'missing' })
+      class _Bad {}
+      void _Bad;
+    }).toThrow(/initial state/);
+  });
+
+  it('rejects transition to unknown state at decoration time', () => {
+    expect(() => {
+      @State({ states: ['open'], initial: 'open' })
+      class _Door {
+        @Transition({ from: 'open', to: 'closed' })
+        close() {}
+      }
+      void _Door;
+    }).toThrow(/unknown state/);
+  });
 });
 
 describe('Phase 3 legacy @Command', () => {
@@ -130,17 +148,41 @@ describe('Phase 3 legacy @Command', () => {
     const history = new CommandHistory();
     history.execute(new Insert('Hello'));
     expect(editor.text).toBe('Hello');
+    expect(history.canUndo).toBe(true);
     history.undo();
     expect(editor.text).toBe('');
+    expect(history.canRedo).toBe(true);
     history.redo();
     expect(editor.text).toBe('Hello');
+    history.clear();
+    expect(history.canUndo).toBe(false);
   });
 
   it('requires execute()', () => {
     expect(() => {
       @Command
-      class _Bad {}
+      class Bad {}
+      void Bad;
     }).toThrow(/execute\(\)/);
+  });
+
+  it('CommandHistory throws on empty undo/redo', () => {
+    const history = new CommandHistory();
+    expect(() => history.undo()).toThrow(/Nothing to undo/);
+    expect(() => history.redo()).toThrow(/Nothing to redo/);
+  });
+
+  it('CommandHistory rejects undo when command has no undo()', () => {
+    @Command
+    class NoUndo {
+      execute() {
+        return 1;
+      }
+    }
+
+    const history = new CommandHistory();
+    history.execute(new NoUndo());
+    expect(() => history.undo()).toThrow(/does not support undo/);
   });
 });
 
@@ -152,7 +194,12 @@ describe('Phase 3 legacy @Memento', () => {
       cursor = 0;
     }
 
-    const editor = new Editor() as MementoInstance<Editor>;
+    type EditorWithMemento = Editor & {
+      save(): MementoSnapshot;
+      restore(snapshot: MementoSnapshot): void;
+    };
+
+    const editor = new Editor() as EditorWithMemento;
     editor.content = 'Hello';
     editor.cursor = 3;
     const snap = editor.save();
@@ -170,7 +217,12 @@ describe('Phase 3 legacy @Memento', () => {
       cache = { hits: 1 };
     }
 
-    const editor = new Editor() as MementoInstance<Editor>;
+    type EditorWithMemento = Editor & {
+      save(): MementoSnapshot;
+      restore(snapshot: MementoSnapshot): void;
+    };
+
+    const editor = new Editor() as EditorWithMemento;
     editor.content = 'A';
     editor.cache.hits = 99;
     const snap = editor.save();
@@ -179,6 +231,21 @@ describe('Phase 3 legacy @Memento', () => {
     editor.restore(snap);
     expect(editor.content).toBe('A');
     expect(editor.cache.hits).toBe(0);
+  });
+
+  it('restore rejects invalid snapshots', () => {
+    @Memento
+    class Note {
+      text = '';
+    }
+
+    type NoteWithMemento = Note & {
+      save(): MementoSnapshot;
+      restore(snapshot: MementoSnapshot): void;
+    };
+
+    const note = new Note() as NoteWithMemento;
+    expect(() => note.restore({} as MementoSnapshot)).toThrow(/expects a snapshot/);
   });
 });
 
@@ -250,9 +317,24 @@ describe('Phase 3 legacy @ChainOfResponsibility', () => {
       }
     }
 
-    const pipeline = new Pipeline() as ChainInstance<Pipeline>;
+    type PipelineWithHandle = Pipeline & { handle(context: unknown): boolean };
+    const pipeline = new Pipeline() as PipelineWithHandle;
     expect(pipeline.handle(null)).toBe(true);
     expect(log).toEqual(['first', 'second']);
+  });
+
+  it('returns false when no handler handles the request', () => {
+    @ChainOfResponsibility
+    class Empty {
+      @Handler({ order: 1 })
+      pass() {
+        return false;
+      }
+    }
+
+    type EmptyWithHandle = Empty & { handle(context: unknown): boolean };
+    expect(new Empty() as EmptyWithHandle).toBeDefined();
+    expect((new Empty() as EmptyWithHandle).handle({})).toBe(false);
   });
 });
 
@@ -264,7 +346,30 @@ describe('Phase 3 legacy @Iterable', () => {
       songs: string[] = ['a', 'b'];
     }
 
-    expect([...(new Playlist() as IterableInstance)]).toEqual(['a', 'b']);
+    expect([...(new Playlist() as unknown as Iterable<unknown>)]).toEqual(['a', 'b']);
+  });
+
+  it('throws when @IterateOver is missing', () => {
+    expect(() => {
+      @Iterable
+      class _Bad {
+        items: string[] = [];
+      }
+      void _Bad;
+    }).toThrow(/exactly one @IterateOver/);
+  });
+
+  it('throws when multiple @IterateOver fields are present', () => {
+    expect(() => {
+      @Iterable
+      class _Bad {
+        @IterateOver
+        a: string[] = [];
+        @IterateOver
+        b: string[] = [];
+      }
+      void _Bad;
+    }).toThrow(/only one @IterateOver/);
   });
 });
 
@@ -290,7 +395,7 @@ describe('Phase 3 observer adapters', () => {
       count = 0;
     }
 
-    const store = new Store() as Store & ObservableInstance;
+    const store = new Store() as Store & ObservableInstance & Record<string | symbol, unknown>;
     const spy = vi.fn();
     const dispose = makeLombokObservable(store, 'count', spy);
     store.count = 1;
@@ -358,7 +463,7 @@ describe('Phase 3 stage3 decorators', () => {
       ctx,
     ) as typeof Door;
 
-    const door = new Wrapped() as Stateful<typeof Wrapped>;
+    const door = new Wrapped() as InstanceType<typeof Wrapped> & { state: string };
     expect(door.state).toBe('open');
     door.close();
     expect(door.state).toBe('closed');
@@ -378,10 +483,11 @@ describe('Phase 3 stage3 decorators', () => {
     class Note {
       text = '';
     }
-    const WrappedNote = MementoS3()(Note, makeClassContext('Note')) as typeof Note & {
+    type NoteWithMemento = InstanceType<typeof Note> & {
       save(): MementoSnapshot;
       restore(snapshot: MementoSnapshot): void;
     };
+    const WrappedNote = MementoS3()(Note, makeClassContext('Note')) as new () => NoteWithMemento;
     const note = new WrappedNote();
     note.text = 'hi';
     const snap = note.save();
@@ -394,7 +500,7 @@ describe('Phase 3 stage3 decorators', () => {
     class Box {
       value = 0;
     }
-    const WrappedBox = ObservableS3()(Box, makeClassContext('Box')) as typeof Box &
+    const WrappedBox = ObservableS3()(Box, makeClassContext('Box')) as new () => Box &
       ObservableInstance;
     const box = new WrappedBox();
     const spy = vi.fn();
@@ -414,8 +520,9 @@ describe('Phase 3 stage3 decorators', () => {
       ...makeMethodContext('run'),
       metadata: ctx.metadata,
     } as ClassMethodDecoratorContext);
-    const Wrapped = ChainS3(Chain, ctx) as typeof Chain;
-    expect((new Wrapped() as ChainInstance<typeof Wrapped>).handle({})).toBe(true);
+    type ChainWithHandle = InstanceType<typeof Chain> & { handle(context: unknown): boolean };
+    const Wrapped = ChainS3(Chain, ctx) as new () => ChainWithHandle;
+    expect(new Wrapped().handle({})).toBe(true);
   });
 
   it('@Iterable @IterateOver on stage3', () => {
@@ -425,6 +532,6 @@ describe('Phase 3 stage3 decorators', () => {
     const ctx = makeClassContext('List');
     IterateOverS3(undefined, { ...makeFieldContext('items'), metadata: ctx.metadata });
     IterableS3(List, ctx);
-    expect([...(new List() as IterableInstance)]).toEqual([1, 2, 3]);
+    expect([...(new List() as unknown as Iterable<unknown>)]).toEqual([1, 2, 3]);
   });
 });
