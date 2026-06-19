@@ -31,6 +31,20 @@ All decorators are exported from **`lombok-typescript/legacy`** and **`lombok-ty
 
 `@Data` and `@Value` **cannot** be combined — codegen enforces this at generation time.
 
+## Phase 3 (v0.5.0–v0.6.0)
+
+| Decorator                                                       | Kind    | Codegen? | Summary                         |
+| --------------------------------------------------------------- | ------- | -------- | ------------------------------- |
+| [`@Strategy`](/decorators/strategy)                             | Hybrid  | No       | Two-level algorithm registry    |
+| [`@State` / `@Transition`](/decorators/state)                   | Runtime | No       | Finite state machine            |
+| [`@Command`](/decorators/command)                               | Runtime | No       | Command objects + undo stack    |
+| [`@Memento`](/decorators/memento)                               | Runtime | No       | Snapshot / restore              |
+| [`@Observable`](/decorators/observable)                         | Runtime | No       | Reactive property subscriptions |
+| [`@ChainOfResponsibility`](/decorators/chain-of-responsibility) | Runtime | No       | Ordered handler chain           |
+| [`@Iterable`](/decorators/iterable)                             | Runtime | No       | `Symbol.iterator` over a field  |
+
+Observer adapters: [RxJS / MobX](/decorators/observers-adapters).
+
 ## Codegen decorators
 
 Run after changing decorated classes:
@@ -54,7 +68,3 @@ import { Data, Value } from 'lombok-typescript/stage3';
 ```
 
 See [Getting started](/guide/getting-started) for tsconfig requirements.
-
-## Roadmap
-
-Phase 3 adds GoF behavioral patterns (`@Strategy`, `@State`, …). See the repository planning docs for the full catalog.

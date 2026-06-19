@@ -58,6 +58,19 @@ export default defineConfig({
           { text: '@Delegate', link: '/decorators/delegate' },
         ],
       },
+      {
+        text: 'Decorators (Phase 3)',
+        items: [
+          { text: '@Strategy', link: '/decorators/strategy' },
+          { text: '@State / @Transition', link: '/decorators/state' },
+          { text: '@Command', link: '/decorators/command' },
+          { text: '@Memento', link: '/decorators/memento' },
+          { text: '@Observable', link: '/decorators/observable' },
+          { text: 'Observer adapters', link: '/decorators/observers-adapters' },
+          { text: '@ChainOfResponsibility', link: '/decorators/chain-of-responsibility' },
+          { text: '@Iterable', link: '/decorators/iterable' },
+        ],
+      },
     ],
     socialLinks: [{ icon: 'github', link: 'https://github.com/A-Dev-Kit/lombok-typescript' }],
     editLink: {
