@@ -3,6 +3,7 @@ import {
   defineClassDecorator,
   defineFieldDecorator,
   defineMethodDecorator,
+  defineGetterDecorator,
 } from '../../stage3/decorate.js';
 import {
   codegenClassMarkerStage3,
@@ -31,6 +32,32 @@ import { setterFieldStage3 } from '../shared/setter.js';
 import { utilityClassStage3 } from '../shared/utility-class.js';
 import { valueClassStage3 } from '../shared/value.js';
 import { withClassStage3, withFieldStage3 } from '../shared/with.js';
+import {
+  getStrategyFromRegistry,
+  getStrategyRegistry,
+  listStrategies,
+  registerStrategy,
+  strategyClassStage3,
+  StrategyRegistry,
+} from '../shared/strategy.js';
+import type { StateOptions } from '../shared/state.js';
+import { stateClassStage3 } from '../shared/state.js';
+import type { TransitionOptions } from '../shared/transition.js';
+import { transitionMethodStage3 } from '../shared/transition.js';
+import { commandClassStage3 } from '../shared/command.js';
+import { CommandHistory } from '../shared/command-history.js';
+import { mementoClassStage3, mementoExcludeFieldStage3 } from '../shared/memento.js';
+import {
+  observableClassStage3,
+  observableDerivedStage3,
+  observerClassStage3,
+} from '../shared/observable.js';
+import {
+  chainOfResponsibilityClassStage3,
+  handlerMethodStage3,
+} from '../shared/chain-of-responsibility.js';
+import type { HandlerOptions } from '../shared/chain-of-responsibility.js';
+import { iterableClassStage3, iterateOverFieldStage3 } from '../shared/iterable.js';
 
 /** Validates field initial values are not null or undefined. */
 export const NonNull = defineFieldDecorator(nonNullFieldStage3);
@@ -151,4 +178,74 @@ export function Delegate(...methods: string[]) {
 /** Exclude a field from generated `equals()`. */
 export const EqualsExclude = defineFieldDecorator(equalsExcludeFieldStage3);
 
-export { createFromFactory, getFactoryRegistry, registerFactory };
+/** Registers a swappable strategy under `family` and `name`. */
+export function Strategy(family: string, name: string) {
+  return defineClassDecorator((backend, value, context) => {
+    strategyClassStage3(backend, value, context, family, name);
+  });
+}
+
+/** Finite state machine with `@Transition`-guarded methods. */
+export function State(options: StateOptions) {
+  return defineClassDecorator((backend, value, context) =>
+    stateClassStage3(backend, value, context, options),
+  );
+}
+
+/** Declares an allowed state transition on a method. */
+export function Transition(options: TransitionOptions) {
+  return defineMethodDecorator((backend, value, context) =>
+    transitionMethodStage3(backend, value, context, options),
+  );
+}
+
+/** Command object marker — class must define `execute()`. */
+export const Command = defineClassDecorator(commandClassStage3);
+
+const observableClassDec = defineClassDecorator(observableClassStage3);
+const observableDerivedDec = defineGetterDecorator(observableDerivedStage3);
+
+/** Reactive property changes with a subscription API. */
+export function Observable() {
+  return observableClassDec;
+}
+Observable.Derived = observableDerivedDec;
+
+/** Alias for `@Observable` (GoF naming). */
+export const Observer = defineClassDecorator(observerClassStage3);
+
+const mementoClassDec = defineClassDecorator(mementoClassStage3);
+
+/** Snapshot and restore instance state. */
+export function Memento() {
+  return mementoClassDec;
+}
+Memento.Exclude = defineFieldDecorator(mementoExcludeFieldStage3);
+
+/** Chain-of-responsibility handler dispatch via `handle()`. */
+export const ChainOfResponsibility = defineClassDecorator(chainOfResponsibilityClassStage3);
+
+/** Marks a method as a chain handler with sort `order`. */
+export function Handler(options: HandlerOptions) {
+  return defineMethodDecorator((backend, value, context) =>
+    handlerMethodStage3(backend, value, context, options),
+  );
+}
+
+/** Auto-implements `Symbol.iterator` over an `@IterateOver` field. */
+export const Iterable = defineClassDecorator(iterableClassStage3);
+
+/** Marks the collection field iterated by `@Iterable`. */
+export const IterateOver = defineFieldDecorator(iterateOverFieldStage3);
+
+export {
+  createFromFactory,
+  getFactoryRegistry,
+  registerFactory,
+  StrategyRegistry,
+  getStrategyFromRegistry,
+  getStrategyRegistry,
+  listStrategies,
+  registerStrategy,
+  CommandHistory,
+};

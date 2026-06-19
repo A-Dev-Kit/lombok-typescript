@@ -8,6 +8,8 @@ export default defineConfig({
     'stage3/index': 'src/stage3/index.ts',
     'codegen/index': 'src/codegen/index.ts',
     'cli/index': 'src/cli/index.ts',
+    'observers/rxjs': 'src/observers/rxjs.ts',
+    'observers/mobx': 'src/observers/mobx.ts',
   },
   format: ['esm', 'cjs'],
   dts: true,
@@ -16,7 +18,7 @@ export default defineConfig({
   splitting: false,
   treeshake: true,
   minify: false,
-  external: ['typescript', 'ts-morph', 'reflect-metadata'],
+  external: ['typescript', 'ts-morph', 'reflect-metadata', 'rxjs', 'mobx'],
   outExtension({ format }) {
     return { js: format === 'cjs' ? '.cjs' : '.js' };
   },

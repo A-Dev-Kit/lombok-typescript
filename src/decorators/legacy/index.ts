@@ -5,6 +5,7 @@ import {
   defineMethodDecorator,
   defineParameterDecorator,
 } from '../../legacy/decorate.js';
+import { legacyBackend } from '../../legacy/backend.js';
 import {
   codegenClassMarkerLegacy,
   factoryClassLegacy,
@@ -33,6 +34,32 @@ import { setterFieldLegacy } from '../shared/setter.js';
 import { utilityClassLegacy } from '../shared/utility-class.js';
 import { valueClassLegacy } from '../shared/value.js';
 import { withClassLegacy, withFieldLegacy } from '../shared/with.js';
+import {
+  getStrategyFromRegistry,
+  getStrategyRegistry,
+  listStrategies,
+  registerStrategy,
+  strategyClassLegacy,
+  StrategyRegistry,
+} from '../shared/strategy.js';
+import type { StateOptions } from '../shared/state.js';
+import { stateClassLegacy } from '../shared/state.js';
+import type { TransitionOptions } from '../shared/transition.js';
+import { transitionMethodLegacy } from '../shared/transition.js';
+import { commandClassLegacy } from '../shared/command.js';
+import { CommandHistory } from '../shared/command-history.js';
+import { mementoClassLegacy, mementoExcludeFieldLegacy } from '../shared/memento.js';
+import {
+  observableClassLegacy,
+  observableDerivedLegacy,
+  observerClassLegacy,
+} from '../shared/observable.js';
+import {
+  chainOfResponsibilityClassLegacy,
+  handlerMethodLegacy,
+} from '../shared/chain-of-responsibility.js';
+import type { HandlerOptions } from '../shared/chain-of-responsibility.js';
+import { iterableClassLegacy, iterateOverFieldLegacy } from '../shared/iterable.js';
 
 /** Validates field assignments are not null or undefined. */
 export const NonNull = defineFieldDecorator(nonNullFieldLegacy);
@@ -147,4 +174,78 @@ export function Delegate(...methods: string[]): PropertyDecorator {
 /** Exclude a field from generated `equals()`. */
 export const EqualsExclude = defineFieldDecorator(equalsExcludeFieldLegacy);
 
-export { createFromFactory, getFactoryRegistry, registerFactory };
+/** Registers a swappable strategy under `family` and `name`. */
+export function Strategy(family: string, name: string): ClassDecorator {
+  return defineClassDecorator((backend, target) => {
+    strategyClassLegacy(backend, target, family, name);
+  });
+}
+
+/** Finite state machine with `@Transition`-guarded methods. */
+export function State(options: StateOptions): ClassDecorator {
+  return defineClassDecorator((backend, target) => stateClassLegacy(backend, target, options));
+}
+
+/** Declares an allowed state transition on a method. */
+export function Transition(options: TransitionOptions): MethodDecorator {
+  return defineMethodDecorator((backend, target, key, descriptor) =>
+    transitionMethodLegacy(backend, target, key, descriptor, options),
+  );
+}
+
+/** Command object marker — class must define `execute()`. */
+export const Command = defineClassDecorator(commandClassLegacy);
+
+/** Reactive property changes with a subscription API. */
+export const Observable = defineClassDecorator(observableClassLegacy) as ClassDecorator & {
+  Derived: PropertyDecorator;
+};
+
+Observable.Derived = ((
+  target: object,
+  propertyKey: string | symbol,
+  descriptor: PropertyDescriptor,
+): void => {
+  if (descriptor === undefined || typeof descriptor.get !== 'function') {
+    throw new TypeError('@Observable.Derived requires a getter');
+  }
+  observableDerivedLegacy(legacyBackend, target, propertyKey, descriptor);
+}) as PropertyDecorator;
+
+/** Alias for `@Observable` (GoF naming). */
+export const Observer = defineClassDecorator(observerClassLegacy);
+
+/** Snapshot and restore instance state. */
+export const Memento = defineClassDecorator(mementoClassLegacy) as ClassDecorator & {
+  Exclude: PropertyDecorator;
+};
+
+Memento.Exclude = defineFieldDecorator(mementoExcludeFieldLegacy);
+
+/** Chain-of-responsibility handler dispatch via `handle()`. */
+export const ChainOfResponsibility = defineClassDecorator(chainOfResponsibilityClassLegacy);
+
+/** Marks a method as a chain handler with sort `order`. */
+export function Handler(options: HandlerOptions): MethodDecorator {
+  return defineMethodDecorator((backend, target, key, descriptor) =>
+    handlerMethodLegacy(backend, target, key, descriptor, options),
+  );
+}
+
+/** Auto-implements `Symbol.iterator` over an `@IterateOver` field. */
+export const Iterable = defineClassDecorator(iterableClassLegacy);
+
+/** Marks the collection field iterated by `@Iterable`. */
+export const IterateOver = defineFieldDecorator(iterateOverFieldLegacy);
+
+export {
+  createFromFactory,
+  getFactoryRegistry,
+  registerFactory,
+  StrategyRegistry,
+  getStrategyFromRegistry,
+  getStrategyRegistry,
+  listStrategies,
+  registerStrategy,
+  CommandHistory,
+};
