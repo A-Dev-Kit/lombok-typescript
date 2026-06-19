@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { Memoize, Singleton } from 'lombok-typescript/legacy';
 import { Point } from './point.js';
 import { applyAllGenerated } from '../.lombok/src/point.lombok.js';
+import './behavioral.js';
 
 applyAllGenerated({ Point });
 
