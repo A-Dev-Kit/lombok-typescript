@@ -54,6 +54,23 @@ export {
   createFromFactory,
   getFactoryRegistry,
   registerFactory,
+  Strategy,
+  StrategyRegistry,
+  getStrategyFromRegistry,
+  getStrategyRegistry,
+  listStrategies,
+  registerStrategy,
+  State,
+  Transition,
+  Command,
+  CommandHistory,
+  Observable,
+  Observer,
+  Memento,
+  ChainOfResponsibility,
+  Handler,
+  Iterable,
+  IterateOver,
 } from '../decorators/stage3/index.js';
 
 /** Read the Stage 3 `Symbol.metadata` object from a class, if present. */
