@@ -10,7 +10,7 @@ import {
   State,
   Strategy,
   Transition,
-} from 'lombok-typescript/legacy';
+} from '@a-dev-kit/lombok-typescript/legacy';
 
 interface Compressor {
   compress(data: string): string;
