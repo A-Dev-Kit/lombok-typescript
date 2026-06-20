@@ -61,22 +61,23 @@ jobs:
       matrix:
         include:
           - version: '0.1.0'
-            commit: '490b5d4'
+            tag: 'v0.1.0'
           - version: '0.2.0'
-            commit: '32ef000'
+            tag: 'v0.2.0'
           - version: '0.3.0'
-            commit: '32ef000'
+            tag: 'v0.3.0'
           - version: '0.4.0'
-            commit: '32ef000'
+            tag: 'v0.4.0'
           - version: '0.5.0'
-            commit: 'bd4118d'
+            tag: 'v0.5.0'
           - version: '0.6.0'
-            commit: 'bd4118d'
+            tag: 'v0.6.0'
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ matrix.commit }}
+          ref: ${{ matrix.tag }}
           fetch-depth: 0
+          fetch-tags: true
       - name: Fetch publish scripts from default branch
         run: git fetch origin "${{ github.event.repository.default_branch }}" && git checkout "origin/${{ github.event.repository.default_branch }}" -- scripts/gh-packages-prepare.mjs scripts/gh-packages-publish.mjs
       - uses: pnpm/action-setup@v6
