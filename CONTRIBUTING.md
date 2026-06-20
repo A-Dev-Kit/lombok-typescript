@@ -65,14 +65,14 @@ To publish a new version after merging a release PR:
 
 Logical release queue versions and the git commits used for GitHub Packages backfill:
 
-| Tag | Commit | Notes |
-| --- | ------ | ----- |
-| `v0.1.0` | `490b5d4` | Phase 1 merge |
+| Tag      | Commit    | Notes                                                |
+| -------- | --------- | ---------------------------------------------------- |
+| `v0.1.0` | `490b5d4` | Phase 1 merge                                        |
 | `v0.2.0` | `32ef000` | Phase 2 merge (2a scope); version patched at publish |
 | `v0.3.0` | `32ef000` | Phase 2 merge (2b scope); version patched at publish |
-| `v0.4.0` | `32ef000` | Phase 2 merge; `package.json` was `0.4.0` |
+| `v0.4.0` | `32ef000` | Phase 2 merge; `package.json` was `0.4.0`            |
 | `v0.5.0` | `bd4118d` | Phase 3 merge (3a scope); version patched at publish |
-| `v0.6.0` | `bd4118d` | Phase 3 merge; `package.json` was `0.6.0` |
+| `v0.6.0` | `bd4118d` | Phase 3 merge; `package.json` was `0.6.0`            |
 
 Versions `0.2.0`/`0.3.0` share the Phase 2 merge tree; `0.5.0`/`0.6.0` share the Phase 3 merge tree. This matches the release-queue slots when those phases landed as single PRs.
 
