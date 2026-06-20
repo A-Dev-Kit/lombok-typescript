@@ -23,8 +23,10 @@ function preparePackage(version) {
 for (const version of VERSIONS) {
   console.log(`\n=== Publishing ${version} ===\n`);
   run(`git fetch origin ${DEFAULT_BRANCH} --tags`);
-  run(`git checkout v${version}`);
-  run(`git checkout origin/${DEFAULT_BRANCH} -- scripts/gh-packages-prepare.mjs scripts/gh-packages-publish.mjs`);
+  run('git reset --hard');
+  run('git clean -fd -e node_modules');
+  run(`git checkout -f v${version}`);
+  run(`git checkout origin/${DEFAULT_BRANCH} -- scripts/gh-packages-prepare.mjs scripts/gh-packages-publish.mjs scripts/gh-packages-backfill.mjs`);
   preparePackage(version);
   try {
     run('pnpm install --frozen-lockfile');
