@@ -1,6 +1,11 @@
 import 'reflect-metadata';
-import { CommandHistory, Memoize, Singleton, StrategyRegistry } from 'lombok-typescript/legacy';
-import { toObservable } from 'lombok-typescript/observers/rxjs';
+import {
+  CommandHistory,
+  Memoize,
+  Singleton,
+  StrategyRegistry,
+} from '@a-dev-kit/lombok-typescript/legacy';
+import { toObservable } from '@a-dev-kit/lombok-typescript/observers/rxjs';
 import { Point } from './point.js';
 import { applyAllGenerated } from '../.lombok/src/point.lombok.js';
 import {

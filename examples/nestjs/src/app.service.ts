@@ -1,6 +1,11 @@
 import 'reflect-metadata';
 import { Injectable } from '@nestjs/common';
-import { Factory, Memoize, Singleton, createFromFactory } from 'lombok-typescript/legacy';
+import {
+  Factory,
+  Memoize,
+  Singleton,
+  createFromFactory,
+} from '@a-dev-kit/lombok-typescript/legacy';
 
 @Injectable()
 @Singleton

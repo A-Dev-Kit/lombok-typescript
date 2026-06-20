@@ -1,4 +1,4 @@
-import { Value } from 'lombok-typescript/legacy';
+import { Value } from '@a-dev-kit/lombok-typescript/legacy';
 
 @Value
 export class Point {

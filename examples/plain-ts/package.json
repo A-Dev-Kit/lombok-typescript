@@ -7,7 +7,7 @@
     "generate": "node ../../dist/cli/index.js generate"
   },
   "dependencies": {
-    "lombok-typescript": "workspace:*",
+    "@a-dev-kit/lombok-typescript": "workspace:*",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {

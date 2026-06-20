@@ -1,4 +1,4 @@
-import { defineConfig } from 'lombok-typescript';
+import { defineConfig } from '@a-dev-kit/lombok-typescript';
 
 export default defineConfig({
   backend: 'legacy',
