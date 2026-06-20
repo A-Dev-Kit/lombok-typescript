@@ -26,7 +26,8 @@ if (npmView()) {
   process.exit(0);
 }
 
-const tagFlag = isLatest ? '' : ` --tag ${version}`;
+const distTag = isLatest ? 'latest' : `rel-${version.replace(/\./g, '-')}`;
+const tagFlag = isLatest ? '' : ` --tag ${distTag}`;
 execSync(`pnpm publish --no-git-checks --access public${tagFlag}`, {
   stdio: 'inherit',
   env: process.env,
