@@ -1,0 +1,94 @@
+name: Publish GitHub Packages
+
+# Publishes @a-dev-kit/lombok-typescript to GitHub Packages (npm registry).
+# npmjs.org release.yml stays disabled until ADR-17 batch publish.
+
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      backfill_all:
+        description: 'Publish all historical versions 0.1.0 through 0.6.0'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  PACKAGE_SCOPE: '@a-dev-kit'
+  PACKAGE_NAME: '@a-dev-kit/lombok-typescript'
+
+jobs:
+  publish-tag:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set version from tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: echo "PUBLISH_VERSION=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_ENV"
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@a-dev-kit'
+      - name: Prepare package for GitHub Packages
+        run: node scripts/gh-packages-prepare.mjs "$PUBLISH_VERSION"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+      - name: Publish to GitHub Packages
+        run: node scripts/gh-packages-publish.mjs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLISH_VERSION: ${{ env.PUBLISH_VERSION }}
+
+  publish-backfill:
+    if: github.event_name == 'workflow_dispatch' && inputs.backfill_all
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - version: '0.1.0'
+            commit: '490b5d4'
+          - version: '0.2.0'
+            commit: '32ef000'
+          - version: '0.3.0'
+            commit: '32ef000'
+          - version: '0.4.0'
+            commit: '32ef000'
+          - version: '0.5.0'
+            commit: 'bd4118d'
+          - version: '0.6.0'
+            commit: 'bd4118d'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ matrix.commit }}
+          fetch-depth: 0
+      - name: Fetch publish scripts from default branch
+        run: git fetch origin "${{ github.event.repository.default_branch }}" && git checkout "origin/${{ github.event.repository.default_branch }}" -- scripts/gh-packages-prepare.mjs scripts/gh-packages-publish.mjs
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: https://npm.pkg.github.com
+          scope: '@a-dev-kit'
+      - name: Prepare package for GitHub Packages
+        run: node scripts/gh-packages-prepare.mjs ${{ matrix.version }}
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile || pnpm install
+      - name: Build
+        run: pnpm build
+      - name: Publish if not already present
+        run: node scripts/gh-packages-publish.mjs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLISH_VERSION: ${{ matrix.version }}

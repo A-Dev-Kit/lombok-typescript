@@ -2,8 +2,9 @@
 
 [![CI](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/ci.yml/badge.svg)](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/ci.yml)
 [![Docs](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/docs.yml/badge.svg)](https://a-dev-kit.github.io/lombok-typescript/)
+[![Publish GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/publish-github-packages.yml/badge.svg)](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/publish-github-packages.yml)
+[![GitHub Packages](https://img.shields.io/github/v/tag/A-Dev-Kit/lombok-typescript?label=GitHub%20Packages&logo=github&color=24292f)](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
-[![version](<https://img.shields.io/badge/npm-0.4.0%20(not%20published)-lightgrey>)](https://github.com/A-Dev-Kit/lombok-typescript)
 [![coverage](https://img.shields.io/codecov/c/github/A-Dev-Kit/lombok-typescript/main?label=coverage)](https://codecov.io/gh/A-Dev-Kit/lombok-typescript)
 [![Node](https://img.shields.io/badge/node-%E2%89%A522-brightgreen)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-%E2%89%A55.0-blue?logo=typescript)](https://www.typescriptlang.org/)
@@ -14,26 +15,41 @@ A TypeScript port of Java's [Project Lombok](https://projectlombok.org/) with Ga
 
 ## Status
 
-**Version `0.4.0` — Phase 2 code-complete, not on npm yet.** Batch publish is deferred until the full release queue is ready. See [CHANGELOG.md](./CHANGELOG.md).
+**Version `0.6.0` — Phase 3 complete.** Published on [GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript). Public npmjs.org release is deferred until the full release queue is ready (ADR-17). See [CHANGELOG.md](./CHANGELOG.md).
 
 **Phase 1:** `@NonNull`, `@ToString`, `@Builder`, `@Data`, `@Singleton`, `@Prototype`, `@Factory`, `@Memoize`
 
-**Phase 2 (v0.2.0–0.4.0):** `@Value`, `@With`, `@Equals`, `@Getter`, `@Setter`, `@Log`, `@Accessors`, `@UtilityClass`, `@FieldDefaults`, `@Delegate`, plus CLI `watch` mode.
+**Phase 2 (v0.2.0–v0.4.0):** `@Value`, `@With`, `@Equals`, `@Getter`, `@Setter`, `@Log`, `@Accessors`, `@UtilityClass`, `@FieldDefaults`, `@Delegate`, plus CLI `watch` mode.
+
+**Phase 3 (v0.5.0–v0.6.0):** `@Strategy`, `@State`, `@Command`, `@Memento`, `@Observable`, `@ChainOfResponsibility`, `@Iterable`, observer adapters.
 
 ## Install
 
+From **GitHub Packages** (recommended until npm batch publish):
+
 ```bash
-# Not on npm yet — clone and link locally:
+# .npmrc in your project (or user-level)
+echo "@a-dev-kit:registry=https://npm.pkg.github.com" >> .npmrc
+
+# Authenticate — use a GitHub PAT with read:packages (local dev)
+# npm login --registry=https://npm.pkg.github.com
+
+pnpm add @a-dev-kit/lombok-typescript@0.6.0
+# or: npm install @a-dev-kit/lombok-typescript@0.6.0
+```
+
+Pin any released version (`0.1.0` through `0.6.0`). See [CONTRIBUTING.md](./CONTRIBUTING.md#github-packages) for the tag map.
+
+Local development:
+
+```bash
 git clone https://github.com/A-Dev-Kit/lombok-typescript.git
 cd lombok-typescript && pnpm install && pnpm build && pnpm link --global
-
-# When published (preview tag):
-npm install lombok-typescript@preview
 ```
 
 ## Pick a decorator standard
 
-### Legacy (`lombok-typescript/legacy`)
+### Legacy (`@a-dev-kit/lombok-typescript/legacy`)
 
 For NestJS, TypeORM, and most existing decorator-based projects.
 
@@ -41,7 +57,7 @@ For NestJS, TypeORM, and most existing decorator-based projects.
 { "compilerOptions": { "experimentalDecorators": true, "emitDecoratorMetadata": true } }
 ```
 
-### Stage 3 (`lombok-typescript/stage3`)
+### Stage 3 (`@a-dev-kit/lombok-typescript/stage3`)
 
 For TS 5.0+ projects without `experimentalDecorators`.
 
@@ -57,7 +73,7 @@ npx lombok-ts generate
 ```
 
 ```ts
-import { Data, Builder, NonNull, Memoize, Singleton } from 'lombok-typescript/legacy';
+import { Data, Builder, NonNull, Memoize, Singleton } from '@a-dev-kit/lombok-typescript/legacy';
 
 @Data
 @Builder

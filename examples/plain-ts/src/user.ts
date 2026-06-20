@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { Builder, Data, NonNull, ToString } from 'lombok-typescript/legacy';
+import { Builder, Data, NonNull, ToString } from '@a-dev-kit/lombok-typescript/legacy';
 
 @Data
 @Builder

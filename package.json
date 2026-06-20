@@ -1,6 +1,9 @@
 {
-  "name": "lombok-typescript",
+  "name": "@a-dev-kit/lombok-typescript",
   "version": "0.6.0",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "description": "Lombok-like decorators and code generation for TypeScript - reduce boilerplate with powerful annotations and Gang-of-Four design patterns",
   "packageManager": "pnpm@10.34.3",
   "type": "module",

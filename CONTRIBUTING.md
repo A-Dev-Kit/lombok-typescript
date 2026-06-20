@@ -49,9 +49,38 @@ Use [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:
 
 ## Release process
 
-Releases are **not** published on every merge. Maintainers accumulate versions in a private release queue and publish in batch via GitHub Actions when the queue is full. The `release.yml` workflow stays disabled until then.
+### GitHub Packages (active)
 
-When active, publishing is tag-driven: push `v*.*.*` tags to trigger CI publish with npm provenance.
+`@a-dev-kit/lombok-typescript` is published to [GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript) on each `v*.*.*` tag push via `.github/workflows/publish-github-packages.yml`.
+
+To publish a new version after merging a release PR:
+
+1. Bump `package.json` and `CHANGELOG.md`.
+2. `git tag -a vX.Y.Z -m "vX.Y.Z"` and `git push origin vX.Y.Z`.
+3. CI publishes automatically.
+
+**One-time backfill** of historical versions: Actions → Publish GitHub Packages → Run workflow → enable **backfill_all**.
+
+#### Git tag map (retrospective releases)
+
+Logical release queue versions and the git commits used for GitHub Packages backfill:
+
+| Tag | Commit | Notes |
+| --- | ------ | ----- |
+| `v0.1.0` | `490b5d4` | Phase 1 merge |
+| `v0.2.0` | `32ef000` | Phase 2 merge (2a scope); version patched at publish |
+| `v0.3.0` | `32ef000` | Phase 2 merge (2b scope); version patched at publish |
+| `v0.4.0` | `32ef000` | Phase 2 merge; `package.json` was `0.4.0` |
+| `v0.5.0` | `bd4118d` | Phase 3 merge (3a scope); version patched at publish |
+| `v0.6.0` | `bd4118d` | Phase 3 merge; `package.json` was `0.6.0` |
+
+Versions `0.2.0`/`0.3.0` share the Phase 2 merge tree; `0.5.0`/`0.6.0` share the Phase 3 merge tree. This matches the release-queue slots when those phases landed as single PRs.
+
+### npmjs.org (deferred)
+
+Public npm publish is **not** on every merge. Maintainers accumulate versions in a private release queue and publish in batch via GitHub Actions when the queue is full. The `release.yml` workflow stays disabled until then.
+
+When active, publishing is tag-driven: push `v*.*.*` tags to trigger CI publish with npm provenance to `registry.npmjs.org` as unscoped `lombok-typescript`.
 
 ## Architecture
 

@@ -76,15 +76,15 @@ importers:
 
   examples/nestjs:
     dependencies:
+      '@a-dev-kit/lombok-typescript':
+        specifier: workspace:*
+        version: link:../..
       '@nestjs/common':
         specifier: ^11.0.0
         version: 11.1.26(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/core':
         specifier: ^11.0.0
         version: 11.1.26(@nestjs/common@11.1.26(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      lombok-typescript:
-        specifier: workspace:*
-        version: link:../..
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -98,7 +98,7 @@ importers:
 
   examples/plain-ts:
     dependencies:
-      lombok-typescript:
+      '@a-dev-kit/lombok-typescript':
         specifier: workspace:*
         version: link:../..
       reflect-metadata:
