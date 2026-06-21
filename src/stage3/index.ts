@@ -71,6 +71,9 @@ export {
   Handler,
   Iterable,
   IterateOver,
+  Flyweight,
+  Composite,
+  Proxy,
 } from '../decorators/stage3/index.js';
 
 /** Read the Stage 3 `Symbol.metadata` object from a class, if present. */

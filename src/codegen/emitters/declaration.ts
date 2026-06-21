@@ -84,6 +84,14 @@ function emitDeclarationModuleBlock(relSource: string, classes: readonly ClassIn
     if (hasClassDecorator(info, 'Iterable')) {
       augments.push('    [Symbol.iterator](): IterableIterator<unknown>;');
     }
+    if (hasClassDecorator(info, 'Composite')) {
+      augments.push('    add(child: object): void;');
+      augments.push('    remove(child: object): void;');
+      augments.push('    getChild(index: number): object;');
+      augments.push('    getChildren(): readonly object[];');
+      augments.push('    traverse(callback: (node: object) => void): void;');
+      augments.push('    [Symbol.iterator](): IterableIterator<object>;');
+    }
 
     if (augments.length > 0) {
       lines.push(`  interface ${info.name} {`);
