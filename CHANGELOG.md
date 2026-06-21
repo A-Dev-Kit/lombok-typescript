@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-06-18
+
+Phase 4b — published on [GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript) (batch queue slot 8).
+
+### Added
+
+- `@Wraps` — GoF Decorator with `protected inner` delegation
+- `@TemplateMethod` / `@Hook` — codegen template method with ordered hook steps
+- `@AbstractFactory` — Helper scaffold emitting abstract product factory methods
+- `@Visitor` / `@Visitable` — hybrid double-dispatch with generated `accept(visitor)`
+
 ## [0.7.0] - 2026-06-18
 
 Phase 4a — published on [GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript) (batch queue slot 7).

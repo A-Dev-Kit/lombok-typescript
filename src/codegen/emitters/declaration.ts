@@ -5,6 +5,7 @@ import {
   fieldHasDecorator,
   getterName,
   getDelegateMethods,
+  getTemplateMethodName,
   hasClassDecorator,
   setterName,
   wantsEquals,
@@ -91,6 +92,17 @@ function emitDeclarationModuleBlock(relSource: string, classes: readonly ClassIn
       augments.push('    getChildren(): readonly object[];');
       augments.push('    traverse(callback: (node: object) => void): void;');
       augments.push('    [Symbol.iterator](): IterableIterator<object>;');
+    }
+    if (hasClassDecorator(info, 'Wraps')) {
+      const dec = info.decorators.find((d) => d.name === 'Wraps');
+      const innerName = dec?.arguments[0] ? String(dec.arguments[0]) : 'unknown';
+      augments.push(`    protected inner: ${innerName};`);
+    }
+    if (hasClassDecorator(info, 'Visitable')) {
+      augments.push('    accept(visitor: unknown): unknown;');
+    }
+    if (hasClassDecorator(info, 'TemplateMethod')) {
+      augments.push(`    ${getTemplateMethodName(info)}(): void;`);
     }
 
     if (augments.length > 0) {

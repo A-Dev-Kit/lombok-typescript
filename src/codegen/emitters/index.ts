@@ -2,12 +2,14 @@ import { dirname, relative } from 'node:path';
 import { validateAllClassCompositions } from '../../decorators/shared/composition.js';
 import type { ClassInfo } from '../types.js';
 import { emitAccessorApplyAssignments, emitAccessorFns } from './accessors-emit.js';
+import { emitAbstractFactoryMixin } from './abstract-factory-emit.js';
 import { emitBuilderClass } from './builder.js';
 import { emitDeclarationShim } from './declaration.js';
 import { emitDelegateApplyAssignments, emitDelegateFns } from './delegate-emit.js';
 import { emitEqualsFn, emitEqualsStaticFn } from './equals-emit.js';
 import {
   builderClassName,
+  getAbstractFactoryProducts,
   hasClassDecorator,
   hasCodegenClassDecorator,
   toImportPath,
@@ -18,11 +20,29 @@ import {
   withMethodName,
 } from './helpers.js';
 import { emitWithFns } from './with-emit.js';
+import { emitTemplateMethodApplyAssignment, emitTemplateMethodFn } from './template-method-emit.js';
+import { emitVisitableAcceptApplyAssignment, emitVisitableAcceptFn } from './visitor-emit.js';
 
 function emitImports(classes: readonly ClassInfo[], importPath: string): string {
   const names = classes.filter(hasCodegenClassDecorator).map((c) => c.name);
-  if (names.length === 0) return '';
-  return `import { ${names.join(', ')} } from '${importPath}';\n\n`;
+  const productTypes = new Set<string>();
+  for (const info of classes) {
+    if (hasClassDecorator(info, 'AbstractFactory')) {
+      for (const product of getAbstractFactoryProducts(info)) {
+        productTypes.add(product);
+      }
+    }
+  }
+  const importLines: string[] = [];
+  if (names.length > 0) {
+    importLines.push(`import { ${names.join(', ')} } from '${importPath}';`);
+  }
+  const extraProducts = [...productTypes].filter((p) => !names.includes(p));
+  if (extraProducts.length > 0) {
+    importLines.push(`import type { ${extraProducts.join(', ')} } from '${importPath}';`);
+  }
+  if (importLines.length === 0) return '';
+  return importLines.join('\n') + '\n\n';
 }
 
 function emitToStringFn(info: ClassInfo): string {
@@ -70,6 +90,12 @@ function emitApplyMixin(info: ClassInfo): string {
     );
   }
 
+  const templateApply = emitTemplateMethodApplyAssignment(info);
+  if (templateApply) assignments.push(templateApply);
+
+  const visitableApply = emitVisitableAcceptApplyAssignment(info);
+  if (visitableApply) assignments.push(visitableApply);
+
   if (assignments.length === 0) return '';
 
   return `
@@ -114,6 +140,15 @@ function emitClassCompanionBlocks(info: ClassInfo): string {
 
   const builderFn = emitBuilderFn(info);
   if (builderFn) blocks.push(builderFn);
+
+  const templateMethod = emitTemplateMethodFn(info);
+  if (templateMethod) blocks.push(templateMethod);
+
+  const visitableAccept = emitVisitableAcceptFn(info);
+  if (visitableAccept) blocks.push(visitableAccept);
+
+  const abstractFactory = emitAbstractFactoryMixin(info);
+  if (abstractFactory) blocks.push(abstractFactory);
 
   const apply = emitApplyMixin(info);
   if (apply) blocks.push(apply);
