@@ -4,6 +4,7 @@
 [![Docs](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/docs.yml/badge.svg)](https://a-dev-kit.github.io/lombok-typescript/)
 [![Publish GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/publish-github-packages.yml/badge.svg)](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/publish-github-packages.yml)
 [![GitHub Packages](https://img.shields.io/github/v/tag/A-Dev-Kit/lombok-typescript?label=GitHub%20Packages&logo=github&color=24292f)](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript)
+[![npm](https://img.shields.io/npm/v/lombok-typescript?label=npm&logo=npm&color=CB3837)](https://www.npmjs.com/package/lombok-typescript)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![coverage](https://img.shields.io/codecov/c/github/A-Dev-Kit/lombok-typescript/main?label=coverage)](https://codecov.io/gh/A-Dev-Kit/lombok-typescript)
 [![Node](https://img.shields.io/badge/node-%E2%89%A522-brightgreen)](https://nodejs.org/)
@@ -15,7 +16,7 @@ A TypeScript port of Java's [Project Lombok](https://projectlombok.org/) with Ga
 
 ## Status
 
-**Version `0.7.0` — Phase 4a complete.** Published on [GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript). Public npmjs.org release is deferred until the full release queue is ready (ADR-17). See [CHANGELOG.md](./CHANGELOG.md).
+**Version `0.8.0` — Phase 4b complete.** Published on [GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript). [![npm (not published)](https://img.shields.io/badge/npm-not%20on%20npmjs.org%20yet-lightgrey)](https://www.npmjs.com/package/lombok-typescript) Public npmjs.org release is deferred until the full release queue is ready (ADR-17). See [CHANGELOG.md](./CHANGELOG.md).
 
 **Phase 1:** `@NonNull`, `@ToString`, `@Builder`, `@Data`, `@Singleton`, `@Prototype`, `@Factory`, `@Memoize`
 
@@ -24,6 +25,8 @@ A TypeScript port of Java's [Project Lombok](https://projectlombok.org/) with Ga
 **Phase 3 (v0.5.0–v0.6.0):** `@Strategy`, `@State`, `@Command`, `@Memento`, `@Observable`, `@ChainOfResponsibility`, `@Iterable`, observer adapters.
 
 **Phase 4a (v0.7.0):** `@Flyweight`, `@Proxy`, `@Composite`.
+
+**Phase 4b (v0.8.0):** `@Wraps`, `@Hook`, `@TemplateMethod`, `@AbstractFactory`, `@Visitor` / `@Visitable`.
 
 ## Install
 
@@ -36,11 +39,11 @@ echo "@a-dev-kit:registry=https://npm.pkg.github.com" >> .npmrc
 # Authenticate — use a GitHub PAT with read:packages (local dev)
 # npm login --registry=https://npm.pkg.github.com
 
-pnpm add @a-dev-kit/lombok-typescript@0.7.0
-# or: npm install @a-dev-kit/lombok-typescript@0.7.0
+pnpm add @a-dev-kit/lombok-typescript@0.8.0
+# or: npm install @a-dev-kit/lombok-typescript@0.8.0
 ```
 
-Pin any released version (`0.1.0` through `0.7.0`). See [CONTRIBUTING.md](./CONTRIBUTING.md#github-packages) for the tag map.
+Pin any released version (`0.1.0` through `0.8.0`). See [CONTRIBUTING.md](./CONTRIBUTING.md#github-packages) for the tag map.
 
 Local development:
 

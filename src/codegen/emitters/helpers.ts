@@ -15,6 +15,9 @@ const CODEGEN_CLASS_DECORATORS = [
   'Value',
   'Equals',
   'With',
+  'TemplateMethod',
+  'AbstractFactory',
+  'Visitable',
 ] as const;
 
 export function hasCodegenClassDecorator(info: ClassInfo): boolean {
@@ -181,4 +184,50 @@ export function parseDecoratorObjectArg(dec: DecoratorInfo | undefined): Record<
   } catch {
     return {};
   }
+}
+
+export function parseDecoratorArrayArg(dec: DecoratorInfo | undefined): string[] {
+  if (!dec || dec.arguments.length === 0) return [];
+  const [first] = dec.arguments;
+  const text = String(first);
+  if (!text.startsWith('[')) return [];
+  try {
+    return JSON.parse(text.replace(/'/g, '"')) as string[];
+  } catch {
+    return [];
+  }
+}
+
+export function getAbstractFactoryProducts(info: ClassInfo): string[] {
+  const dec = info.decorators.find((d) => d.name === 'AbstractFactory');
+  const fromArray = parseDecoratorArrayArg(dec);
+  if (fromArray.length > 0) return fromArray;
+  const obj = parseDecoratorObjectArg(dec);
+  return Array.isArray(obj.products) ? (obj.products as string[]) : [];
+}
+
+export function getTemplateMethodSteps(info: ClassInfo): string[] {
+  const dec = info.decorators.find((d) => d.name === 'TemplateMethod');
+  const obj = parseDecoratorObjectArg(dec);
+  return Array.isArray(obj.steps) ? (obj.steps as string[]) : [];
+}
+
+export function getTemplateMethodName(info: ClassInfo): string {
+  const dec = info.decorators.find((d) => d.name === 'TemplateMethod');
+  const obj = parseDecoratorObjectArg(dec);
+  return typeof obj.template === 'string' ? obj.template : 'execute';
+}
+
+export function getHookMethodNames(info: ClassInfo): string[] {
+  return info.methods
+    .filter((m) => m.decorators.some((d) => d.name === 'Hook'))
+    .map((m) => {
+      const hookDec = m.decorators.find((d) => d.name === 'Hook');
+      const opts = parseDecoratorObjectArg(hookDec);
+      return typeof opts.name === 'string' ? opts.name : m.name;
+    });
+}
+
+export function visitMethodName(className: string): string {
+  return `visit${className}`;
 }

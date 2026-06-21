@@ -67,4 +67,11 @@ export {
   Flyweight,
   Composite,
   Proxy,
+  Wraps,
+  TemplateMethod,
+  Hook,
+  AbstractFactory,
+  Visitor,
+  Visitable,
+  getVisitableRegistry,
 } from '../decorators/legacy/index.js';

@@ -65,6 +65,19 @@ import { flyweightClassLegacy } from '../shared/flyweight.js';
 import { compositeClassLegacy } from '../shared/composite.js';
 import type { ProxyHooks } from '../shared/proxy.js';
 import { proxyClassLegacy } from '../shared/proxy.js';
+import type { AnyClass } from '../../legacy/decorate.js';
+import { wrapsClassLegacy } from '../shared/wraps.js';
+import type { TemplateMethodOptions } from '../shared/template-method.js';
+import { templateMethodClassLegacy } from '../shared/template-method.js';
+import type { HookOptions } from '../shared/hook.js';
+import { hookMethodLegacy } from '../shared/hook.js';
+import { abstractFactoryClassLegacy } from '../shared/abstract-factory.js';
+import type { VisitorOptions } from '../shared/visitor.js';
+import {
+  getVisitableRegistry,
+  visitableClassLegacy,
+  visitorClassLegacy,
+} from '../shared/visitor.js';
 
 /** Validates field assignments are not null or undefined. */
 export const NonNull = defineFieldDecorator(nonNullFieldLegacy);
@@ -256,6 +269,44 @@ export function Proxy(hooks: ProxyHooks = {}): ClassDecorator {
   return defineClassDecorator((backend, target) => proxyClassLegacy(backend, target, hooks));
 }
 
+/**
+ * GoF Decorator — wraps an inner instance as `protected inner`.
+ * @see GoF Decorator Pattern (ADR-15)
+ */
+export function Wraps(InnerClass: AnyClass): ClassDecorator {
+  return defineClassDecorator((backend, target) => wrapsClassLegacy(backend, target, InnerClass));
+}
+
+/** Codegen template method with ordered `@Hook` steps. */
+export function TemplateMethod(options: TemplateMethodOptions): ClassDecorator {
+  return defineClassDecorator((backend, target) =>
+    templateMethodClassLegacy(backend, target, options),
+  );
+}
+
+/** Marks a method as a template hook step. */
+export function Hook(options?: Partial<HookOptions>): MethodDecorator {
+  return defineMethodDecorator((backend, target, key) => {
+    const name = options?.name ?? String(key);
+    hookMethodLegacy(backend, target, key, { name });
+  });
+}
+
+/** Helper scaffold — codegen emits abstract product factory methods. */
+export function AbstractFactory(products: string[]): ClassDecorator {
+  return defineClassDecorator((backend, target) =>
+    abstractFactoryClassLegacy(backend, target, products),
+  );
+}
+
+/** Double-dispatch visitor — calls `visit{ClassName}` on the visitor. */
+export function Visitor(options: VisitorOptions): ClassDecorator {
+  return defineClassDecorator((backend, target) => visitorClassLegacy(backend, target, options));
+}
+
+/** Registers a node type for visitor dispatch. */
+export const Visitable = defineClassDecorator(visitableClassLegacy);
+
 export {
   createFromFactory,
   getFactoryRegistry,
@@ -266,4 +317,5 @@ export {
   listStrategies,
   registerStrategy,
   CommandHistory,
+  getVisitableRegistry,
 };

@@ -7,7 +7,7 @@ import {
 } from '@a-dev-kit/lombok-typescript/legacy';
 import { toObservable } from '@a-dev-kit/lombok-typescript/observers/rxjs';
 import { Point } from './point.js';
-import { applyAllGenerated } from '../.lombok/src/point.lombok.js';
+import { applyAllGenerated as applyPointGenerated } from '../.lombok/src/point.lombok.js';
 import {
   AppendText,
   Auth,
@@ -17,9 +17,26 @@ import {
   Task,
   type Compressor,
 } from './behavioral.js';
-import { FileNode, Service, TreeType } from './structural.js';
+import {
+  AreaVisitor,
+  Circle,
+  Coffee,
+  DataExporter,
+  FileNode,
+  Service,
+  Square,
+  TreeType,
+  WithMilk,
+} from './structural.js';
+import { applyAllGenerated as applyStructuralGenerated } from '../.lombok/src/structural.lombok.js';
 
-applyAllGenerated({ Point });
+applyStructuralGenerated({
+  DataExporter,
+  Circle,
+  Square,
+});
+
+applyPointGenerated({ Point });
 
 @Singleton
 class UserService {
@@ -78,5 +95,17 @@ root.add(leaf);
 console.info('composite children', root.getChildren().length);
 
 console.info('proxy work', new Service().work());
+const WithMilkCtor = WithMilk as unknown as new (inner: Coffee) => WithMilk;
+console.info('wraps cost', new WithMilkCtor(new Coffee()).cost());
+
+const exporter = new DataExporter();
+exporter.export();
+console.info('template export', exporter.log.join(','));
+
+const circle = new Circle();
+const square = new Square();
+const visitor = new AreaVisitor();
+console.info('visitor circle', circle.accept(visitor));
+console.info('visitor square', square.accept(visitor));
 
 export { UserService };
