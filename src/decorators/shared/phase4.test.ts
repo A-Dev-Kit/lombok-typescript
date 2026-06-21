@@ -149,6 +149,15 @@ describe('Phase 4b legacy @Wraps', () => {
     expect(() => new WithMilkCtor()).toThrow(/expects an instance/);
     expect(() => new WithMilkCtor({} as Coffee)).toThrow(/expects an instance/);
   });
+
+  it('throws when inner class is not a constructor', () => {
+    expect(() => {
+      // @ts-expect-error invalid inner class
+      @Wraps({})
+      class _Bad {}
+      void _Bad;
+    }).toThrow(/constructor function/);
+  });
 });
 
 describe('Phase 4b legacy @Visitor/@Visitable', () => {
@@ -169,6 +178,15 @@ describe('Phase 4b legacy @Visitor/@Visitable', () => {
     }
     expect(AreaVisitor).toBeDefined();
   });
+
+  it('rejects invalid visitMethods map', () => {
+    expect(() => {
+      // @ts-expect-error invalid options
+      @Visitor({})
+      class _Bad {}
+      void _Bad;
+    }).toThrow(/visitMethods/);
+  });
 });
 
 describe('Phase 4 legacy decorator validation', () => {
@@ -186,6 +204,13 @@ describe('Phase 4 legacy decorator validation', () => {
       class _Bad {}
       void _Bad;
     }).toThrow(/product list/);
+  });
+
+  it('@AbstractFactory accepts options object form', () => {
+    // @ts-expect-error runtime accepts AbstractFactoryOptions object
+    @AbstractFactory({ products: ['Button', 'Dialog'] })
+    class Factory {}
+    expect(Factory).toBeDefined();
   });
 });
 
@@ -311,6 +336,21 @@ describe('Phase 4 stage3 parity', () => {
     }
     VisitorS3({ visitMethods: { Circle: 'visitCircle' } })(V, makeClassContext('V'));
     expect(new V().visitCircle()).toBe(1);
+  });
+
+  it('@Visitor rejects invalid visitMethods on stage3', () => {
+    class V {}
+    expect(() => {
+      // @ts-expect-error invalid options
+      VisitorS3({})(V, makeClassContext('V'));
+    }).toThrow(/visitMethods/);
+  });
+
+  it('@TemplateMethod rejects empty steps on stage3', () => {
+    class Job {}
+    expect(() => {
+      TemplateMethodS3({ steps: [] })(Job, makeClassContext('Job'));
+    }).toThrow(/steps/);
   });
 });
 

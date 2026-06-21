@@ -2,12 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { analyzeSourceString } from '../analyzer.js';
 import {
   effectiveReadonly,
+  getAbstractFactoryProducts,
   getDelegateMethods,
   getFieldDefaultsOptions,
+  getHookMethodNames,
   hasFluentAccessors,
+  parseDecoratorArrayArg,
   parseDecoratorObjectArg,
   wantsWithMethods,
 } from './helpers.js';
+import { emitAbstractFactoryApplyAssignment, emitAbstractFactoryMixin } from './abstract-factory-emit.js';
 import { emitWithFns } from './with-emit.js';
 import { emitEqualsStaticFn } from './equals-emit.js';
 
@@ -27,6 +31,14 @@ describe('emitter helpers (phase 2)', () => {
       class User { @Setter name: string; }
     `);
     expect(hasFluentAccessors(info!)).toBe(true);
+  });
+
+  it('hasFluentAccessors returns false without chain/fluent args', () => {
+    const [info] = analyzeSourceString(`
+      @Accessors()
+      class Plain { name: string; }
+    `);
+    expect(hasFluentAccessors(info!)).toBe(false);
   });
 
   it('parses delegate method names from field decorator', () => {
@@ -50,6 +62,7 @@ describe('emitter helpers (phase 2)', () => {
 
   it('parseDecoratorObjectArg handles malformed input', () => {
     expect(parseDecoratorObjectArg({ name: 'X', arguments: ['not-json'] })).toEqual({});
+    expect(parseDecoratorObjectArg({ name: 'X', arguments: ['{ broken: }'] })).toEqual({});
   });
 
   it('emitEqualsStaticFn only for @Equals class', () => {
@@ -91,5 +104,41 @@ describe('emitter helpers (phase 2)', () => {
       class X { n: number; }
     `);
     expect(getFieldDefaultsOptions(info!)).toEqual({ level: 'public', makeFinal: false });
+  });
+
+  it('parseDecoratorArrayArg returns empty array for malformed JSON', () => {
+    expect(parseDecoratorArrayArg({ name: 'AbstractFactory', arguments: ['[broken]'] })).toEqual(
+      [],
+    );
+  });
+
+  it('getAbstractFactoryProducts reads products from object literal', () => {
+    const [info] = analyzeSourceString(`
+      @AbstractFactory({ products: ['Theme', 'Widget'] })
+      abstract class Factory {}
+    `);
+    expect(getAbstractFactoryProducts(info!)).toEqual(['Theme', 'Widget']);
+  });
+
+  it('getHookMethodNames honors explicit hook names', () => {
+    const [info] = analyzeSourceString(`
+      @TemplateMethod({ steps: ['load', 'save'] })
+      class Job {
+        @Hook({ name: 'loadData' })
+        load() {}
+        @Hook()
+        save() {}
+      }
+    `);
+    expect(getHookMethodNames(info!)).toEqual(['loadData', 'save']);
+  });
+
+  it('abstract factory emit throws when product list is empty', () => {
+    const [info] = analyzeSourceString(`
+      @AbstractFactory([])
+      abstract class Bad {}
+    `);
+    expect(() => emitAbstractFactoryMixin(info!)).toThrow(/product list is empty/);
+    expect(emitAbstractFactoryApplyAssignment(info!)).toBeUndefined();
   });
 });
