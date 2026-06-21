@@ -176,4 +176,69 @@ describe('codegen emitters', () => {
     expect(emitDataEquals(classes[0]!)).toContain('return (');
     expect(emitDataEquals(classes[0]!)).toContain('true');
   });
+
+  it('emits Phase 4 template method and visitor companions', () => {
+    const classes = analyzeSourceString(`
+      import { TemplateMethod, Hook, Visitable, AbstractFactory } from 'lombok-typescript/legacy';
+
+      @TemplateMethod({ steps: ['fetch', 'write'], template: 'run' })
+      class Exporter {
+        @Hook()
+        fetch() {}
+        @Hook()
+        write() {}
+      }
+
+      @Visitable
+      class Circle { radius = 1; }
+
+      @AbstractFactory(['Button', 'Dialog'])
+      abstract class UIFactory {}
+    `);
+
+    const { ts, dts } = emitCompanionFile(
+      '/proj/src/structural.ts',
+      '/proj/.lombok/src/structural.lombok.ts',
+      classes,
+      '/proj',
+    );
+    expect(ts).toContain('Exporter_run');
+    expect(ts).toContain('this.fetch(); this.write();');
+    expect(ts).toContain('Circle_accept');
+    expect(ts).toContain('visitCircle');
+    expect(ts).toContain('UIFactoryMixin');
+    expect(ts).toContain('createButton');
+    expect(dts).toContain('accept(visitor: unknown): unknown');
+    expect(dts).toContain('run(): void');
+  });
+
+  it('declaration shim covers Phase 4 runtime decorators', () => {
+    const classes = analyzeSourceString(`
+      import { Composite, Wraps } from 'lombok-typescript/legacy';
+      class Inner {}
+      @Composite
+      class Node {}
+      @Wraps(Inner)
+      class Decorated {}
+    `);
+    const { dts } = emitCompanionFile(
+      '/proj/src/wrap.ts',
+      '/proj/.lombok/src/wrap.lombok.ts',
+      classes,
+      '/proj',
+    );
+    expect(dts).toContain('interface Node');
+    expect(dts).toContain('traverse(callback');
+    expect(dts).toContain('protected inner: Inner');
+  });
+
+  it('template method emit throws when hook step is missing', () => {
+    const classes = analyzeSourceString(`
+      @TemplateMethod({ steps: ['missing'] })
+      class Bad {}
+    `);
+    expect(() =>
+      emitCompanionFile('/proj/src/bad.ts', '/proj/.lombok/bad.lombok.ts', classes, '/proj'),
+    ).toThrow(/missing @Hook method/);
+  });
 });
