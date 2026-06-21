@@ -64,4 +64,7 @@ export {
   Handler,
   Iterable,
   IterateOver,
+  Flyweight,
+  Composite,
+  Proxy,
 } from '../decorators/legacy/index.js';

@@ -17,6 +17,7 @@ import {
   Task,
   type Compressor,
 } from './behavioral.js';
+import { FileNode, Service, TreeType } from './structural.js';
 
 applyAllGenerated({ Point });
 
@@ -66,5 +67,16 @@ const auth = new Auth();
 console.info('chain handled', auth.handle({ token: 'x' }));
 
 console.info('iterable', [...new Playlist()]);
+
+const treeA = new TreeType('green');
+const treeB = new TreeType('green');
+console.info('flyweight same', treeA === treeB);
+
+const root = new FileNode();
+const leaf = new FileNode();
+root.add(leaf);
+console.info('composite children', root.getChildren().length);
+
+console.info('proxy work', new Service().work());
 
 export { UserService };

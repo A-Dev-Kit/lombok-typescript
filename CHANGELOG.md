@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-06-18
+
+Phase 4a — published on [GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript) (batch queue slot 7).
+
+### Added
+
+- `@Flyweight` — shared instance pool keyed by constructor arguments
+- `@Proxy` — runtime method interception with before/after hooks
+- `@Composite` — tree API with add, remove, traverse, and child iteration
+
 ## [0.6.0] - 2026-06-18
 
 Phase 3b — **not published to npm** (batch queue slot 6).

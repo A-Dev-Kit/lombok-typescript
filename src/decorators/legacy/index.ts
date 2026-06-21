@@ -60,6 +60,11 @@ import {
 } from '../shared/chain-of-responsibility.js';
 import type { HandlerOptions } from '../shared/chain-of-responsibility.js';
 import { iterableClassLegacy, iterateOverFieldLegacy } from '../shared/iterable.js';
+import type { FlyweightOptions } from '../shared/flyweight.js';
+import { flyweightClassLegacy } from '../shared/flyweight.js';
+import { compositeClassLegacy } from '../shared/composite.js';
+import type { ProxyHooks } from '../shared/proxy.js';
+import { proxyClassLegacy } from '../shared/proxy.js';
 
 /** Validates field assignments are not null or undefined. */
 export const NonNull = defineFieldDecorator(nonNullFieldLegacy);
@@ -237,6 +242,19 @@ export const Iterable = defineClassDecorator(iterableClassLegacy);
 
 /** Marks the collection field iterated by `@Iterable`. */
 export const IterateOver = defineFieldDecorator(iterateOverFieldLegacy);
+
+/** Shared instance pool keyed by constructor arguments. */
+export function Flyweight(options: FlyweightOptions): ClassDecorator {
+  return defineClassDecorator((backend, target) => flyweightClassLegacy(backend, target, options));
+}
+
+/** Tree composite API — add, remove, traverse children. */
+export const Composite = defineClassDecorator(compositeClassLegacy);
+
+/** Runtime method interception via Proxy. */
+export function Proxy(hooks: ProxyHooks = {}): ClassDecorator {
+  return defineClassDecorator((backend, target) => proxyClassLegacy(backend, target, hooks));
+}
 
 export {
   createFromFactory,
