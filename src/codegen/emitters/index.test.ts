@@ -144,6 +144,23 @@ describe('codegen emitters', () => {
     expect(dts).toContain('[Symbol.iterator]()');
   });
 
+  it('declaration shim covers Phase 4a @Composite', () => {
+    const classes = analyzeSourceString(`
+      import { Composite } from 'lombok-typescript/legacy';
+      @Composite
+      class Node {}
+    `);
+    const { dts } = emitCompanionFile(
+      '/proj/src/structural.ts',
+      '/proj/.lombok/src/structural.lombok.ts',
+      classes,
+      '/proj',
+    );
+    expect(dts).toContain('interface Node');
+    expect(dts).toContain('add(child: object): void');
+    expect(dts).toContain('traverse(callback');
+  });
+
   it('data helpers return empty string without @Data', () => {
     const classes = analyzeSourceString(`class Plain { x: number; }`);
     expect(emitDataAccessors(classes[0]!)).toBe('');

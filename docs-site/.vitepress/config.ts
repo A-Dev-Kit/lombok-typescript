@@ -71,6 +71,14 @@ export default defineConfig({
           { text: '@Iterable', link: '/decorators/iterable' },
         ],
       },
+      {
+        text: 'Decorators (Phase 4a)',
+        items: [
+          { text: '@Flyweight', link: '/decorators/flyweight' },
+          { text: '@Proxy', link: '/decorators/proxy' },
+          { text: '@Composite', link: '/decorators/composite' },
+        ],
+      },
     ],
     socialLinks: [{ icon: 'github', link: 'https://github.com/A-Dev-Kit/lombok-typescript' }],
     editLink: {

@@ -5,7 +5,8 @@
 import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 
-const version = process.env.PUBLISH_VERSION ?? JSON.parse(readFileSync('package.json', 'utf8')).version;
+const version =
+  process.env.PUBLISH_VERSION ?? JSON.parse(readFileSync('package.json', 'utf8')).version;
 const name = '@a-dev-kit/lombok-typescript';
 const isLatest = process.env.PUBLISH_AS_LATEST === 'true';
 
