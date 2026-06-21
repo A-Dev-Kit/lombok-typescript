@@ -6,12 +6,6 @@ name: Publish GitHub Packages
 on:
   push:
     tags: ['v*.*.*']
-  workflow_dispatch:
-    inputs:
-      backfill_all:
-        description: 'Publish all historical versions 0.1.0 through 0.6.0'
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -23,7 +17,6 @@ env:
 
 jobs:
   publish-tag:
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -53,23 +46,3 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PUBLISH_VERSION: ${{ env.PUBLISH_VERSION }}
           PUBLISH_AS_LATEST: 'true'
-
-  publish-backfill:
-    if: github.event_name == 'workflow_dispatch' && inputs.backfill_all
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          registry-url: https://npm.pkg.github.com
-          scope: '@a-dev-kit'
-      - name: Backfill versions 0.1.0 through 0.6.0 (ascending)
-        run: node scripts/gh-packages-backfill.mjs
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}

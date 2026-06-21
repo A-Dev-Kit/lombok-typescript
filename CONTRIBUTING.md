@@ -59,8 +59,6 @@ To publish a new version after merging a release PR:
 2. `git tag -a vX.Y.Z -m "vX.Y.Z"` and `git push origin vX.Y.Z`.
 3. CI publishes automatically.
 
-**One-time backfill** of historical versions: Actions → Publish GitHub Packages → Run workflow → enable **backfill_all**.
-
 #### Git tag map (retrospective releases)
 
 Logical release queue versions and the git commits used for GitHub Packages backfill:
