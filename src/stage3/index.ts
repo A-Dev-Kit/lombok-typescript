@@ -74,6 +74,13 @@ export {
   Flyweight,
   Composite,
   Proxy,
+  Wraps,
+  TemplateMethod,
+  Hook,
+  AbstractFactory,
+  Visitor,
+  Visitable,
+  getVisitableRegistry,
 } from '../decorators/stage3/index.js';
 
 /** Read the Stage 3 `Symbol.metadata` object from a class, if present. */

@@ -63,6 +63,19 @@ import { flyweightClassStage3 } from '../shared/flyweight.js';
 import { compositeClassStage3 } from '../shared/composite.js';
 import type { ProxyHooks } from '../shared/proxy.js';
 import { proxyClassStage3 } from '../shared/proxy.js';
+import type { AnyClass } from '../../legacy/decorate.js';
+import { wrapsClassStage3 } from '../shared/wraps.js';
+import type { TemplateMethodOptions } from '../shared/template-method.js';
+import { templateMethodClassStage3 } from '../shared/template-method.js';
+import type { HookOptions } from '../shared/hook.js';
+import { hookMethodStage3 } from '../shared/hook.js';
+import { abstractFactoryClassStage3 } from '../shared/abstract-factory.js';
+import type { VisitorOptions } from '../shared/visitor.js';
+import {
+  getVisitableRegistry,
+  visitableClassStage3,
+  visitorClassStage3,
+} from '../shared/visitor.js';
 
 /** Validates field initial values are not null or undefined. */
 export const NonNull = defineFieldDecorator(nonNullFieldStage3);
@@ -260,6 +273,48 @@ export function Proxy(hooks: ProxyHooks = {}) {
   );
 }
 
+/**
+ * GoF Decorator — wraps an inner instance as `protected inner`.
+ * @see GoF Decorator Pattern (ADR-15)
+ */
+export function Wraps(InnerClass: AnyClass) {
+  return defineClassDecorator((backend, value, context) =>
+    wrapsClassStage3(backend, value, context, InnerClass),
+  );
+}
+
+/** Codegen template method with ordered `@Hook` steps. */
+export function TemplateMethod(options: TemplateMethodOptions) {
+  return defineClassDecorator((backend, value, context) =>
+    templateMethodClassStage3(backend, value, context, options),
+  );
+}
+
+/** Marks a method as a template hook step. */
+export function Hook(options?: Partial<HookOptions>) {
+  return defineMethodDecorator((backend, value, context) => {
+    const name = options?.name ?? String(context.name);
+    hookMethodStage3(backend, value, context, { name });
+  });
+}
+
+/** Helper scaffold — codegen emits abstract product factory methods. */
+export function AbstractFactory(products: string[]) {
+  return defineClassDecorator((backend, value, context) =>
+    abstractFactoryClassStage3(backend, value, context, products),
+  );
+}
+
+/** Double-dispatch visitor — calls `visit{ClassName}` on the visitor. */
+export function Visitor(options: VisitorOptions) {
+  return defineClassDecorator((backend, value, context) =>
+    visitorClassStage3(backend, value, context, options),
+  );
+}
+
+/** Registers a node type for visitor dispatch. */
+export const Visitable = defineClassDecorator(visitableClassStage3);
+
 export {
   createFromFactory,
   getFactoryRegistry,
@@ -270,4 +325,5 @@ export {
   listStrategies,
   registerStrategy,
   CommandHistory,
+  getVisitableRegistry,
 };
