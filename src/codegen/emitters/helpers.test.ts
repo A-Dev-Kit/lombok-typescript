@@ -11,7 +11,10 @@ import {
   parseDecoratorObjectArg,
   wantsWithMethods,
 } from './helpers.js';
-import { emitAbstractFactoryApplyAssignment, emitAbstractFactoryMixin } from './abstract-factory-emit.js';
+import {
+  emitAbstractFactoryApplyAssignment,
+  emitAbstractFactoryMixin,
+} from './abstract-factory-emit.js';
 import { emitWithFns } from './with-emit.js';
 import { emitEqualsStaticFn } from './equals-emit.js';
 
