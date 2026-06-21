@@ -72,11 +72,15 @@ export default defineConfig({
         ],
       },
       {
-        text: 'Decorators (Phase 4a)',
+        text: 'Decorators (Phase 4)',
         items: [
           { text: '@Flyweight', link: '/decorators/flyweight' },
           { text: '@Proxy', link: '/decorators/proxy' },
           { text: '@Composite', link: '/decorators/composite' },
+          { text: '@Wraps', link: '/decorators/wraps' },
+          { text: '@TemplateMethod / @Hook', link: '/decorators/template-method' },
+          { text: '@AbstractFactory', link: '/decorators/abstract-factory' },
+          { text: '@Visitor / @Visitable', link: '/decorators/visitor' },
         ],
       },
     ],

@@ -53,6 +53,15 @@ Observer adapters: [RxJS / MobX](/decorators/observers-adapters).
 | [`@Proxy`](/decorators/proxy)         | Hybrid (runtime) | No       | Method before/after hooks          |
 | [`@Composite`](/decorators/composite) | Runtime          | Shim     | Tree add/remove/traverse API       |
 
+## Phase 4b (v0.8.0)
+
+| Decorator                                                  | Kind               | Codegen? | Summary                           |
+| ---------------------------------------------------------- | ------------------ | -------- | --------------------------------- |
+| [`@Wraps`](/decorators/wraps)                              | Runtime            | Shim     | GoF Decorator — inner delegation  |
+| [`@TemplateMethod` / `@Hook`](/decorators/template-method) | Codegen + metadata | Yes      | Ordered template method steps     |
+| [`@AbstractFactory`](/decorators/abstract-factory)         | Codegen Helper     | Yes      | Abstract product factory stubs    |
+| [`@Visitor` / `@Visitable`](/decorators/visitor)           | Hybrid             | Yes      | Double-dispatch `accept(visitor)` |
+
 ## Codegen decorators
 
 Run after changing decorated classes:
