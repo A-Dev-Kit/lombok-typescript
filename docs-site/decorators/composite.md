@@ -2,10 +2,10 @@
 
 **Tree composite API** — add, remove, and traverse child nodes.
 
-|                         |                    |
-| ----------------------- | ------------------ |
-| **Kind**                | Runtime            |
-| **Backends**            | `legacy`, `stage3` |
+|                         |                                        |
+| ----------------------- | -------------------------------------- |
+| **Kind**                | Runtime                                |
+| **Backends**            | `legacy`, `stage3`                     |
 | **Requires `generate`** | No (declaration shim for tree methods) |
 
 ## Example

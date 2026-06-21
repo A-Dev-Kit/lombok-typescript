@@ -47,11 +47,11 @@ Observer adapters: [RxJS / MobX](/decorators/observers-adapters).
 
 ## Phase 4a (v0.7.0)
 
-| Decorator                                     | Kind             | Codegen? | Summary                            |
-| --------------------------------------------- | ---------------- | -------- | ---------------------------------- |
-| [`@Flyweight`](/decorators/flyweight)         | Runtime          | No       | Instance pool keyed by constructor |
-| [`@Proxy`](/decorators/proxy)                 | Hybrid (runtime) | No       | Method before/after hooks          |
-| [`@Composite`](/decorators/composite)         | Runtime          | Shim     | Tree add/remove/traverse API       |
+| Decorator                             | Kind             | Codegen? | Summary                            |
+| ------------------------------------- | ---------------- | -------- | ---------------------------------- |
+| [`@Flyweight`](/decorators/flyweight) | Runtime          | No       | Instance pool keyed by constructor |
+| [`@Proxy`](/decorators/proxy)         | Hybrid (runtime) | No       | Method before/after hooks          |
+| [`@Composite`](/decorators/composite) | Runtime          | Shim     | Tree add/remove/traverse API       |
 
 ## Codegen decorators
 

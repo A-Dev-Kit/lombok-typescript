@@ -45,7 +45,11 @@ function wrapProxyClass(target: AnyClass, hooks: ProxyHooks): AnyClass {
   return ProxyClass as AnyClass;
 }
 
-export function proxyClassLegacy(backend: Backend, target: AnyClass, hooks: ProxyHooks = {}): AnyClass {
+export function proxyClassLegacy(
+  backend: Backend,
+  target: AnyClass,
+  hooks: ProxyHooks = {},
+): AnyClass {
   backend.metadata.set(MetadataKeys.PROXY, target, undefined, hooks);
   return wrapProxyClass(target, hooks);
 }
