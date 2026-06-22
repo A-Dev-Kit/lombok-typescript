@@ -12,7 +12,12 @@ export default defineConfig({
     'observers/mobx': 'src/observers/mobx.ts',
   },
   format: ['esm', 'cjs'],
-  dts: true,
+  dts: {
+    // tsup injects baseUrl for rollup-plugin-dts (egoist/tsup#1388); TS 6 deprecates it
+    compilerOptions: {
+      ignoreDeprecations: '6.0',
+    },
+  },
   sourcemap: true,
   clean: true,
   splitting: false,
