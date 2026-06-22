@@ -57,8 +57,7 @@ export function emitDataConstructor(info: ClassInfo): string {
 
   const params = info.fields
     .map(
-      (f) =>
-        `${f.name}${f.isOptional ? '?' : ''}: ${formatFieldTypeForEmit(f.type, f.isOptional)}`,
+      (f) => `${f.name}${f.isOptional ? '?' : ''}: ${formatFieldTypeForEmit(f.type, f.isOptional)}`,
     )
     .join(', ');
   const assigns = info.fields.map((f) => `this.${f.name} = ${f.name};`).join('\n    ');

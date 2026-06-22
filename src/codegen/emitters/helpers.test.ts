@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { analyzeSourceString } from '../analyzer.js';
 import {
   effectiveReadonly,
+  formatFieldTypeForEmit,
+  fieldExcludesEquals,
+  fieldExcludesToString,
   getAbstractFactoryProducts,
   getDelegateMethods,
   getFieldDefaultsOptions,
@@ -19,6 +22,44 @@ import { emitWithFns } from './with-emit.js';
 import { emitEqualsStaticFn } from './equals-emit.js';
 
 describe('emitter helpers (phase 2)', () => {
+  it('formatFieldTypeForEmit strips redundant undefined from optional types', () => {
+    expect(formatFieldTypeForEmit('number | undefined', true)).toBe('number');
+    expect(formatFieldTypeForEmit('number', true)).toBe('number');
+    expect(formatFieldTypeForEmit('string | undefined', false)).toBe('string | undefined');
+  });
+
+  it('fieldExcludesToString and fieldExcludesEquals accept dotted decorator aliases', () => {
+    const field = {
+      name: 'x',
+      type: 'string',
+      isOptional: false,
+      isReadonly: false,
+      hasDefault: false,
+      decorators: [
+        { name: 'ToString.Exclude', arguments: [] },
+        { name: 'Equals.Exclude', arguments: [] },
+      ],
+    };
+    expect(fieldExcludesToString(field)).toBe(true);
+    expect(fieldExcludesEquals(field)).toBe(true);
+  });
+
+  it('getFieldDefaultsOptions returns defaults for non-object FieldDefaults args', () => {
+    const [info] = analyzeSourceString(`
+      @FieldDefaults('invalid')
+      class Row { id: string; }
+    `);
+    expect(getFieldDefaultsOptions(info!)).toEqual({ level: 'public', makeFinal: false });
+  });
+
+  it('hasFluentAccessors detects fluent string config', () => {
+    const [info] = analyzeSourceString(`
+      @Accessors({ fluent: true })
+      class User { name: string; }
+    `);
+    expect(hasFluentAccessors(info!)).toBe(true);
+  });
+
   it('parses FieldDefaults decorator arguments', () => {
     const [info] = analyzeSourceString(`
       @FieldDefaults({ makeFinal: true })
