@@ -30,7 +30,7 @@ A TypeScript port of Java's [Project Lombok](https://projectlombok.org/) with Ga
 
 ## Install
 
-From **GitHub Packages** (recommended until npm batch publish):
+From **GitHub Packages** (active today):
 
 ```bash
 # .npmrc in your project (or user-level)
@@ -43,7 +43,9 @@ pnpm add @a-dev-kit/lombok-typescript@0.8.0
 # or: npm install @a-dev-kit/lombok-typescript@0.8.0
 ```
 
-Pin any released version (`0.1.0` through `0.8.0`). See [CONTRIBUTING.md](./CONTRIBUTING.md#github-packages) for the tag map.
+Pin any released version (`0.1.0` through `0.8.0`). See [CONTRIBUTING.md — Release process](./CONTRIBUTING.md#release-process).
+
+**npmjs.org** (`npm install lombok-typescript`) is prepared but not live yet — enable via `NPM_PUBLISH_ENABLED` after the [validation checklist](./CONTRIBUTING.md#npm-validation-checklist) in CONTRIBUTING.
 
 Local development:
 
