@@ -1,5 +1,11 @@
 import type { ClassInfo } from '../types.js';
-import { equalsFields, getterName, hasClassDecorator, setterName } from './helpers.js';
+import {
+  equalsFields,
+  formatFieldTypeForEmit,
+  getterName,
+  hasClassDecorator,
+  setterName,
+} from './helpers.js';
 import { emitToStringMethod } from './toString.js';
 
 export function emitDataAccessors(info: ClassInfo): string {
@@ -50,7 +56,9 @@ export function emitDataConstructor(info: ClassInfo): string {
   }
 
   const params = info.fields
-    .map((f) => `${f.name}${f.isOptional ? '?' : ''}: ${f.type}`)
+    .map(
+      (f) => `${f.name}${f.isOptional ? '?' : ''}: ${formatFieldTypeForEmit(f.type, f.isOptional)}`,
+    )
     .join(', ');
   const assigns = info.fields.map((f) => `this.${f.name} = ${f.name};`).join('\n    ');
 
