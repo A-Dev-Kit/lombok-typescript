@@ -49,15 +49,31 @@ Use [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:
 
 ## Release process
 
+Publishing is **tag-driven only** — merging to `main` does **not** publish. After every version-bump release PR lands on `main`, maintainers must push a matching git tag.
+
+### Post-merge maintainer checklist (required)
+
+Use this after merging a release PR (e.g. Phase 4b / `v0.8.0`):
+
+1. Confirm CI is **green** on the merge commit on `main`.
+2. Confirm `package.json` `version` and `CHANGELOG.md` entry match the intended release (e.g. `0.8.0`).
+3. Tag and push from `main`:
+   ```bash
+   git checkout main && git pull
+   git tag -a vX.Y.Z -m "vX.Y.Z"
+   git push origin vX.Y.Z
+   ```
+4. Verify [Publish GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/publish-github-packages.yml) succeeded for the tag.
+5. When npm is enabled, verify [Release](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/release.yml) succeeded for the same tag.
+6. Update the private planning repo [RELEASE_QUEUE.md](https://github.com/A-Dev-Kit/lombok-typescript-planning/blob/main/RELEASE_QUEUE.md) slot status.
+
+Optional: `gh release create vX.Y.Z --generate-notes`
+
 ### GitHub Packages (active)
 
 `@a-dev-kit/lombok-typescript` is published to [GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript) on each `v*.*.*` tag push via `.github/workflows/publish-github-packages.yml`.
 
-To publish a new version after merging a release PR:
-
-1. Bump `package.json` and `CHANGELOG.md`.
-2. `git tag -a vX.Y.Z -m "vX.Y.Z"` and `git push origin vX.Y.Z`.
-3. CI publishes automatically.
+The publish workflow sets the version from the tag (`v0.8.0` → `0.8.0`) via `scripts/gh-packages-prepare.mjs`. [gh-packages-publish.mjs](../scripts/gh-packages-publish.mjs) skips if that version already exists.
 
 #### Git tag map (retrospective releases)
 
@@ -71,14 +87,41 @@ Logical release queue versions and the git commits used for GitHub Packages back
 | `v0.4.0` | `32ef000` | Phase 2 merge; `package.json` was `0.4.0`            |
 | `v0.5.0` | `bd4118d` | Phase 3 merge (3a scope); version patched at publish |
 | `v0.6.0` | `bd4118d` | Phase 3 merge; `package.json` was `0.6.0`            |
+| `v0.7.0` | —         | Phase 4a merge                                       |
+| `v0.8.0` | `92c3c1c` | Phase 4b merge                                       |
 
-Versions `0.2.0`/`0.3.0` share the Phase 2 merge tree; `0.5.0`/`0.6.0` share the Phase 3 merge tree. This matches the release-queue slots when those phases landed as single PRs.
+Versions `0.2.0`/`0.3.0` share the Phase 2 merge tree; `0.5.0`/`0.6.0` share the Phase 3 merge tree.
 
-### npmjs.org (deferred)
+### npmjs.org (ready — gated)
 
-Public npm publish is **not** on every merge. Maintainers accumulate versions in a private release queue and publish in batch via GitHub Actions when the queue is full. The `release.yml` workflow stays disabled until then.
+Public npm publish uses the unscoped name **`lombok-typescript`** (ADR-17). The [release.yml](../.github/workflows/release.yml) workflow is **tag-driven** (same `v*.*.*` tags as GitHub Packages) but **disabled by default** until you enable it:
 
-When active, publishing is tag-driven: push `v*.*.*` tags to trigger CI publish with npm provenance to `registry.npmjs.org` as unscoped `lombok-typescript`.
+1. Complete the [npm validation checklist](#npm-validation-checklist) below.
+2. Add `NPM_TOKEN` (npm Automation token, publish scope) to repository secrets.
+3. Set repository variable `NPM_PUBLISH_ENABLED` to `true` (Settings → Secrets and variables → Actions → Variables).
+4. Optional: set `NPM_DIST_TAG` to `next` or `preview` for the first public publish before promoting to `latest`.
+
+Scripts: `scripts/npm-prepare.mjs` (unscoped name + registry) and `scripts/npm-publish.mjs` (idempotent, provenance).
+
+**Forward-only (recommended):** first npm tag `v0.8.0`. Historical `0.1.0`–`0.7.0` remain GitHub Packages–only unless you run a backfill session.
+
+#### npm validation checklist
+
+Run locally before adding `NPM_TOKEN` or setting `NPM_PUBLISH_ENABLED`:
+
+```bash
+pnpm install && pnpm build
+node scripts/npm-prepare.mjs 0.8.0
+npm publish --dry-run --registry=https://registry.npmjs.org
+npm pack
+# Inspect package/package.json — name must be lombok-typescript
+git checkout -- package.json   # restore scoped dev package.json
+```
+
+- [ ] Dry-run shows unscoped `lombok-typescript@0.8.0`
+- [ ] `npm pack` tarball installs in a clean project
+- [ ] Imports work: `lombok-typescript/legacy`, `/stage3`; CLI `lombok-ts --help`
+- [ ] plain-ts and nestjs examples work against the packed tarball
 
 ## Architecture
 

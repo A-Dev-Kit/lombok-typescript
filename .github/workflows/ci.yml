@@ -75,7 +75,10 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: pnpm pack
-      - run: npm publish --dry-run
+      - name: Validate npmjs.org tarball (unscoped lombok-typescript)
+        run: |
+          node scripts/npm-prepare.mjs
+          npm publish --dry-run --registry=https://registry.npmjs.org
       - run: node dist/cli/index.js --help
 
   examples:
