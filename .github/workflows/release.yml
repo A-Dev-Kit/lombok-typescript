@@ -21,7 +21,7 @@ jobs:
     if: vars.NPM_PUBLISH_ENABLED == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Set version from tag
         if: startsWith(github.ref, 'refs/tags/v')
         run: echo "PUBLISH_VERSION=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_ENV"
