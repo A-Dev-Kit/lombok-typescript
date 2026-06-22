@@ -1,7 +1,7 @@
-# Release workflow — DISABLED until batch publish day.
+# Publishes unscoped lombok-typescript to npmjs.org on tag push.
 #
-# See private RELEASE_QUEUE.md: publish only when 10 versions are code-ready.
-# Activate by removing the `if: false` gate and adding NPM_TOKEN.
+# Gated by repository variable NPM_PUBLISH_ENABLED=true (Settings → Secrets and variables → Actions).
+# Requires NPM_TOKEN secret and npm 2FA on the publishing account (ADR-17).
 
 name: Release
 
@@ -13,22 +13,33 @@ permissions:
   contents: read
   id-token: write # for npm provenance
 
+env:
+  NPM_PACKAGE_NAME: lombok-typescript
+
 jobs:
   publish:
-    if: false # Remove this line to activate the workflow
+    if: vars.NPM_PUBLISH_ENABLED == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
+      - name: Set version from tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: echo "PUBLISH_VERSION=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_ENV"
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: https://registry.npmjs.org
+      - name: Prepare package for npmjs.org
+        run: node scripts/npm-prepare.mjs "$PUBLISH_VERSION"
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
-      - run: pnpm publish --no-git-checks --provenance --access public
+      - name: Publish to npmjs.org
+        run: node scripts/npm-publish.mjs
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PUBLISH_VERSION: ${{ env.PUBLISH_VERSION }}
+          NPM_DIST_TAG: ${{ vars.NPM_DIST_TAG }}
