@@ -37,6 +37,14 @@ export function hasClassDecorator(info: ClassInfo, name: string): boolean {
   return info.decorators.some((d) => d.name === name);
 }
 
+/** Strip redundant `| undefined` from optional field types (ts-morph 28+ / TS 6). */
+export function formatFieldTypeForEmit(type: string, isOptional: boolean): string {
+  if (!isOptional) {
+    return type;
+  }
+  return type.replace(/\s*\|\s*undefined$/u, '');
+}
+
 export function fieldHasDecorator(field: FieldInfo, name: string): boolean {
   return field.decorators.some((d) => d.name === name);
 }

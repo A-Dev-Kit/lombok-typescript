@@ -23,20 +23,11 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "types": ["node"],
     "verbatimModuleSyntax": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "useDefineForClassFields": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"],
-      "@core/*": ["src/core/*"],
-      "@legacy/*": ["src/legacy/*"],
-      "@stage3/*": ["src/stage3/*"],
-      "@codegen/*": ["src/codegen/*"],
-      "@cli/*": ["src/cli/*"],
-      "@utils/*": ["src/utils/*"]
-    }
+    "useDefineForClassFields": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "coverage", ".lombok"]

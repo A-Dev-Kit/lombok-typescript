@@ -8,7 +8,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![coverage](https://img.shields.io/codecov/c/github/A-Dev-Kit/lombok-typescript/main?label=coverage)](https://codecov.io/gh/A-Dev-Kit/lombok-typescript)
 [![Node](https://img.shields.io/badge/node-%E2%89%A522-brightgreen)](https://nodejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-%E2%89%A55.0-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-%E2%89%A56.0-blue?logo=typescript)](https://www.typescriptlang.org/)
 
 **Documentation:** [a-dev-kit.github.io/lombok-typescript](https://a-dev-kit.github.io/lombok-typescript/) — full guides and decorator reference. This README is a quick technical entry point.
 
@@ -64,7 +64,7 @@ For NestJS, TypeORM, and most existing decorator-based projects.
 
 ### Stage 3 (`@a-dev-kit/lombok-typescript/stage3`)
 
-For TS 5.0+ projects without `experimentalDecorators`.
+For TS 6.0+ projects without `experimentalDecorators`.
 
 ```jsonc
 { "compilerOptions": { "experimentalDecorators": false } }
