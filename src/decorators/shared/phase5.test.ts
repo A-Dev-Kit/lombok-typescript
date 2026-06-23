@@ -199,7 +199,9 @@ describe('phase 5 method wrappers', () => {
 
   it('traceMethod logs exit with result only', () => {
     const logs: string[] = [];
-    const logger = { log: (msg: string, ...rest: unknown[]) => logs.push(`${msg} ${rest.join(' ')}`) };
+    const logger = {
+      log: (msg: string, ...rest: unknown[]) => logs.push(`${msg} ${rest.join(' ')}`),
+    };
     traceMethod(() => 42, { logger, args: false, result: true, timing: false }, 'T.fn')();
     expect(logs.some((l) => l.includes('->'))).toBe(true);
   });

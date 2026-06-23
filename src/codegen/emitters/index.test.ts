@@ -127,7 +127,9 @@ describe('codegen emitters', () => {
       classes,
       '/proj',
     );
-    expect(ts).toContain("import { runValidation } from '@a-dev-kit/lombok-typescript/validators/zod'");
+    expect(ts).toContain(
+      "import { runValidation } from '@a-dev-kit/lombok-typescript/validators/zod'",
+    );
     expect(ts).toContain("import { z } from 'zod'");
   });
 
