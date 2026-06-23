@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { runValidation } from './adapter.js';
+import { getValidatorAdapter, runValidation } from './adapter.js';
 
 describe('validator adapter', () => {
+  it('throws when adapter is not registered', () => {
+    expect(() => getValidatorAdapter('class-validator')).toThrow(/No validator adapter registered/);
+  });
+
   it('runs BYOV function schemas', () => {
     const schema = (value: unknown) => {
       if (value !== 'ok') throw new Error('invalid');

@@ -94,6 +94,17 @@ describe('phase 5 method wrappers', () => {
     vi.useRealTimers();
   });
 
+  it('throttleMethod allows calls after the interval elapses', () => {
+    vi.useFakeTimers();
+    const fn = vi.fn();
+    const throttled = throttleMethod(fn, 100);
+    throttled(1);
+    vi.advanceTimersByTime(100);
+    throttled(2);
+    expect(fn).toHaveBeenCalledTimes(2);
+    vi.useRealTimers();
+  });
+
   it('Throttle decorator integrates with legacy', () => {
     vi.useFakeTimers();
     const spy = vi.fn();

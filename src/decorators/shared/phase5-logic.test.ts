@@ -142,6 +142,11 @@ describe('phase5-logic legacy', () => {
     expect(retryMethodLegacy(legacyBackend, {}, 'x', desc, {})).toBeUndefined();
   });
 
+  it('traceMethodLegacy returns early for non-function descriptors', () => {
+    const desc = { value: 1, writable: true, enumerable: true, configurable: true };
+    expect(traceMethodLegacy(legacyBackend, {}, 'x', desc)).toBeUndefined();
+  });
+
   it('traceClassStage3 wraps class methods', () => {
     const logs: string[] = [];
     class Svc {
