@@ -81,6 +81,15 @@ export {
   Visitor,
   Visitable,
   getVisitableRegistry,
+  Retry,
+  Debounce,
+  Throttle,
+  Trace,
+  DeepFreeze,
+  Validate,
+  Serializable,
+  SerializableAlias,
+  SerializableTransform,
 } from '../decorators/stage3/index.js';
 
 /** Read the Stage 3 `Symbol.metadata` object from a class, if present. */

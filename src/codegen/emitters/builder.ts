@@ -1,5 +1,25 @@
 import type { ClassInfo } from '../types.js';
-import { builderClassName, hasClassDecorator } from './helpers.js';
+import {
+  builderClassName,
+  fieldsWithValidate,
+  getValidateDecorator,
+  hasClassDecorator,
+} from './helpers.js';
+
+function emitBuildValidation(info: ClassInfo): string {
+  const lines: string[] = [];
+  const classValidate = getValidateDecorator(info.decorators);
+  if (classValidate?.arguments[0]) {
+    lines.push(`    runValidation(${classValidate.arguments[0]}, instance, 'zod');`);
+  }
+  for (const field of fieldsWithValidate(info)) {
+    const validateDec = getValidateDecorator(field.decorators);
+    if (validateDec?.arguments[0]) {
+      lines.push(`    runValidation(${validateDec.arguments[0]}, instance.${field.name}, 'zod');`);
+    }
+  }
+  return lines.join('\n');
+}
 
 export function emitBuilderClass(info: ClassInfo): string {
   if (!hasClassDecorator(info, 'Builder')) {
@@ -22,6 +42,9 @@ export function emitBuilderClass(info: ClassInfo): string {
   }`.trim(),
   );
 
+  const validationLines = emitBuildValidation(info);
+  const validationBlock = validationLines ? `\n${validationLines}\n` : '';
+
   return `
 export class ${builderName} {
 ${fieldLines.join('\n')}
@@ -34,8 +57,7 @@ ${setterMethods.join('\n\n')}
 
   build(): ${info.name} {
     const instance = new ${info.name}();
-${info.fields.map((f) => `    instance.${f.name} = this._${f.name}${f.isOptional ? '' : '!'};`).join('\n')}
-    return instance;
+${info.fields.map((f) => `    instance.${f.name} = this._${f.name}${f.isOptional ? '' : '!'};`).join('\n')}${validationBlock}    return instance;
   }
 }`.trim();
 }

@@ -76,6 +76,28 @@ import {
   visitableClassStage3,
   visitorClassStage3,
 } from '../shared/visitor.js';
+import type { RetryOptions } from '../shared/retry.js';
+import type { DebounceOptions } from '../shared/debounce.js';
+import type { TraceOptions } from '../shared/trace.js';
+import {
+  debounceMethodStage3,
+  retryMethodStage3,
+  throttleMethodStage3,
+  traceClassStage3,
+  traceMethodStage3,
+} from '../shared/phase5-logic.js';
+import { deepFreezeClassStage3 } from '../shared/deep-freeze-logic.js';
+import {
+  validateClassStage3,
+  validateFieldStage3,
+  type ValidateOptions,
+} from '../shared/validate-logic.js';
+import {
+  serializableAliasFieldStage3,
+  serializableClassStage3,
+  serializableExcludeFieldStage3,
+  serializableTransformFieldStage3,
+} from '../shared/serializable.js';
 
 /** Validates field initial values are not null or undefined. */
 export const NonNull = defineFieldDecorator(nonNullFieldStage3);
@@ -314,6 +336,82 @@ export function Visitor(options: VisitorOptions) {
 
 /** Registers a node type for visitor dispatch. */
 export const Visitable = defineClassDecorator(visitableClassStage3);
+
+export function Retry(options: RetryOptions = {}) {
+  return defineMethodDecorator((backend, value, context) =>
+    retryMethodStage3(backend, value, context, options),
+  );
+}
+
+export function Debounce(waitMs: number, options: DebounceOptions = {}) {
+  return defineMethodDecorator((backend, value, context) =>
+    debounceMethodStage3(backend, value, context, waitMs, options),
+  );
+}
+
+export function Throttle(intervalMs: number) {
+  return defineMethodDecorator((backend, value, context) =>
+    throttleMethodStage3(backend, value, context, intervalMs),
+  );
+}
+
+export function Trace(options: TraceOptions = {}) {
+  return function decorator(
+    value: unknown,
+    context: ClassDecoratorContext | ClassMethodDecoratorContext,
+  ): unknown {
+    if (context.kind === 'class') {
+      return defineClassDecorator((backend, ctor, ctx) =>
+        traceClassStage3(backend, ctor, ctx, options),
+      )(value as new (...args: unknown[]) => unknown, context as ClassDecoratorContext);
+    }
+    return defineMethodDecorator((backend, method, ctx) =>
+      traceMethodStage3(backend, method, ctx, options),
+    )(value as (...args: unknown[]) => unknown, context as ClassMethodDecoratorContext);
+  };
+}
+
+export const DeepFreeze = defineClassDecorator(deepFreezeClassStage3);
+
+export function Validate(schema: unknown, options?: ValidateOptions) {
+  return function decorator(
+    value: unknown,
+    context: ClassDecoratorContext | ClassFieldDecoratorContext,
+  ): unknown {
+    if (context.kind === 'class') {
+      return defineClassDecorator((backend, ctor, ctx) =>
+        validateClassStage3(backend, ctor, ctx, schema, options),
+      )(value as new (...args: unknown[]) => unknown, context as ClassDecoratorContext);
+    }
+    return defineFieldDecorator((backend, ctx) =>
+      validateFieldStage3(backend, ctx, schema, options),
+    )(undefined, context as ClassFieldDecoratorContext);
+  };
+}
+
+const serializableClassDec = defineClassDecorator(serializableClassStage3);
+const serializableExcludeDec = defineFieldDecorator(serializableExcludeFieldStage3);
+
+export function SerializableAlias(alias: string) {
+  return defineFieldDecorator((backend, context) => {
+    serializableAliasFieldStage3(backend, context, alias);
+  });
+}
+
+export function SerializableTransform(
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports -- tsup DTS rollup requires import() type here
+  transform: import('../shared/serializable.js').SerializableTransform,
+) {
+  return defineFieldDecorator((backend, context) => {
+    serializableTransformFieldStage3(backend, context, transform);
+  });
+}
+
+export const Serializable = Object.assign(serializableClassDec, {
+  Exclude: serializableExcludeDec,
+  Alias: SerializableAlias,
+  Transform: SerializableTransform,
+});
 
 export {
   createFromFactory,

@@ -16,7 +16,7 @@ A TypeScript port of Java's [Project Lombok](https://projectlombok.org/) with Ga
 
 ## Status
 
-**Version `0.8.0` — Phase 4b complete.** Published on [GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript). [![npm (not published)](https://img.shields.io/badge/npm-not%20on%20npmjs.org%20yet-lightgrey)](https://www.npmjs.com/package/lombok-typescript) Public npmjs.org release is deferred until the full release queue is ready (ADR-17). See [CHANGELOG.md](./CHANGELOG.md).
+**Version `0.9.0` — Phase 5 complete.** Published on [GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript) after merge and `v0.9.0` tag. [![npm (not published)](https://img.shields.io/badge/npm-not%20on%20npmjs.org%20yet-lightgrey)](https://www.npmjs.com/package/lombok-typescript) Public npmjs.org release is deferred until the full release queue is ready (ADR-17). See [CHANGELOG.md](./CHANGELOG.md).
 
 **Phase 1:** `@NonNull`, `@ToString`, `@Builder`, `@Data`, `@Singleton`, `@Prototype`, `@Factory`, `@Memoize`
 
@@ -27,6 +27,8 @@ A TypeScript port of Java's [Project Lombok](https://projectlombok.org/) with Ga
 **Phase 4a (v0.7.0):** `@Flyweight`, `@Proxy`, `@Composite`.
 
 **Phase 4b (v0.8.0):** `@Wraps`, `@Hook`, `@TemplateMethod`, `@AbstractFactory`, `@Visitor` / `@Visitable`.
+
+**Phase 5 (v0.9.0):** `@Retry`, `@Debounce`, `@Throttle`, `@Trace`, `@DeepFreeze`, `@Validate`, `@Serializable`.
 
 ## Install
 
@@ -39,11 +41,11 @@ echo "@a-dev-kit:registry=https://npm.pkg.github.com" >> .npmrc
 # Authenticate — use a GitHub PAT with read:packages (local dev)
 # npm login --registry=https://npm.pkg.github.com
 
-pnpm add @a-dev-kit/lombok-typescript@0.8.0
-# or: npm install @a-dev-kit/lombok-typescript@0.8.0
+pnpm add @a-dev-kit/lombok-typescript@0.9.0
+# or: npm install @a-dev-kit/lombok-typescript@0.9.0
 ```
 
-Pin any released version (`0.1.0` through `0.8.0`). See [CONTRIBUTING.md — Release process](./CONTRIBUTING.md#release-process).
+Pin any released version (`0.1.0` through `0.9.0`). See [CONTRIBUTING.md — Release process](./CONTRIBUTING.md#release-process).
 
 **npmjs.org** (`npm install lombok-typescript`) is prepared but not live yet — enable via `NPM_PUBLISH_ENABLED` after the [validation checklist](./CONTRIBUTING.md#npm-validation-checklist) in CONTRIBUTING.
 

@@ -83,6 +83,17 @@ export default defineConfig({
           { text: '@Visitor / @Visitable', link: '/decorators/visitor' },
         ],
       },
+      {
+        text: 'Decorators (Phase 5)',
+        items: [
+          { text: '@Retry', link: '/decorators/retry' },
+          { text: '@Debounce / @Throttle', link: '/decorators/debounce-throttle' },
+          { text: '@Trace', link: '/decorators/trace' },
+          { text: '@DeepFreeze', link: '/decorators/deep-freeze' },
+          { text: '@Validate', link: '/decorators/validate' },
+          { text: '@Serializable', link: '/decorators/serializable' },
+        ],
+      },
     ],
     socialLinks: [{ icon: 'github', link: 'https://github.com/A-Dev-Kit/lombok-typescript' }],
     editLink: {

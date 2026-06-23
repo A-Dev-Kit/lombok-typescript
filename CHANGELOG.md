@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-06-18
+
+Phase 5 — TypeScript utility decorators (batch queue slot 9).
+
+### Added
+
+- `@Retry` — async method retry with backoff, `retryIf`, and per-attempt timeout
+- `@Debounce` / `@Throttle` — method rate limiting with `cancel()` / `flush()`
+- `@Trace` — class/method entry-exit logging with redaction and timing
+- `@DeepFreeze` — recursive freeze on construction
+- `@Validate` — field/class schema validation via optional adapters
+- `@Serializable` / `.Exclude` / `.Alias` / `.Transform` — codegen `toJSON` / `fromJSON`
+- Validator subpaths: `lombok-typescript/validators/{zod,yup,class-validator}`
+- Builder `build()` emits validation when fields use `@Validate`
+
 ## [0.8.0] - 2026-06-18
 
 Phase 4b — published on [GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript) (batch queue slot 8).
