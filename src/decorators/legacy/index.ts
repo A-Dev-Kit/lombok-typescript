@@ -100,7 +100,6 @@ import {
   serializableExcludeFieldLegacy,
   serializableTransformFieldLegacy,
 } from '../shared/serializable.js';
-import type { SerializableTransform } from '../shared/serializable.js';
 
 /** Validates field assignments are not null or undefined. */
 export const NonNull = defineFieldDecorator(nonNullFieldLegacy);
@@ -398,7 +397,10 @@ export function SerializableAlias(alias: string): PropertyDecorator {
   );
 }
 
-export function SerializableTransform(transform: SerializableTransform): PropertyDecorator {
+export function SerializableTransform(
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports -- tsup DTS rollup requires import() type here
+  transform: import('../shared/serializable.js').SerializableTransform,
+): PropertyDecorator {
   return defineFieldDecorator((backend, target, key) =>
     serializableTransformFieldLegacy(backend, target, key, transform),
   );
