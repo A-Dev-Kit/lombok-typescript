@@ -3,7 +3,7 @@ import { debounceMethod } from './debounce.js';
 import { deepFreezeInstance, deepFreezeValue } from './deep-freeze.js';
 import { retryMethod } from './retry.js';
 import { throttleMethod } from './throttle.js';
-import { formatTraceArgs, traceMethod } from './trace.js';
+import { formatTraceArgs, traceClassMethods, traceMethod } from './trace.js';
 import '../../validators/zod.js';
 import { runValidation } from '../../validators/adapter.js';
 import { Retry, Throttle, Trace } from '../../legacy/index.js';
@@ -54,6 +54,24 @@ describe('phase 5 method wrappers', () => {
     vi.advanceTimersByTime(100);
     expect(fn).toHaveBeenCalledOnce();
     expect(fn).toHaveBeenCalledWith('b');
+    vi.useRealTimers();
+  });
+
+  it('debounceMethod flush is a no-op without pending args', () => {
+    const fn = vi.fn();
+    const debounced = debounceMethod(fn, 100, { trailing: false });
+    debounced.flush();
+    expect(fn).not.toHaveBeenCalled();
+  });
+
+  it('debounceMethod trailing callback skips when leading already ran', () => {
+    vi.useFakeTimers();
+    const fn = vi.fn();
+    const debounced = debounceMethod(fn, 100, { leading: true, trailing: true });
+    debounced('only');
+    expect(fn).toHaveBeenCalledOnce();
+    vi.advanceTimersByTime(100);
+    expect(fn).toHaveBeenCalledOnce();
     vi.useRealTimers();
   });
 
@@ -165,6 +183,57 @@ describe('phase 5 method wrappers', () => {
     expect(formatTraceArgs(['a', 'b'], ['email', 'token'], ['token'])).toEqual(['a', '[REDACTED]']);
   });
 
+  it('traceMethod uses the default console logger', () => {
+    const spy = vi.spyOn(console, 'info').mockImplementation(() => {});
+    traceMethod(() => 1, {}, 'Test.fn')();
+    expect(spy).toHaveBeenCalled();
+    spy.mockRestore();
+  });
+
+  it('traceMethod logs exit with timing only', () => {
+    const logs: string[] = [];
+    const logger = { log: (msg: string) => logs.push(msg) };
+    traceMethod(() => 1, { logger, args: false, result: false, timing: true }, 'T.fn')();
+    expect(logs.some((l) => l.startsWith('< T.fn ['))).toBe(true);
+  });
+
+  it('traceMethod logs exit with result only', () => {
+    const logs: string[] = [];
+    const logger = { log: (msg: string, ...rest: unknown[]) => logs.push(`${msg} ${rest.join(' ')}`) };
+    traceMethod(() => 42, { logger, args: false, result: true, timing: false }, 'T.fn')();
+    expect(logs.some((l) => l.includes('->'))).toBe(true);
+  });
+
+  it('traceMethod logs exit without result or timing details', () => {
+    const logs: string[] = [];
+    const logger = { log: (msg: string) => logs.push(msg) };
+    traceMethod(() => 1, { logger, args: false, result: false, timing: false }, 'T.fn')();
+    expect(logs).toContain('< T.fn');
+  });
+
+  it('traceClassMethods skips non-function prototype properties', () => {
+    class Svc {
+      ping() {
+        return 1;
+      }
+    }
+    Object.defineProperty(Svc.prototype, 'label', { value: 'svc', enumerable: true });
+    traceClassMethods(Svc, { args: false, result: false, timing: false });
+    expect((Svc.prototype as unknown as { label: string }).label).toBe('svc');
+    expect(new Svc().ping()).toBe(1);
+  });
+
+  it('formatTraceArgs returns args unchanged without redact list', () => {
+    expect(formatTraceArgs([1, 2], ['a', 'b'], undefined)).toEqual([1, 2]);
+  });
+
+  it('throttleMethod cancel is safe without a pending timer', () => {
+    const fn = vi.fn();
+    const throttled = throttleMethod(fn, 100);
+    throttled.cancel();
+    expect(fn).not.toHaveBeenCalled();
+  });
+
   it('stacks Trace and Retry decorators', async () => {
     const logs: string[] = [];
     let calls = 0;
@@ -218,6 +287,13 @@ describe('deep freeze', () => {
     obj.self = obj;
     expect(() => deepFreezeValue(obj)).not.toThrow();
     expect(Object.isFrozen(obj)).toBe(true);
+  });
+
+  it('freezes array-like objects that are not Array.isArray', () => {
+    const arrayLike = Object.create(Array.prototype) as unknown[];
+    arrayLike[0] = 1;
+    const frozen = deepFreezeValue(arrayLike);
+    expect(Object.isFrozen(frozen)).toBe(true);
   });
 });
 

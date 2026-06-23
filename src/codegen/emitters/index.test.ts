@@ -89,6 +89,48 @@ describe('codegen emitters', () => {
     expect(builder).toContain('runValidation(z.string().email(), instance.email');
   });
 
+  it('emitBuilderClass validates class schema at build time', () => {
+    const classes = analyzeSourceString(`
+      import { Builder, Validate } from 'lombok-typescript/legacy';
+      import { z } from 'zod';
+      @Builder
+      @Validate(z.object({ email: z.string().email() }))
+      class Signup {
+        email: string;
+      }
+    `);
+    const builder = emitBuilderClass(classes[0]!);
+    expect(builder).toContain('runValidation(z.object({ email: z.string().email() }), instance');
+  });
+
+  it('emitBuilderClass omits validation when schema argument is missing', () => {
+    const classes = analyzeSourceString(`
+      @Builder
+      class Plain { name: string; }
+    `);
+    expect(emitBuilderClass(classes[0]!)).not.toContain('runValidation');
+  });
+
+  it('emitCompanionFile imports validation helpers for Builder+Validate', () => {
+    const classes = analyzeSourceString(`
+      import { Builder, Validate } from 'lombok-typescript/legacy';
+      import { z } from 'zod';
+      @Builder
+      @Validate(z.object({ email: z.string().email() }))
+      class Signup {
+        email: string;
+      }
+    `);
+    const { ts } = emitCompanionFile(
+      '/proj/src/signup.ts',
+      '/proj/.lombok/src/signup.lombok.ts',
+      classes,
+      '/proj',
+    );
+    expect(ts).toContain("import { runValidation } from '@a-dev-kit/lombok-typescript/validators/zod'");
+    expect(ts).toContain("import { z } from 'zod'");
+  });
+
   it('serializable emit helpers return empty without decorator', () => {
     const classes = analyzeSourceString(`class Plain { x: number; }`);
     const info = classes[0]!;

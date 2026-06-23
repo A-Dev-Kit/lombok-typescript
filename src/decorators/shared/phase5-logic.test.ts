@@ -10,6 +10,7 @@ import {
   throttleMethodLegacy,
   throttleMethodStage3,
   traceClassLegacy,
+  traceClassStage3,
   traceMethodLegacy,
   traceMethodStage3,
 } from './phase5-logic.js';
@@ -65,7 +66,9 @@ describe('phase5-logic legacy', () => {
       }
     }
     const desc = Object.getOwnPropertyDescriptor(Svc.prototype, 'go')!;
-    const next = debounceMethodLegacy(legacyBackend, Svc.prototype, 'go', desc, 50)!;
+    const next = debounceMethodLegacy(legacyBackend, Svc.prototype, 'go', desc, 50, {
+      leading: true,
+    })!;
     const fn = next.value as { (v: string): void; cancel(): void; flush(): void };
     fn('a');
     fn.cancel();
@@ -147,6 +150,16 @@ describe('phase5-logic legacy', () => {
     expect(traceMethodLegacy(legacyBackend, {}, 'x', desc)).toBeUndefined();
   });
 
+  it('debounceMethodLegacy returns early for non-function descriptors', () => {
+    const desc = { value: 1, writable: true, enumerable: true, configurable: true };
+    expect(debounceMethodLegacy(legacyBackend, {}, 'x', desc, 10)).toBeUndefined();
+  });
+
+  it('throttleMethodLegacy returns early for non-function descriptors', () => {
+    const desc = { value: 1, writable: true, enumerable: true, configurable: true };
+    expect(throttleMethodLegacy(legacyBackend, {}, 'x', desc, 10)).toBeUndefined();
+  });
+
   it('traceClassStage3 wraps class methods', () => {
     const logs: string[] = [];
     class Svc {
@@ -184,6 +197,28 @@ describe('phase5-logic stage3', () => {
     });
     await expect(wrapped()).resolves.toBe('ok');
     expect(logs.length).toBeGreaterThan(1);
+  });
+
+  it('traceClassStage3 wraps class methods', () => {
+    const logs: string[] = [];
+    class Svc {
+      ping() {
+        return 1;
+      }
+    }
+    traceClassStage3(
+      stage3Backend,
+      Svc,
+      {
+        kind: 'class',
+        name: 'Svc',
+        metadata: {},
+        addInitializer: () => {},
+      } as ClassDecoratorContext,
+      { logger: { log: (m) => logs.push(m) }, args: false },
+    );
+    expect(new Svc().ping()).toBe(1);
+    expect(logs.length).toBeGreaterThan(0);
   });
 
   it('deepFreezeClassStage3 freezes instances', () => {

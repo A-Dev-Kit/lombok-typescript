@@ -35,6 +35,10 @@ function makeClassContext(name: string): ClassDecoratorContext {
 }
 
 describe('validate-logic', () => {
+  it('getValidationErrors returns an empty array by default', () => {
+    expect(getValidationErrors({})).toEqual([]);
+  });
+
   it('validateFieldLegacy throws on invalid assignment', () => {
     class Row {
       value!: string;
@@ -109,6 +113,46 @@ describe('validate-logic', () => {
       z.object({ email: z.string().email() }),
     );
     expect(new Validated()).toBeInstanceOf(Signup);
+  });
+
+  it('validateClassStage3 collects errors when throwOnError is false', () => {
+    class Signup {
+      email = 'not-an-email';
+    }
+    const Validated = validateClassStage3(
+      stage3Backend,
+      Signup,
+      makeClassContext('Signup'),
+      z.object({ email: z.string().email() }),
+      { throwOnError: false },
+    );
+    const signup = new Validated();
+    expect(signup.validationErrors.length).toBeGreaterThan(0);
+  });
+
+  it('validateFieldStage3 throws when throwOnError is true', () => {
+    class Row {}
+    const init = validateFieldStage3(
+      stage3Backend,
+      makeFieldContext('value') as ClassFieldDecoratorContext<Row, string>,
+      yup.string().min(3),
+      { provider: 'yup' },
+    );
+    const row = new Row();
+    expect(() => init?.call(row, 'ab')).toThrow();
+  });
+
+  it('skips redefining validationErrors when accessor already exists', () => {
+    class Row {
+      value!: string;
+    }
+    validateFieldLegacy(legacyBackend, Row.prototype, 'value', yup.string().min(3), {
+      provider: 'yup',
+    });
+    validateFieldLegacy(legacyBackend, Row.prototype, 'label', yup.string().min(1), {
+      provider: 'yup',
+    });
+    expect(Object.getOwnPropertyDescriptor(Row.prototype, 'validationErrors')?.get).toBeDefined();
   });
 
   it('validateFieldStage3 validates initial values', () => {
