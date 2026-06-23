@@ -13,9 +13,9 @@ Walkthroughs grouped by what you're trying to do. The first three cover setup an
 ## Decorator usage
 
 - [04-data-classes.md](./04-data-classes.md) — **v0.1 shipped:** `@Data`, `@Builder`, `@ToString`, `@NonNull`. Preview: `@Value`, `@With`, `@Equals`, etc.
-- [05-validation.md](./05-validation.md) — **v0.1 shipped:** `@NonNull`. Preview: `@Validate` (Phase 5)
-- [06-creational-patterns.md](./06-creational-patterns.md) — **v0.1 shipped:** `@Singleton`, `@Factory`, `@Prototype`, `@Builder`. Preview: `@AbstractFactory` (Phase 4)
-- [07-method-wrappers.md](./07-method-wrappers.md) — **v0.1 shipped:** `@Memoize`. Preview: `@Retry`, `@Debounce`, etc. (Phase 5)
+- [05-validation.md](./05-validation.md) — **v0.1:** `@NonNull`. **v0.9:** `@Validate`
+- [06-creational-patterns.md](./06-creational-patterns.md) — **v0.1 shipped:** `@Singleton`, `@Factory`, `@Prototype`, `@Builder`. **v0.4:** `@AbstractFactory`
+- [07-method-wrappers.md](./07-method-wrappers.md) — **v0.1:** `@Memoize`. **v0.9:** `@Retry`, `@Debounce`, `@Throttle`, `@Trace`
 - [08-behavioral-patterns.md](./08-behavioral-patterns.md) — **Preview only** (Phase 3): `@Strategy`, `@Observer`, etc.
 
 For current API details see the [decorator reference](https://a-dev-kit.github.io/lombok-typescript/decorators/overview).

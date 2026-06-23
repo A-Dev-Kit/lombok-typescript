@@ -1,6 +1,6 @@
 # Method wrappers
 
-> **v0.1 shipped:** `@Memoize` — see [docs](https://a-dev-kit.github.io/lombok-typescript/decorators/memoize). **Preview:** `@Retry`, `@Debounce`, `@Throttle`, `@Trace` (Phase 5).
+> **v0.1 shipped:** `@Memoize` — see [docs](https://a-dev-kit.github.io/lombok-typescript/decorators/memoize). **v0.9 shipped:** `@Retry`, `@Debounce`, `@Throttle`, `@Trace` — see [method wrappers](https://a-dev-kit.github.io/lombok-typescript/decorators/retry).
 
 ## `@Memoize`
 

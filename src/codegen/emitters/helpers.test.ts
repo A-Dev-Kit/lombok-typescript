@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { analyzeSourceString } from '../analyzer.js';
 import {
+  classHasValidate,
   effectiveReadonly,
+  fieldsWithValidate,
   formatFieldTypeForEmit,
   fieldExcludesEquals,
   fieldExcludesToString,
@@ -10,6 +12,9 @@ import {
   getFieldDefaultsOptions,
   getHookMethodNames,
   hasFluentAccessors,
+  needsBuilderValidation,
+  needsValidateImport,
+  needsZodImport,
   parseDecoratorArrayArg,
   parseDecoratorObjectArg,
   wantsWithMethods,
@@ -184,5 +189,47 @@ describe('emitter helpers (phase 2)', () => {
     `);
     expect(() => emitAbstractFactoryMixin(info!)).toThrow(/product list is empty/);
     expect(emitAbstractFactoryApplyAssignment(info!)).toBeUndefined();
+  });
+});
+
+describe('validation codegen helpers', () => {
+  it('detects Builder classes that need validation imports', () => {
+    const classes = analyzeSourceString(`
+      import { Builder, Validate } from 'lombok-typescript/legacy';
+      import { z } from 'zod';
+      @Builder
+      class Row {
+        @Validate(z.string())
+        name: string;
+      }
+    `);
+    const info = classes[0]!;
+    expect(needsBuilderValidation(info)).toBe(true);
+    expect(needsValidateImport(classes)).toBe(true);
+    expect(needsZodImport(classes)).toBe(true);
+    expect(classHasValidate(info)).toBe(false);
+    expect(fieldsWithValidate(info)).toHaveLength(1);
+  });
+
+  it('skips validation imports when Builder has no Validate metadata', () => {
+    const classes = analyzeSourceString(`
+      @Builder
+      class Row { name: string; }
+    `);
+    expect(needsBuilderValidation(classes[0]!)).toBe(false);
+    expect(needsValidateImport(classes)).toBe(false);
+    expect(needsZodImport(classes)).toBe(false);
+  });
+
+  it('needsZodImport detects class-level zod schemas', () => {
+    const classes = analyzeSourceString(`
+      import { Builder, Validate } from 'lombok-typescript/legacy';
+      import { z } from 'zod';
+      @Builder
+      @Validate(z.object({ id: z.number() }))
+      class Row { id: number; }
+    `);
+    expect(classHasValidate(classes[0]!)).toBe(true);
+    expect(needsZodImport(classes)).toBe(true);
   });
 });

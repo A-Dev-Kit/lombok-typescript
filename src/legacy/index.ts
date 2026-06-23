@@ -74,4 +74,13 @@ export {
   Visitor,
   Visitable,
   getVisitableRegistry,
+  Retry,
+  Debounce,
+  Throttle,
+  Trace,
+  DeepFreeze,
+  Validate,
+  Serializable,
+  SerializableAlias,
+  SerializableTransform,
 } from '../decorators/legacy/index.js';

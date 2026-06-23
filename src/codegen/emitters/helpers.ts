@@ -18,6 +18,7 @@ const CODEGEN_CLASS_DECORATORS = [
   'TemplateMethod',
   'AbstractFactory',
   'Visitable',
+  'Serializable',
 ] as const;
 
 export function hasCodegenClassDecorator(info: ClassInfo): boolean {
@@ -47,6 +48,41 @@ export function formatFieldTypeForEmit(type: string, isOptional: boolean): strin
 
 export function fieldHasDecorator(field: FieldInfo, name: string): boolean {
   return field.decorators.some((d) => d.name === name);
+}
+
+export function getValidateDecorator(decorators: DecoratorInfo[]): DecoratorInfo | undefined {
+  return decorators.find((d) => d.name === 'Validate');
+}
+
+export function classHasValidate(info: ClassInfo): boolean {
+  return getValidateDecorator(info.decorators) !== undefined;
+}
+
+export function fieldsWithValidate(info: ClassInfo): FieldInfo[] {
+  return info.fields.filter((f) => fieldHasDecorator(f, 'Validate'));
+}
+
+export function needsBuilderValidation(info: ClassInfo): boolean {
+  return (
+    hasClassDecorator(info, 'Builder') &&
+    (classHasValidate(info) || fieldsWithValidate(info).length > 0)
+  );
+}
+
+export function needsValidateImport(classes: readonly ClassInfo[]): boolean {
+  return classes.some(needsBuilderValidation);
+}
+
+function validateSchemaText(decorators: DecoratorInfo[]): string {
+  return String(getValidateDecorator(decorators)?.arguments[0] ?? '');
+}
+
+export function needsZodImport(classes: readonly ClassInfo[]): boolean {
+  return classes.some((info) => {
+    if (!needsBuilderValidation(info)) return false;
+    if (validateSchemaText(info.decorators).includes('z.')) return true;
+    return fieldsWithValidate(info).some((f) => validateSchemaText(f.decorators).includes('z.'));
+  });
 }
 
 export function fieldExcludesToString(field: FieldInfo): boolean {
