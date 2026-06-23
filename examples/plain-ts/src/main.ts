@@ -29,6 +29,8 @@ import {
   WithMilk,
 } from './structural.js';
 import { applyAllGenerated as applyStructuralGenerated } from '../.lombok/src/structural.lombok.js';
+import { demoPhase5Utilities, Profile, SignupDto } from './utilities.js';
+import { applyAllGenerated as applyUtilitiesGenerated } from '../.lombok/src/utilities.lombok.js';
 
 applyStructuralGenerated({
   DataExporter,
@@ -37,6 +39,7 @@ applyStructuralGenerated({
 });
 
 applyPointGenerated({ Point });
+applyUtilitiesGenerated({ SignupDto, Profile });
 
 @Singleton
 class UserService {
@@ -107,5 +110,8 @@ const square = new Square();
 const visitor = new AreaVisitor();
 console.info('visitor circle', circle.accept(visitor));
 console.info('visitor square', square.accept(visitor));
+
+const phase5 = await demoPhase5Utilities();
+console.info('phase5 status', phase5.status, phase5.signupEmail, phase5.frozen);
 
 export { UserService };

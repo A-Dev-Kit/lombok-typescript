@@ -10,6 +10,9 @@ export default defineConfig({
     'cli/index': 'src/cli/index.ts',
     'observers/rxjs': 'src/observers/rxjs.ts',
     'observers/mobx': 'src/observers/mobx.ts',
+    'validators/zod': 'src/validators/zod.ts',
+    'validators/yup': 'src/validators/yup.ts',
+    'validators/class-validator': 'src/validators/class-validator.ts',
   },
   format: ['esm', 'cjs'],
   dts: {
@@ -23,7 +26,7 @@ export default defineConfig({
   splitting: false,
   treeshake: true,
   minify: false,
-  external: ['typescript', 'ts-morph', 'reflect-metadata', 'rxjs', 'mobx'],
+  external: ['typescript', 'ts-morph', 'reflect-metadata', 'rxjs', 'mobx', 'zod', 'yup', 'class-validator'],
   outExtension({ format }) {
     return { js: format === 'cjs' ? '.cjs' : '.js' };
   },

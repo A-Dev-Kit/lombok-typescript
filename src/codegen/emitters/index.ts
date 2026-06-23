@@ -12,6 +12,8 @@ import {
   getAbstractFactoryProducts,
   hasClassDecorator,
   hasCodegenClassDecorator,
+  needsValidateImport,
+  needsZodImport,
   toImportPath,
   visibleFields,
   wantsEquals,
@@ -21,6 +23,10 @@ import {
 } from './helpers.js';
 import { emitWithFns } from './with-emit.js';
 import { emitTemplateMethodApplyAssignment, emitTemplateMethodFn } from './template-method-emit.js';
+import {
+  emitSerializableApplyAssignment,
+  emitSerializableMethods,
+} from './serializable-emit.js';
 import { emitVisitableAcceptApplyAssignment, emitVisitableAcceptFn } from './visitor-emit.js';
 
 function emitImports(classes: readonly ClassInfo[], importPath: string): string {
@@ -40,6 +46,12 @@ function emitImports(classes: readonly ClassInfo[], importPath: string): string 
   const extraProducts = [...productTypes].filter((p) => !names.includes(p));
   if (extraProducts.length > 0) {
     importLines.push(`import type { ${extraProducts.join(', ')} } from '${importPath}';`);
+  }
+  if (needsValidateImport(classes)) {
+    importLines.push(`import { runValidation } from '@a-dev-kit/lombok-typescript/validators/zod';`);
+  }
+  if (needsZodImport(classes)) {
+    importLines.push(`import { z } from 'zod';`);
   }
   if (importLines.length === 0) return '';
   return importLines.join('\n') + '\n\n';
@@ -96,6 +108,9 @@ function emitApplyMixin(info: ClassInfo): string {
   const visitableApply = emitVisitableAcceptApplyAssignment(info);
   if (visitableApply) assignments.push(visitableApply);
 
+  const serializableApply = emitSerializableApplyAssignment(info);
+  if (serializableApply) assignments.push(serializableApply);
+
   if (assignments.length === 0) return '';
 
   return `
@@ -149,6 +164,9 @@ function emitClassCompanionBlocks(info: ClassInfo): string {
 
   const abstractFactory = emitAbstractFactoryMixin(info);
   if (abstractFactory) blocks.push(abstractFactory);
+
+  const serializable = emitSerializableMethods(info);
+  if (serializable) blocks.push(serializable);
 
   const apply = emitApplyMixin(info);
   if (apply) blocks.push(apply);

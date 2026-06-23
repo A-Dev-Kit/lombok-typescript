@@ -78,6 +78,28 @@ import {
   visitableClassLegacy,
   visitorClassLegacy,
 } from '../shared/visitor.js';
+import type { RetryOptions } from '../shared/retry.js';
+import type { DebounceOptions } from '../shared/debounce.js';
+import type { TraceOptions } from '../shared/trace.js';
+import {
+  debounceMethodLegacy,
+  retryMethodLegacy,
+  throttleMethodLegacy,
+  traceClassLegacy,
+  traceMethodLegacy,
+} from '../shared/phase5-logic.js';
+import { deepFreezeClassLegacy } from '../shared/deep-freeze-logic.js';
+import {
+  validateClassLegacy,
+  validateFieldLegacy,
+  type ValidateOptions,
+} from '../shared/validate-logic.js';
+import {
+  serializableAliasFieldLegacy,
+  serializableClassLegacy,
+  serializableExcludeFieldLegacy,
+  serializableTransformFieldLegacy,
+} from '../shared/serializable.js';
 
 /** Validates field assignments are not null or undefined. */
 export const NonNull = defineFieldDecorator(nonNullFieldLegacy);
@@ -306,6 +328,90 @@ export function Visitor(options: VisitorOptions): ClassDecorator {
 
 /** Registers a node type for visitor dispatch. */
 export const Visitable = defineClassDecorator(visitableClassLegacy);
+
+/** Retries async methods on failure. */
+export function Retry(options: RetryOptions = {}): MethodDecorator {
+  return defineMethodDecorator((backend, target, key, descriptor) =>
+    retryMethodLegacy(backend, target, key, descriptor, options),
+  );
+}
+
+/** Debounces method calls until invocations pause. */
+export function Debounce(
+  waitMs: number,
+  options: DebounceOptions = {},
+): MethodDecorator {
+  return defineMethodDecorator((backend, target, key, descriptor) =>
+    debounceMethodLegacy(backend, target, key, descriptor, waitMs, options),
+  );
+}
+
+/** Throttles method calls to once per interval. */
+export function Throttle(intervalMs: number): MethodDecorator {
+  return defineMethodDecorator((backend, target, key, descriptor) =>
+    throttleMethodLegacy(backend, target, key, descriptor, intervalMs),
+  );
+}
+
+/** Logs method entry, exit, timing, and arguments. */
+export function Trace(options: TraceOptions = {}): ClassDecorator & MethodDecorator {
+  const classDec = defineClassDecorator((backend, target) => traceClassLegacy(backend, target, options));
+  const methodDec = defineMethodDecorator((backend, target, key, descriptor) =>
+    traceMethodLegacy(backend, target, key, descriptor, options),
+  );
+  return ((target: object, propertyKey?: string | symbol, descriptor?: PropertyDescriptor) => {
+    if (propertyKey !== undefined && descriptor !== undefined) {
+      return methodDec(target, propertyKey, descriptor);
+    }
+    return classDec(target as new (...args: unknown[]) => unknown);
+  }) as ClassDecorator & MethodDecorator;
+}
+
+/** Recursively freezes instances at construction. */
+export const DeepFreeze = defineClassDecorator(deepFreezeClassLegacy);
+
+/** Schema validation on fields or the whole class. */
+export function Validate(
+  schema: unknown,
+  options?: ValidateOptions,
+): ClassDecorator & PropertyDecorator {
+  const classDec = defineClassDecorator((backend, target) =>
+    validateClassLegacy(backend, target, schema, options),
+  );
+  const fieldDec = defineFieldDecorator((backend, target, key) =>
+    validateFieldLegacy(backend, target, key, schema, options),
+  );
+  return ((target: object, propertyKey?: string | symbol) => {
+    if (propertyKey === undefined) {
+      return classDec(target as new (...args: unknown[]) => unknown);
+    }
+    return fieldDec(target, propertyKey);
+  }) as ClassDecorator & PropertyDecorator;
+}
+
+const serializableClassDec = defineClassDecorator(serializableClassLegacy);
+const serializableExcludeDec = defineFieldDecorator(serializableExcludeFieldLegacy);
+
+export function SerializableAlias(alias: string): PropertyDecorator {
+  return defineFieldDecorator((backend, target, key) =>
+    serializableAliasFieldLegacy(backend, target, key, alias),
+  );
+}
+
+export function SerializableTransform(
+  transform: import('../shared/serializable.js').SerializableTransform,
+): PropertyDecorator {
+  return defineFieldDecorator((backend, target, key) =>
+    serializableTransformFieldLegacy(backend, target, key, transform),
+  );
+}
+
+/** JSON serialization helpers — codegen emits `toJSON` / `fromJSON`. */
+export const Serializable = Object.assign(serializableClassDec, {
+  Exclude: serializableExcludeDec,
+  Alias: SerializableAlias,
+  Transform: SerializableTransform,
+});
 
 export {
   createFromFactory,

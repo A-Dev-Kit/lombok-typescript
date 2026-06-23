@@ -3,14 +3,22 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   Builder,
   Data,
+  Debounce,
+  DeepFreeze,
   Factory,
   Memoize,
   NonNull,
   Prototype,
+  Retry,
+  Serializable,
   Singleton,
   ToString,
+  Trace,
+  Validate,
   createFromFactory,
 } from '../../legacy/index.js';
+import { z } from 'zod';
+import '../../validators/zod.js';
 
 describe('legacy decorators', () => {
   it('NonNull rejects null on field setter', () => {
@@ -76,5 +84,79 @@ describe('legacy decorators', () => {
       sku!: string;
     }
     expect(Product).toBeDefined();
+  });
+
+  it('Retry retries async methods', async () => {
+    const spy = vi
+      .fn()
+      .mockRejectedValueOnce(new Error('x'))
+      .mockResolvedValue(42);
+    class Api {
+      @Retry({ attempts: 2, delay: 1 })
+      async load() {
+        return spy();
+      }
+    }
+    await expect(new Api().load()).resolves.toBe(42);
+    expect(spy).toHaveBeenCalledTimes(2);
+  });
+
+  it('Debounce delays method calls', () => {
+    vi.useFakeTimers();
+    const spy = vi.fn();
+    class Search {
+      @Debounce(50)
+      onInput(q: string) {
+        spy(q);
+      }
+    }
+    const s = new Search();
+    s.onInput('a');
+    s.onInput('b');
+    expect(spy).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(50);
+    expect(spy).toHaveBeenCalledWith('b');
+    vi.useRealTimers();
+  });
+
+  it('DeepFreeze prevents mutation', () => {
+    @DeepFreeze
+    class Config {
+      nested = { port: 3000 };
+    }
+    const cfg = new Config();
+    expect(() => {
+      (cfg.nested as { port: number }).port = 4000;
+    }).toThrow();
+  });
+
+  it('Validate rejects invalid field values', () => {
+    class User {
+      @Validate(z.string().min(3))
+      name = 'ok';
+    }
+    const user = new User();
+    const desc = Object.getOwnPropertyDescriptor(User.prototype, 'name')!;
+    expect(() => desc.set!.call(user, 'no')).toThrow();
+  });
+
+  it('Trace wraps methods', () => {
+    const logs: string[] = [];
+    @Trace({ logger: { log: (m: string) => logs.push(m) }, args: false, result: false })
+    class Svc {
+      ping() {
+        return 'pong';
+      }
+    }
+    expect(new Svc().ping()).toBe('pong');
+    expect(logs.length).toBeGreaterThan(0);
+  });
+
+  it('Serializable sets class metadata', () => {
+    @Serializable
+    class Payload {
+      id = 1;
+    }
+    expect(Payload).toBeDefined();
   });
 });

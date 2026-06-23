@@ -3,6 +3,7 @@ import { analyzeSourceString } from '../analyzer.js';
 import { emitBuilderClass, emitBuilderStaticMethod } from './builder.js';
 import { emitDataAccessors, emitDataConstructor, emitDataEquals, emitDataMethods } from './data.js';
 import { emitCompanionFile } from './index.js';
+import { emitSerializableApplyAssignment, emitSerializableMethods } from './serializable-emit.js';
 import { emitToStringMethod, emitToStringMixin } from './toString.js';
 
 describe('codegen emitters', () => {
@@ -71,6 +72,28 @@ describe('codegen emitters', () => {
       class User { name: string; age?: number; }
     `);
     expect(emitDataConstructor(classes[0]!)).toContain('constructor(name: string, age?: number)');
+  });
+
+  it('emitBuilderClass validates fields at build time', () => {
+    const classes = analyzeSourceString(`
+      import { Data, Builder, Validate } from 'lombok-typescript/legacy';
+      import { z } from 'zod';
+      @Data
+      @Builder
+      class Signup {
+        @Validate(z.string().email())
+        email: string;
+      }
+    `);
+    const builder = emitBuilderClass(classes[0]!);
+    expect(builder).toContain('runValidation(z.string().email(), instance.email');
+  });
+
+  it('serializable emit helpers return empty without decorator', () => {
+    const classes = analyzeSourceString(`class Plain { x: number; }`);
+    const info = classes[0]!;
+    expect(emitSerializableMethods(info)).toBe('');
+    expect(emitSerializableApplyAssignment(info)).toBe('');
   });
 
   it('emitToStringMethod returns empty for undecorated classes', () => {
@@ -230,6 +253,32 @@ describe('codegen emitters', () => {
     expect(dts).toContain('interface Node');
     expect(dts).toContain('traverse(callback');
     expect(dts).toContain('protected inner: Inner');
+  });
+
+  it('emitSerializable generates toJSON and fromJSON', () => {
+    const classes = analyzeSourceString(`
+      @Serializable
+      class User {
+        name: string;
+        @Serializable.Exclude
+        secret: string;
+        @Serializable.Alias('user_email')
+        email: string;
+        @Serializable.Transform({ serialize: (d: Date) => d.toISOString(), deserialize: (s: string) => new Date(s) })
+        createdAt: Date;
+      }
+    `);
+    const { ts } = emitCompanionFile(
+      '/proj/src/user.ts',
+      '/proj/.lombok/src/user.lombok.ts',
+      classes,
+      '/proj',
+    );
+    expect(ts).toContain('User_toJSON');
+    expect(ts).toContain('User_fromJSON');
+    expect(ts).toContain("'user_email': this.email");
+    expect(ts).not.toContain('this.secret');
+    expect(ts).toContain('applyUserGenerated');
   });
 
   it('template method emit throws when hook step is missing', () => {
