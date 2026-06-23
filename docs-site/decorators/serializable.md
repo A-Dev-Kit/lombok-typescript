@@ -32,10 +32,10 @@ Run `lombok-ts generate`, then call `applyUserGenerated` from the companion file
 
 ## Field markers
 
-| Marker                    | Effect                          |
-| ------------------------- | ------------------------------- |
-| `@Serializable.Exclude`   | Omit field from JSON            |
-| `@Serializable.Alias`     | Use a different JSON key        |
+| Marker                    | Effect                           |
+| ------------------------- | -------------------------------- |
+| `@Serializable.Exclude`   | Omit field from JSON             |
+| `@Serializable.Alias`     | Use a different JSON key         |
 | `@Serializable.Transform` | Custom serialize/deserialize fns |
 
 ## Limitations (v0.9.0)

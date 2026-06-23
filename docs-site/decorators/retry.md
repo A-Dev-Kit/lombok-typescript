@@ -23,13 +23,13 @@ class ApiClient {
 
 ## Options
 
-| Option     | Default    | Description                          |
-| ---------- | ---------- | ------------------------------------ |
-| `attempts` | `3`        | Total tries including the first call |
-| `delay`    | `1000`     | Base delay in ms between retries     |
-| `backoff`  | `'fixed'`  | `'fixed'`, `'linear'`, `'exponential'` |
-| `retryIf`  | always     | Predicate to decide whether to retry |
-| `timeout`  | —          | Per-attempt timeout in ms            |
+| Option     | Default   | Description                            |
+| ---------- | --------- | -------------------------------------- |
+| `attempts` | `3`       | Total tries including the first call   |
+| `delay`    | `1000`    | Base delay in ms between retries       |
+| `backoff`  | `'fixed'` | `'fixed'`, `'linear'`, `'exponential'` |
+| `retryIf`  | always    | Predicate to decide whether to retry   |
+| `timeout`  | —         | Per-attempt timeout in ms              |
 
 ## Composition
 

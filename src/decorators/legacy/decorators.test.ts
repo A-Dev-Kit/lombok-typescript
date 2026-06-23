@@ -87,10 +87,7 @@ describe('legacy decorators', () => {
   });
 
   it('Retry retries async methods', async () => {
-    const spy = vi
-      .fn()
-      .mockRejectedValueOnce(new Error('x'))
-      .mockResolvedValue(42);
+    const spy = vi.fn().mockRejectedValueOnce(new Error('x')).mockResolvedValue(42);
     class Api {
       @Retry({ attempts: 2, delay: 1 })
       async load() {

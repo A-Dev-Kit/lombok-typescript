@@ -6,7 +6,10 @@ export type ValidateProvider = 'zod' | 'yup' | 'class-validator';
 
 const adapters = new Map<ValidateProvider, ValidatorAdapter>();
 
-export function registerValidatorAdapter(provider: ValidateProvider, adapter: ValidatorAdapter): void {
+export function registerValidatorAdapter(
+  provider: ValidateProvider,
+  adapter: ValidatorAdapter,
+): void {
   adapters.set(provider, adapter);
 }
 
@@ -20,11 +23,7 @@ export function getValidatorAdapter(provider: ValidateProvider): ValidatorAdapte
   return adapter;
 }
 
-export function runValidation(
-  schema: unknown,
-  value: unknown,
-  provider: ValidateProvider,
-): void {
+export function runValidation(schema: unknown, value: unknown, provider: ValidateProvider): void {
   if (typeof schema === 'function') {
     (schema as (v: unknown) => void)(value);
     return;

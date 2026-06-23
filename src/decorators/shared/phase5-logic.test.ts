@@ -102,9 +102,15 @@ describe('phase5-logic legacy', () => {
     traceClassLegacy(legacyBackend, Svc, { logger: { log: (m) => logs.push(m) }, args: false });
     expect(new Svc().ping()).toBe(1);
     const desc = Object.getOwnPropertyDescriptor(Svc.prototype, 'ping')!;
-    traceMethodLegacy(legacyBackend, Svc.prototype, 'pong', { ...desc, value: () => 2 }, {
-      logger: { log: (m) => logs.push(m) },
-    });
+    traceMethodLegacy(
+      legacyBackend,
+      Svc.prototype,
+      'pong',
+      { ...desc, value: () => 2 },
+      {
+        logger: { log: (m) => logs.push(m) },
+      },
+    );
     expect(logs.length).toBeGreaterThan(0);
   });
 
@@ -168,12 +174,9 @@ describe('phase5-logic stage3', () => {
   it('traceMethodStage3 logs async results', async () => {
     const logs: string[] = [];
     const fn = async () => 'ok';
-    const wrapped = traceMethodStage3(
-      stage3Backend,
-      fn,
-      makeMethodContext('load'),
-      { logger: { log: (m) => logs.push(m) } },
-    );
+    const wrapped = traceMethodStage3(stage3Backend, fn, makeMethodContext('load'), {
+      logger: { log: (m) => logs.push(m) },
+    });
     await expect(wrapped()).resolves.toBe('ok');
     expect(logs.length).toBeGreaterThan(1);
   });

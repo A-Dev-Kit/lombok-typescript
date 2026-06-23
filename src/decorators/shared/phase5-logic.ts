@@ -17,7 +17,10 @@ export function retryMethodLegacy(
   backend.metadata.set(MetadataKeys.RETRY, targetPrototype, propertyKey, options);
   const original = descriptor.value;
   if (typeof original !== 'function') return;
-  return { ...descriptor, value: retryMethod(original as (...args: unknown[]) => Promise<unknown>, options) };
+  return {
+    ...descriptor,
+    value: retryMethod(original as (...args: unknown[]) => Promise<unknown>, options),
+  };
 }
 
 export function retryMethodStage3<This, Args extends unknown[], Return>(
@@ -27,10 +30,10 @@ export function retryMethodStage3<This, Args extends unknown[], Return>(
   options: RetryOptions = {},
 ): (this: This, ...args: Args) => Return {
   backend.metadata.set(MetadataKeys.RETRY, context.metadata as object, context.name, options);
-  return retryMethod(value as unknown as (...args: unknown[]) => Promise<unknown>, options) as unknown as (
-    this: This,
-    ...args: Args
-  ) => Return;
+  return retryMethod(
+    value as unknown as (...args: unknown[]) => Promise<unknown>,
+    options,
+  ) as unknown as (this: This, ...args: Args) => Return;
 }
 
 export function debounceMethodLegacy(
@@ -89,14 +92,20 @@ export function throttleMethodStage3<This, Args extends unknown[], Return>(
   context: ClassMethodDecoratorContext<This, (this: This, ...args: Args) => Return>,
   intervalMs: number,
 ): (this: This, ...args: Args) => Return {
-  backend.metadata.set(MetadataKeys.THROTTLE, context.metadata as object, context.name, { intervalMs });
+  backend.metadata.set(MetadataKeys.THROTTLE, context.metadata as object, context.name, {
+    intervalMs,
+  });
   return throttleMethod(value as (...args: unknown[]) => unknown, intervalMs) as unknown as (
     this: This,
     ...args: Args
   ) => Return;
 }
 
-export function traceClassLegacy(backend: Backend, target: AnyClass, options: TraceOptions = {}): void {
+export function traceClassLegacy(
+  backend: Backend,
+  target: AnyClass,
+  options: TraceOptions = {},
+): void {
   backend.metadata.set(MetadataKeys.TRACE, target, undefined, options);
   traceClassMethods(target, options);
 }

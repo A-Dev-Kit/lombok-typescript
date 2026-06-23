@@ -26,7 +26,16 @@ export default defineConfig({
   splitting: false,
   treeshake: true,
   minify: false,
-  external: ['typescript', 'ts-morph', 'reflect-metadata', 'rxjs', 'mobx', 'zod', 'yup', 'class-validator'],
+  external: [
+    'typescript',
+    'ts-morph',
+    'reflect-metadata',
+    'rxjs',
+    'mobx',
+    'zod',
+    'yup',
+    'class-validator',
+  ],
   outExtension({ format }) {
     return { js: format === 'cjs' ? '.cjs' : '.js' };
   },

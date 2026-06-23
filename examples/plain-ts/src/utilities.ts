@@ -54,13 +54,14 @@ export async function demoPhase5Utilities() {
   const signup = SignupDto.builder().email('user@example.com').build();
 
   const flags = new FeatureFlags();
-  let frozen = true;
-  try {
-    (flags.enabled as { auth: boolean }).auth = false;
-    frozen = false;
-  } catch {
-    frozen = true;
-  }
+  const frozen = (() => {
+    try {
+      (flags.enabled as { auth: boolean }).auth = false;
+      return false;
+    } catch {
+      return true;
+    }
+  })();
 
   return {
     status,

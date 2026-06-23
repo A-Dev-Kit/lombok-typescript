@@ -23,13 +23,13 @@ class UserService {
 
 ## Options
 
-| Option   | Default              | Description                    |
-| -------- | -------------------- | ------------------------------ |
-| `logger` | `console.info`       | Custom logger with `log()`     |
-| `redact` | —                    | Argument names to mask         |
-| `args`   | `true`               | Log arguments on entry         |
-| `result` | `true`               | Log return value on exit       |
-| `timing` | `true`               | Log elapsed ms on exit         |
-| `name`   | class or method name | Prefix in log lines            |
+| Option   | Default              | Description                |
+| -------- | -------------------- | -------------------------- |
+| `logger` | `console.info`       | Custom logger with `log()` |
+| `redact` | —                    | Argument names to mask     |
+| `args`   | `true`               | Log arguments on entry     |
+| `result` | `true`               | Log return value on exit   |
+| `timing` | `true`               | Log elapsed ms on exit     |
+| `name`   | class or method name | Prefix in log lines        |
 
 Class-level `@Trace` wraps every own prototype method. Method-level `@Trace` wraps a single method.

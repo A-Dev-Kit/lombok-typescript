@@ -2,10 +2,10 @@
 
 **Schema validation** on field assignment or class construction via pluggable adapters (Zod, Yup, class-validator).
 
-|                         |                    |
-| ----------------------- | ------------------ |
-| **Kind**                | Hybrid             |
-| **Backends**            | `legacy`, `stage3` |
+|                         |                      |
+| ----------------------- | -------------------- |
+| **Kind**                | Hybrid               |
+| **Backends**            | `legacy`, `stage3`   |
 | **Requires `generate`** | Partial (`@Builder`) |
 
 ## Example (Zod)

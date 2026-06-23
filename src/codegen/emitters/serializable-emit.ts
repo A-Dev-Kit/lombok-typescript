@@ -2,9 +2,7 @@ import type { ClassInfo, FieldInfo } from '../types.js';
 import { hasClassDecorator } from './helpers.js';
 
 function isSerializableExcluded(field: FieldInfo): boolean {
-  return field.decorators.some(
-    (d) => d.name === 'SerializableExclude' || d.name === 'Exclude',
-  );
+  return field.decorators.some((d) => d.name === 'SerializableExclude' || d.name === 'Exclude');
 }
 
 function serializableFields(info: ClassInfo): FieldInfo[] {
@@ -12,9 +10,7 @@ function serializableFields(info: ClassInfo): FieldInfo[] {
 }
 
 function fieldAlias(field: FieldInfo): string | undefined {
-  const alias = field.decorators.find(
-    (d) => d.name === 'SerializableAlias' || d.name === 'Alias',
-  );
+  const alias = field.decorators.find((d) => d.name === 'SerializableAlias' || d.name === 'Alias');
   return alias?.arguments[0] ? String(alias.arguments[0]).replace(/^['"]|['"]$/g, '') : undefined;
 }
 
@@ -23,9 +19,7 @@ function jsonKey(field: FieldInfo): string {
 }
 
 function hasSerializableTransform(field: FieldInfo): boolean {
-  return field.decorators.some(
-    (d) => d.name === 'SerializableTransform' || d.name === 'Transform',
-  );
+  return field.decorators.some((d) => d.name === 'SerializableTransform' || d.name === 'Transform');
 }
 
 export function emitSerializableMethods(info: ClassInfo): string {
@@ -58,9 +52,8 @@ export function emitSerializableMethods(info: ClassInfo): string {
     .filter((f) => hasSerializableTransform(f))
     .map((f) => {
       const transformArg =
-        f.decorators.find(
-          (d) => d.name === 'SerializableTransform' || d.name === 'Transform',
-        )?.arguments[0] ?? '{}';
+        f.decorators.find((d) => d.name === 'SerializableTransform' || d.name === 'Transform')
+          ?.arguments[0] ?? '{}';
       return `'${f.name}': ${transformArg}`;
     });
 

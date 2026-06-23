@@ -98,6 +98,7 @@ import {
   serializableExcludeFieldStage3,
   serializableTransformFieldStage3,
 } from '../shared/serializable.js';
+import type { SerializableTransform } from '../shared/serializable.js';
 
 /** Validates field initial values are not null or undefined. */
 export const NonNull = defineFieldDecorator(nonNullFieldStage3);
@@ -398,9 +399,7 @@ export function SerializableAlias(alias: string) {
   });
 }
 
-export function SerializableTransform(
-  transform: import('../shared/serializable.js').SerializableTransform,
-) {
+export function SerializableTransform(transform: SerializableTransform) {
   return defineFieldDecorator((backend, context) => {
     serializableTransformFieldStage3(backend, context, transform);
   });

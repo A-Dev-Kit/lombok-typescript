@@ -63,7 +63,10 @@ export function fieldsWithValidate(info: ClassInfo): FieldInfo[] {
 }
 
 export function needsBuilderValidation(info: ClassInfo): boolean {
-  return hasClassDecorator(info, 'Builder') && (classHasValidate(info) || fieldsWithValidate(info).length > 0);
+  return (
+    hasClassDecorator(info, 'Builder') &&
+    (classHasValidate(info) || fieldsWithValidate(info).length > 0)
+  );
 }
 
 export function needsValidateImport(classes: readonly ClassInfo[]): boolean {

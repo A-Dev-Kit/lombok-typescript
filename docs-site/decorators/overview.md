@@ -64,14 +64,14 @@ Observer adapters: [RxJS / MobX](/decorators/observers-adapters).
 
 ## Phase 5 (v0.9.0)
 
-| Decorator                                              | Kind               | Codegen? | Summary                              |
-| ------------------------------------------------------ | ------------------ | -------- | ------------------------------------ |
-| [`@Retry`](/decorators/retry)                          | Runtime method     | No       | Async retry with backoff             |
-| [`@Debounce` / `@Throttle`](/decorators/debounce-throttle) | Runtime method | No       | Debounce or throttle invocations     |
-| [`@Trace`](/decorators/trace)                          | Runtime            | No       | Method entry/exit logging            |
-| [`@DeepFreeze`](/decorators/deep-freeze)               | Runtime class      | No       | Recursive `Object.freeze` on `new`   |
-| [`@Validate`](/decorators/validate)                    | Hybrid             | Partial  | Zod/Yup/class-validator adapters   |
-| [`@Serializable`](/decorators/serializable)            | Hybrid             | Yes      | `toJSON` / `fromJSON` codegen        |
+| Decorator                                                  | Kind           | Codegen? | Summary                            |
+| ---------------------------------------------------------- | -------------- | -------- | ---------------------------------- |
+| [`@Retry`](/decorators/retry)                              | Runtime method | No       | Async retry with backoff           |
+| [`@Debounce` / `@Throttle`](/decorators/debounce-throttle) | Runtime method | No       | Debounce or throttle invocations   |
+| [`@Trace`](/decorators/trace)                              | Runtime        | No       | Method entry/exit logging          |
+| [`@DeepFreeze`](/decorators/deep-freeze)                   | Runtime class  | No       | Recursive `Object.freeze` on `new` |
+| [`@Validate`](/decorators/validate)                        | Hybrid         | Partial  | Zod/Yup/class-validator adapters   |
+| [`@Serializable`](/decorators/serializable)                | Hybrid         | Yes      | `toJSON` / `fromJSON` codegen      |
 
 Validator adapters: `lombok-typescript/validators/{zod,yup,class-validator}` (optional peer deps).
 

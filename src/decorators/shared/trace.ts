@@ -106,7 +106,10 @@ function logError(
   logger.log(`! ${contextName}${logTiming ? ` [${elapsed}ms]` : ''}`, error);
 }
 
-export function traceClassMethods(target: new (...args: unknown[]) => unknown, options: TraceOptions): void {
+export function traceClassMethods(
+  target: new (...args: unknown[]) => unknown,
+  options: TraceOptions,
+): void {
   const className = options.name ?? target.name;
   const proto = target.prototype as Record<string, unknown>;
   for (const key of Object.getOwnPropertyNames(proto)) {
@@ -114,11 +117,7 @@ export function traceClassMethods(target: new (...args: unknown[]) => unknown, o
     const desc = Object.getOwnPropertyDescriptor(proto, key);
     if (!desc || typeof desc.value !== 'function') continue;
     const contextName = `${className}.${key}`;
-    desc.value = traceMethod(
-      desc.value as (...args: unknown[]) => unknown,
-      options,
-      contextName,
-    );
+    desc.value = traceMethod(desc.value as (...args: unknown[]) => unknown, options, contextName);
     Object.defineProperty(proto, key, desc);
   }
 }

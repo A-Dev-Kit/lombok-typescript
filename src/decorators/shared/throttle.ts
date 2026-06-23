@@ -14,6 +14,7 @@ export function throttleMethod<T extends (...args: unknown[]) => unknown>(
   let throttled = false;
 
   const wrapped = function (this: unknown, ...args: Parameters<T>) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias -- throttle must preserve `this` for flush
     lastThis = this;
     lastArgs = args;
     if (!throttled) {

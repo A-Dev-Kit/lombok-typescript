@@ -58,7 +58,11 @@ export function validateFieldLegacy(
 ): void {
   const provider = options.provider ?? 'zod';
   const throwOnError = options.throwOnError ?? true;
-  backend.metadata.set(MetadataKeys.VALIDATE, targetPrototype, propertyKey, { schema, provider, throwOnError });
+  backend.metadata.set(MetadataKeys.VALIDATE, targetPrototype, propertyKey, {
+    schema,
+    provider,
+    throwOnError,
+  });
   installValidationErrorsAccessor(targetPrototype);
   const key = String(propertyKey);
   let stored: unknown;
@@ -91,7 +95,11 @@ export function validateClassLegacy(
 ): AnyClass {
   const provider = options.provider ?? 'zod';
   const throwOnError = options.throwOnError ?? true;
-  backend.metadata.set(MetadataKeys.VALIDATE, target, undefined, { schema, provider, throwOnError });
+  backend.metadata.set(MetadataKeys.VALIDATE, target, undefined, {
+    schema,
+    provider,
+    throwOnError,
+  });
 
   const Validated = class extends target {
     constructor(...args: unknown[]) {

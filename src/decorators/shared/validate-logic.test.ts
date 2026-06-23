@@ -61,7 +61,9 @@ describe('validate-logic', () => {
     const desc = Object.getOwnPropertyDescriptor(Row.prototype, 'value')!;
     desc.set!.call(row, 'ab');
     expect(getValidationErrors(row).length).toBeGreaterThan(0);
-    expect((row as unknown as { validationErrors: unknown[] }).validationErrors.length).toBeGreaterThan(0);
+    expect(
+      (row as unknown as { validationErrors: unknown[] }).validationErrors.length,
+    ).toBeGreaterThan(0);
   });
 
   it('clears validation errors after successful assignment', () => {

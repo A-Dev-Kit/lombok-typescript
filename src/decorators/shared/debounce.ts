@@ -21,6 +21,7 @@ export function debounceMethod<T extends (...args: unknown[]) => unknown>(
   let lastArgs: Parameters<T> | undefined;
 
   const wrapped = function (this: unknown, ...args: Parameters<T>) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias -- debounce must preserve `this` for trailing call
     lastThis = this;
     lastArgs = args;
     const callLeading = leading && timer === undefined;

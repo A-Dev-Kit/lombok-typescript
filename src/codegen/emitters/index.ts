@@ -23,10 +23,7 @@ import {
 } from './helpers.js';
 import { emitWithFns } from './with-emit.js';
 import { emitTemplateMethodApplyAssignment, emitTemplateMethodFn } from './template-method-emit.js';
-import {
-  emitSerializableApplyAssignment,
-  emitSerializableMethods,
-} from './serializable-emit.js';
+import { emitSerializableApplyAssignment, emitSerializableMethods } from './serializable-emit.js';
 import { emitVisitableAcceptApplyAssignment, emitVisitableAcceptFn } from './visitor-emit.js';
 
 function emitImports(classes: readonly ClassInfo[], importPath: string): string {
@@ -48,7 +45,9 @@ function emitImports(classes: readonly ClassInfo[], importPath: string): string 
     importLines.push(`import type { ${extraProducts.join(', ')} } from '${importPath}';`);
   }
   if (needsValidateImport(classes)) {
-    importLines.push(`import { runValidation } from '@a-dev-kit/lombok-typescript/validators/zod';`);
+    importLines.push(
+      `import { runValidation } from '@a-dev-kit/lombok-typescript/validators/zod';`,
+    );
   }
   if (needsZodImport(classes)) {
     importLines.push(`import { z } from 'zod';`);

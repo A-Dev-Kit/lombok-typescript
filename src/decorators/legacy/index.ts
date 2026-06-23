@@ -100,6 +100,7 @@ import {
   serializableExcludeFieldLegacy,
   serializableTransformFieldLegacy,
 } from '../shared/serializable.js';
+import type { SerializableTransform } from '../shared/serializable.js';
 
 /** Validates field assignments are not null or undefined. */
 export const NonNull = defineFieldDecorator(nonNullFieldLegacy);
@@ -337,10 +338,7 @@ export function Retry(options: RetryOptions = {}): MethodDecorator {
 }
 
 /** Debounces method calls until invocations pause. */
-export function Debounce(
-  waitMs: number,
-  options: DebounceOptions = {},
-): MethodDecorator {
+export function Debounce(waitMs: number, options: DebounceOptions = {}): MethodDecorator {
   return defineMethodDecorator((backend, target, key, descriptor) =>
     debounceMethodLegacy(backend, target, key, descriptor, waitMs, options),
   );
@@ -355,7 +353,9 @@ export function Throttle(intervalMs: number): MethodDecorator {
 
 /** Logs method entry, exit, timing, and arguments. */
 export function Trace(options: TraceOptions = {}): ClassDecorator & MethodDecorator {
-  const classDec = defineClassDecorator((backend, target) => traceClassLegacy(backend, target, options));
+  const classDec = defineClassDecorator((backend, target) =>
+    traceClassLegacy(backend, target, options),
+  );
   const methodDec = defineMethodDecorator((backend, target, key, descriptor) =>
     traceMethodLegacy(backend, target, key, descriptor, options),
   );
@@ -398,9 +398,7 @@ export function SerializableAlias(alias: string): PropertyDecorator {
   );
 }
 
-export function SerializableTransform(
-  transform: import('../shared/serializable.js').SerializableTransform,
-): PropertyDecorator {
+export function SerializableTransform(transform: SerializableTransform): PropertyDecorator {
   return defineFieldDecorator((backend, target, key) =>
     serializableTransformFieldLegacy(backend, target, key, transform),
   );

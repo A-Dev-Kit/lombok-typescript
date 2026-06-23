@@ -7,6 +7,7 @@ export default tseslint.config(
   {
     ignores: [
       'dist/**',
+      'examples/**/dist/**',
       'coverage/**',
       '**/.lombok/**',
       'node_modules/**',

@@ -32,7 +32,12 @@ export function serializableExcludeFieldStage3<This, Value>(
   backend: Backend,
   context: ClassFieldDecoratorContext<This, Value>,
 ): void {
-  backend.metadata.set(MetadataKeys.SERIALIZABLE_EXCLUDE, context.metadata as object, context.name, true);
+  backend.metadata.set(
+    MetadataKeys.SERIALIZABLE_EXCLUDE,
+    context.metadata as object,
+    context.name,
+    true,
+  );
 }
 
 export function serializableAliasFieldLegacy(
@@ -49,7 +54,12 @@ export function serializableAliasFieldStage3<This, Value>(
   context: ClassFieldDecoratorContext<This, Value>,
   alias: string,
 ): void {
-  backend.metadata.set(MetadataKeys.SERIALIZABLE_ALIAS, context.metadata as object, context.name, alias);
+  backend.metadata.set(
+    MetadataKeys.SERIALIZABLE_ALIAS,
+    context.metadata as object,
+    context.name,
+    alias,
+  );
 }
 
 export function serializableTransformFieldLegacy(
@@ -58,7 +68,12 @@ export function serializableTransformFieldLegacy(
   propertyKey: PropertyName,
   transform: SerializableTransform,
 ): void {
-  backend.metadata.set(MetadataKeys.SERIALIZABLE_TRANSFORM, targetPrototype, propertyKey, transform);
+  backend.metadata.set(
+    MetadataKeys.SERIALIZABLE_TRANSFORM,
+    targetPrototype,
+    propertyKey,
+    transform,
+  );
 }
 
 export function serializableTransformFieldStage3<This, Value>(

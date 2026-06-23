@@ -11,10 +11,7 @@ import { z } from 'zod';
 
 describe('phase 5 method wrappers', () => {
   it('retryMethod retries async failures', async () => {
-    const fn = vi
-      .fn()
-      .mockRejectedValueOnce(new Error('fail'))
-      .mockResolvedValue('ok');
+    const fn = vi.fn().mockRejectedValueOnce(new Error('fail')).mockResolvedValue('ok');
     const wrapped = retryMethod(fn, { attempts: 2, delay: 1 });
     await expect(wrapped()).resolves.toBe('ok');
     expect(fn).toHaveBeenCalledTimes(2);
@@ -33,10 +30,7 @@ describe('phase 5 method wrappers', () => {
 
   it('retryMethod uses exponential backoff', async () => {
     vi.useFakeTimers();
-    const fn = vi
-      .fn()
-      .mockRejectedValueOnce(new Error('x'))
-      .mockResolvedValue('ok');
+    const fn = vi.fn().mockRejectedValueOnce(new Error('x')).mockResolvedValue('ok');
     const wrapped = retryMethod(fn, { attempts: 2, delay: 10, backoff: 'exponential' });
     const promise = wrapped();
     await vi.advanceTimersByTimeAsync(10);
@@ -120,7 +114,11 @@ describe('phase 5 method wrappers', () => {
     const logs: string[] = [];
     const logger = { log: (msg: string) => logs.push(msg) };
     const fn = (x: number) => x + 1;
-    const traced = traceMethod(fn as (...args: unknown[]) => unknown, { logger, name: 'Svc' }, 'Svc.add');
+    const traced = traceMethod(
+      fn as (...args: unknown[]) => unknown,
+      { logger, name: 'Svc' },
+      'Svc.add',
+    );
     expect(traced(1)).toBe(2);
     expect(logs.some((l) => l.startsWith('> Svc.add'))).toBe(true);
     expect(logs.some((l) => l.startsWith('< Svc.add'))).toBe(true);
@@ -132,7 +130,11 @@ describe('phase 5 method wrappers', () => {
     const fn = () => {
       throw new Error('boom');
     };
-    const traced = traceMethod(fn, { logger, args: false, result: false, timing: false }, 'Svc.run');
+    const traced = traceMethod(
+      fn,
+      { logger, args: false, result: false, timing: false },
+      'Svc.run',
+    );
     expect(() => traced()).toThrow('boom');
     expect(logs.some((l) => l.startsWith('! Svc.run'))).toBe(true);
   });
