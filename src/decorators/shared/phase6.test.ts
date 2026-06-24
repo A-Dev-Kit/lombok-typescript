@@ -5,6 +5,13 @@ import { legacyBackend } from '../../legacy/backend.js';
 import { stage3Backend } from '../../stage3/backend.js';
 import { Adapter, Bridge, Facade, Interpreter, Mediator } from '../../legacy/index.js';
 import {
+  Adapter as AdapterS3,
+  Bridge as BridgeS3,
+  Facade as FacadeS3,
+  Interpreter as InterpreterS3,
+  Mediator as MediatorS3,
+} from '../../stage3/index.js';
+import {
   adapterClassLegacy,
   adapterClassStage3,
   bridgeClassLegacy,
@@ -57,6 +64,21 @@ describe('GoF marker decorators (legacy)', () => {
         target: Modern,
       }),
     ).toThrow(/adapts/);
+  });
+
+  it('returns undefined when no marker metadata exists', () => {
+    class Plain {}
+    expect(getGoFMarkerMetadata(Plain, MetadataKeys.BRIDGE)).toBeUndefined();
+  });
+
+  it('@Adapter rejects non-constructor target in stage3', () => {
+    class Legacy {}
+    expect(() =>
+      adapterClassStage3(stage3Backend, class X {}, makeClassContext('X'), {
+        adapts: Legacy,
+        target: 'nope' as unknown as typeof Legacy,
+      }),
+    ).toThrow(/target/);
   });
 
   it('@Adapter rejects non-constructor options', () => {
@@ -161,5 +183,32 @@ describe('GoF marker decorators (stage3)', () => {
     expect(getGoFMarkerMetadata(Box, MetadataKeys.BRIDGE)).toBe(true);
     expect(getGoFMarkerMetadata(Room, MetadataKeys.MEDIATOR)).toBe(true);
     expect(getGoFMarkerMetadata(Grammar, MetadataKeys.INTERPRETER)).toBe(true);
+  });
+});
+
+describe('GoF marker decorators (stage3 exports)', () => {
+  it('stores metadata via stage3 decorator exports', () => {
+    class Legacy {}
+    class Modern {}
+    class LegacyAdapter {}
+    const ctx = makeClassContext('LegacyAdapter');
+    AdapterS3({ adapts: Legacy, target: Modern })(LegacyAdapter, ctx);
+    (LegacyAdapter as { [Symbol.metadata]?: object })[Symbol.metadata] = ctx.metadata as object;
+    BridgeS3(class Shape {}, makeClassContext('Shape'));
+    FacadeS3({ subsystems: [Legacy] })(class Checkout {}, makeClassContext('Checkout'));
+    MediatorS3(class Room {}, makeClassContext('Room'));
+    InterpreterS3(class Grammar {}, makeClassContext('Grammar'));
+    expect(getGoFMarkerMetadata(LegacyAdapter, MetadataKeys.ADAPTER)).toEqual({
+      adapts: Legacy,
+      target: Modern,
+    });
+  });
+
+  it('@Facade() without options stores empty metadata via stage3 export', () => {
+    class Shop {}
+    const ctx = makeClassContext('Shop');
+    FacadeS3()(Shop, ctx);
+    (Shop as { [Symbol.metadata]?: object })[Symbol.metadata] = ctx.metadata as object;
+    expect(getGoFMarkerMetadata(Shop, MetadataKeys.FACADE)).toEqual({});
   });
 });
