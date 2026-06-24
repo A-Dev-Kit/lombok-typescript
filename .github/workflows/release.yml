@@ -30,6 +30,11 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+      - name: Overlay npm publish scripts for legacy tags
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git fetch origin main --depth=1
+          git checkout origin/main -- scripts/npm-prepare.mjs scripts/npm-publish.mjs
       - name: Set version from tag
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then

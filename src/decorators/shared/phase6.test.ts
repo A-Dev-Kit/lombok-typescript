@@ -99,7 +99,9 @@ describe('GoF marker decorators (legacy)', () => {
 
   it('@Facade rejects invalid subsystem entries in legacy', () => {
     expect(() =>
-      facadeClassLegacy(legacyBackend, class Bad {}, { subsystems: [1] as unknown as (new () => unknown)[] }),
+      facadeClassLegacy(legacyBackend, class Bad {}, {
+        subsystems: [1] as unknown as (new () => unknown)[],
+      }),
     ).toThrow(/subsystems/);
   });
 
