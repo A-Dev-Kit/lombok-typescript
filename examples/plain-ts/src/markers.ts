@@ -1,7 +1,10 @@
-import { Adapter, Bridge, Facade, Mediator, Interpreter } from 'lombok-typescript/legacy';
+import 'reflect-metadata';
+import { Adapter, Bridge, Facade, Interpreter, Mediator } from '@a-dev-kit/lombok-typescript/legacy';
 
-interface TargetApi {
-  ping(): string;
+class TargetApi {
+  ping(): string {
+    return 'pong';
+  }
 }
 
 class LegacyApi {

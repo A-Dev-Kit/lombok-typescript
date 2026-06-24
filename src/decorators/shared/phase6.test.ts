@@ -7,10 +7,14 @@ import { Adapter, Bridge, Facade, Interpreter, Mediator } from '../../legacy/ind
 import {
   adapterClassLegacy,
   adapterClassStage3,
+  bridgeClassLegacy,
   bridgeClassStage3,
+  facadeClassLegacy,
   facadeClassStage3,
   getGoFMarkerMetadata,
+  interpreterClassLegacy,
   interpreterClassStage3,
+  mediatorClassLegacy,
   mediatorClassStage3,
 } from './markers-gof.js';
 
@@ -33,6 +37,26 @@ describe('GoF marker decorators (legacy)', () => {
       adapts: Legacy,
       target: Modern,
     });
+  });
+
+  it('@Adapter rejects non-constructor target', () => {
+    class Legacy {}
+    expect(() =>
+      adapterClassLegacy(legacyBackend, class X {}, {
+        adapts: Legacy,
+        target: 1 as unknown as typeof Legacy,
+      }),
+    ).toThrow(/target/);
+  });
+
+  it('@Adapter rejects non-constructor adapts in stage3', () => {
+    class Modern {}
+    expect(() =>
+      adapterClassStage3(stage3Backend, class X {}, makeClassContext('X'), {
+        adapts: null as unknown as typeof Modern,
+        target: Modern,
+      }),
+    ).toThrow(/adapts/);
   });
 
   it('@Adapter rejects non-constructor options', () => {
@@ -65,6 +89,18 @@ describe('GoF marker decorators (legacy)', () => {
     expect(getGoFMarkerMetadata(Checkout, MetadataKeys.FACADE)).toEqual({
       subsystems: [Payment, Inventory],
     });
+  });
+
+  it('@Facade stores empty options when subsystems omitted', () => {
+    @Facade()
+    class Shop {}
+    expect(getGoFMarkerMetadata(Shop, MetadataKeys.FACADE)).toEqual({});
+  });
+
+  it('@Facade rejects invalid subsystem entries in legacy', () => {
+    expect(() =>
+      facadeClassLegacy(legacyBackend, class Bad {}, { subsystems: [1] as unknown as (new () => unknown)[] }),
+    ).toThrow(/subsystems/);
   });
 
   it('@Facade rejects invalid subsystem entries', () => {
@@ -103,5 +139,25 @@ describe('GoF marker decorators (stage3)', () => {
       adapts: Legacy,
       target: Modern,
     });
+  });
+
+  it('getGoFMarkerMetadata reads stage3 metadata when legacy is empty', () => {
+    class Shape {}
+    const ctx = makeClassContext('Shape');
+    bridgeClassStage3(stage3Backend, Shape, ctx);
+    (Shape as { [Symbol.metadata]?: object })[Symbol.metadata] = ctx.metadata as object;
+    expect(getGoFMarkerMetadata(Shape, MetadataKeys.BRIDGE)).toBe(true);
+  });
+
+  it('legacy marker helpers set metadata flags', () => {
+    class Box {}
+    class Room {}
+    class Grammar {}
+    bridgeClassLegacy(legacyBackend, Box);
+    mediatorClassLegacy(legacyBackend, Room);
+    interpreterClassLegacy(legacyBackend, Grammar);
+    expect(getGoFMarkerMetadata(Box, MetadataKeys.BRIDGE)).toBe(true);
+    expect(getGoFMarkerMetadata(Room, MetadataKeys.MEDIATOR)).toBe(true);
+    expect(getGoFMarkerMetadata(Grammar, MetadataKeys.INTERPRETER)).toBe(true);
   });
 });
