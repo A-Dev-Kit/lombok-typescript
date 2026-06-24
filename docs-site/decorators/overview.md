@@ -79,13 +79,13 @@ Validator adapters: `lombok-typescript/validators/{zod,yup,class-validator}` (op
 
 Complete GoF coverage with metadata-only decorators (no codegen). See [ADR-13](https://github.com/A-Dev-Kit/lombok-typescript-planning/blob/main/adr/0013-gof-coverage-strategy.md).
 
-| Decorator                                      | Kind          | Codegen? | Summary                          |
-| ---------------------------------------------- | ------------- | -------- | -------------------------------- |
-| [`@Adapter`](/decorators/adapter)              | Marker class  | No       | Documents API adapter intent     |
-| [`@Bridge`](/decorators/bridge)                | Marker class  | No       | Abstraction / implementation split |
-| [`@Facade`](/decorators/facade)                | Marker class  | No       | Subsystem simplification         |
-| [`@Mediator`](/decorators/mediator)            | Marker class  | No       | Colleague coordination role      |
-| [`@Interpreter`](/decorators/interpreter)      | Marker class  | No       | DSL / grammar interpreter role   |
+| Decorator                                 | Kind         | Codegen? | Summary                            |
+| ----------------------------------------- | ------------ | -------- | ---------------------------------- |
+| [`@Adapter`](/decorators/adapter)         | Marker class | No       | Documents API adapter intent       |
+| [`@Bridge`](/decorators/bridge)           | Marker class | No       | Abstraction / implementation split |
+| [`@Facade`](/decorators/facade)           | Marker class | No       | Subsystem simplification           |
+| [`@Mediator`](/decorators/mediator)       | Marker class | No       | Colleague coordination role        |
+| [`@Interpreter`](/decorators/interpreter) | Marker class | No       | DSL / grammar interpreter role     |
 
 `@Adapter` (GoF) is unrelated to `ValidatorAdapter` in the validators subpath exports.
 

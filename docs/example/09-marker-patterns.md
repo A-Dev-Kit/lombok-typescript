@@ -4,13 +4,13 @@
 
 These five decorators complete GoF coverage per [ADR-13](https://github.com/A-Dev-Kit/lombok-typescript-planning/blob/main/adr/0013-gof-coverage-strategy.md). They store metadata and document intent; you still implement behavior by hand.
 
-| Decorator | Role |
-| --------- | ---- |
-| `@Adapter` | Wraps a legacy API behind a modern interface |
-| `@Bridge` | Separates abstraction from implementation |
-| `@Facade` | Simplifies a subsystem |
-| `@Mediator` | Coordinates colleagues |
-| `@Interpreter` | Evaluates a small DSL |
+| Decorator      | Role                                         |
+| -------------- | -------------------------------------------- |
+| `@Adapter`     | Wraps a legacy API behind a modern interface |
+| `@Bridge`      | Separates abstraction from implementation    |
+| `@Facade`      | Simplifies a subsystem                       |
+| `@Mediator`    | Coordinates colleagues                       |
+| `@Interpreter` | Evaluates a small DSL                        |
 
 ## `@Adapter`
 
