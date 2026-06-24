@@ -1,0 +1,78 @@
+# npm daily backfill: publish one queue version per run (0.2.0 → 0.10.0).
+#
+# Requires: NPM_PUBLISH_ENABLED=true, NPM_BACKFILL_ACTIVE=true, NPM_TOKEN secret.
+# When slot 0.10.0 is on npm: set NPM_BACKFILL_ACTIVE=false and restore tag push on release.yml.
+
+name: npm daily backfill
+
+on:
+  schedule:
+    - cron: '0 14 * * *' # 14:00 UTC daily
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Force version (e.g. 0.2.0); leave empty for next unpublished slot'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish-next:
+    if: vars.NPM_PUBLISH_ENABLED == 'true' && vars.NPM_BACKFILL_ACTIVE == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Resolve next backfill version
+        id: next
+        env:
+          BACKFILL_VERSION: ${{ inputs.version }}
+        run: node scripts/npm-next-backfill-version.mjs
+      - name: Skip when backfill queue is complete
+        if: steps.next.outputs.skip == 'true'
+        run: echo "No unpublished versions in 0.2.0–0.10.0 queue. Set NPM_BACKFILL_ACTIVE=false and restore release.yml tag push."
+      - name: Checkout release tag
+        if: steps.next.outputs.skip != 'true'
+        run: git checkout "tags/${{ steps.next.outputs.tag }}"
+      - name: Overlay npm scripts and README templates from main
+        if: steps.next.outputs.skip != 'true'
+        run: |
+          git fetch origin main --depth=1
+          git checkout origin/main -- scripts/npm-prepare.mjs scripts/npm-publish.mjs scripts/validate-npm-readme.mjs
+          git checkout origin/main -- docs/npm-readme
+      - name: Set publish version
+        if: steps.next.outputs.skip != 'true'
+        run: echo "PUBLISH_VERSION=${{ steps.next.outputs.version }}" >> "$GITHUB_ENV"
+      - uses: pnpm/action-setup@v6
+        if: steps.next.outputs.skip != 'true'
+      - uses: actions/setup-node@v6
+        if: steps.next.outputs.skip != 'true'
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - name: Prepare package for npmjs.org
+        if: steps.next.outputs.skip != 'true'
+        run: node scripts/npm-prepare.mjs "$PUBLISH_VERSION"
+      - name: Validate npm README
+        if: steps.next.outputs.skip != 'true'
+        run: node scripts/validate-npm-readme.mjs "$PUBLISH_VERSION"
+      - run: pnpm install --frozen-lockfile
+        if: steps.next.outputs.skip != 'true'
+      - run: pnpm typecheck
+        if: steps.next.outputs.skip != 'true'
+      - run: pnpm test
+        if: steps.next.outputs.skip != 'true'
+      - run: pnpm build
+        if: steps.next.outputs.skip != 'true'
+      - name: Publish to npmjs.org
+        if: steps.next.outputs.skip != 'true'
+        run: node scripts/npm-publish.mjs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PUBLISH_VERSION: ${{ env.PUBLISH_VERSION }}
+          NPM_DIST_TAG: ${{ vars.NPM_DIST_TAG }}

@@ -92,18 +92,52 @@ Logical release queue versions and the git commits used for GitHub Packages back
 
 Versions `0.2.0`/`0.3.0` share the Phase 2 merge tree; `0.5.0`/`0.6.0` share the Phase 3 merge tree.
 
-### npmjs.org (ready — gated)
+### npmjs.org (active — daily backfill)
 
-Public npm publish uses the unscoped name **`lombok-typescript`** (ADR-17). The [release.yml](../.github/workflows/release.yml) workflow is **tag-driven** (same `v*.*.*` tags as GitHub Packages) but **disabled by default** until you enable it:
+Public npm publish uses the unscoped name **`lombok-typescript`** (ADR-17).
 
-1. Complete the [npm validation checklist](#npm-validation-checklist) below.
-2. Add `NPM_TOKEN` (npm Automation token, publish scope) to repository secrets.
-3. Set repository variable `NPM_PUBLISH_ENABLED` to `true` (Settings → Secrets and variables → Actions → Variables).
-4. Optional: set `NPM_DIST_TAG` to `next` or `preview` for the first public publish before promoting to `latest`.
+| Mechanism                    | When                                                                                                  |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **`npm-daily-backfill.yml`** | While `NPM_BACKFILL_ACTIVE=true` — publishes next slot `0.2.0`–`0.10.0` once per day (14:00 UTC)      |
+| **`release.yml`**            | Manual `workflow_dispatch` only during backfill; **tag push disabled** until backfill ends            |
+| **Tag push → npm**           | After backfill: set `NPM_BACKFILL_ACTIVE=false` and restore `push: tags` on `release.yml` (see below) |
 
-Scripts: `scripts/npm-prepare.mjs` (unscoped name + registry) and `scripts/npm-publish.mjs` (idempotent, provenance).
+Repository variables:
 
-**Forward-only (recommended):** first npm tag `v0.8.0`. Historical `0.1.0`–`0.7.0` remain GitHub Packages–only unless you run a backfill session.
+- `NPM_PUBLISH_ENABLED=true`
+- `NPM_DIST_TAG=preview` (until `0.10.0` on npm; then promote as needed)
+- `NPM_BACKFILL_ACTIVE=true` during daily backfill
+
+Secret: `NPM_TOKEN` (granular token with publish scope, or Trusted Publishing when migrated).
+
+Scripts:
+
+- `scripts/npm-prepare.mjs` — unscoped name, version, consumer `README.md` from `docs/npm-readme/{version}.md`
+- `scripts/npm-publish.mjs` — idempotent publish with provenance
+- `scripts/validate-npm-readme.mjs` — blocks internal/stale copy on npm
+- `scripts/npm-next-backfill-version.mjs` — next unpublished slot in `0.2.0`–`0.10.0`
+
+Consumer-facing npm readmes live in [`docs/npm-readme/`](../docs/npm-readme/). Regenerate templates: `node scripts/generate-npm-readmes.mjs`.
+
+#### Restoring tag-triggered npm (after slot 10 on npm)
+
+1. Confirm `0.1.0`–`0.10.0` are on [npmjs.org](https://www.npmjs.com/package/lombok-typescript).
+2. Set `NPM_BACKFILL_ACTIVE=false` (GitHub → Settings → Variables).
+3. In [`.github/workflows/release.yml`](../.github/workflows/release.yml), restore:
+
+```yaml
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      tag: ...
+jobs:
+  publish:
+    if: vars.NPM_PUBLISH_ENABLED == 'true'
+```
+
+4. Update this doc and [RELEASE_QUEUE.md](https://github.com/A-Dev-Kit/lombok-typescript-planning/blob/main/RELEASE_QUEUE.md).
 
 #### npm validation checklist
 
@@ -111,11 +145,12 @@ Run locally before adding `NPM_TOKEN` or setting `NPM_PUBLISH_ENABLED`:
 
 ```bash
 pnpm install && pnpm build
-node scripts/npm-prepare.mjs 0.8.0
+node scripts/npm-prepare.mjs 0.10.0
+node scripts/validate-npm-readme.mjs 0.10.0
 npm publish --dry-run --registry=https://registry.npmjs.org
 npm pack
 # Inspect package/package.json — name must be lombok-typescript
-git checkout -- package.json   # restore scoped dev package.json
+git checkout -- package.json README.md
 ```
 
 - [ ] Dry-run shows unscoped `lombok-typescript@0.8.0`

@@ -16,7 +16,7 @@ A TypeScript port of Java's [Project Lombok](https://projectlombok.org/) with Ga
 
 ## Status
 
-**Version `0.10.0` — Phase 6 complete.** Latest on [GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript) (`@a-dev-kit/lombok-typescript@0.10.0` after `v0.10.0` tag). **npmjs.org:** Phase 1 preview at `lombok-typescript@preview` (`0.1.0`); newer versions publish to GitHub Packages first, then npm on a periodic forward schedule. See [CHANGELOG.md](./CHANGELOG.md).
+**Version `0.10.0` — Phase 6 complete.** Latest on [GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript) (`@a-dev-kit/lombok-typescript@0.10.0`). **npmjs.org:** daily backfill in progress — `lombok-typescript@preview` advances one version per day (`0.1.0` → `0.10.0`). Git tags do **not** trigger npm publish during backfill. See [CHANGELOG.md](./CHANGELOG.md).
 
 **Phase 1:** `@NonNull`, `@ToString`, `@Builder`, `@Data`, `@Singleton`, `@Prototype`, `@Factory`, `@Memoize`
 
@@ -49,14 +49,14 @@ pnpm add @a-dev-kit/lombok-typescript@0.10.0
 
 Pin any released version (`0.1.0` through `0.10.0`). See [CONTRIBUTING.md — Release process](./CONTRIBUTING.md#release-process).
 
-**npmjs.org** (Phase 1 preview — forward releases periodic):
+**npmjs.org** (daily backfill — `preview` tag advances through `0.10.0`):
 
 ```bash
 npm install lombok-typescript@preview
-# resolves to 0.1.0 under the preview dist-tag
+# or pin: npm install lombok-typescript@0.2.0
 ```
 
-Newer versions publish to GitHub Packages first; npmjs.org updates on a deliberate forward schedule (not batch backfill).
+During backfill, one queue version (`0.2.0`–`0.10.0`) publishes per day via `npm-daily-backfill.yml`. After backfill completes, new git tags resume npm publish on `release.yml`.
 
 Local development:
 

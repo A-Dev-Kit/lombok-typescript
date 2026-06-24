@@ -77,8 +77,10 @@ jobs:
       - run: pnpm pack
       - name: Validate npmjs.org tarball (unscoped lombok-typescript)
         run: |
-          node scripts/npm-prepare.mjs
+          node scripts/npm-prepare.mjs 0.10.0
+          node scripts/validate-npm-readme.mjs 0.10.0
           npm publish --dry-run --registry=https://registry.npmjs.org
+          git checkout -- package.json README.md
       - run: node dist/cli/index.js --help
 
   examples:
