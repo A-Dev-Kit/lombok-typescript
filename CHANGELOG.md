@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-06-24
+
+Phase 6 — GoF marker decorators (batch queue slot 10).
+
+### Added
+
+- `@Adapter` — marker-only; documents API adaptation (`adapts` / `target` metadata)
+- `@Bridge` — marker-only; Bridge pattern intent
+- `@Facade` — marker-only; optional `subsystems` metadata
+- `@Mediator` — marker-only; mediator role
+- `@Interpreter` — marker-only; DSL interpreter role
+- `getGoFMarkerMetadata()` helper for tooling/tests
+- Docs-site Phase 6 pages; plain-ts `markers` example module
+
 ## [0.9.0] - 2026-06-18
 
 Phase 5 — TypeScript utility decorators (batch queue slot 9).

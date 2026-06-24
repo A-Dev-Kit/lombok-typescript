@@ -98,6 +98,15 @@ import {
   serializableExcludeFieldStage3,
   serializableTransformFieldStage3,
 } from '../shared/serializable.js';
+import {
+  adapterClassStage3,
+  bridgeClassStage3,
+  facadeClassStage3,
+  interpreterClassStage3,
+  mediatorClassStage3,
+  type AdapterOptions,
+  type FacadeOptions,
+} from '../shared/markers-gof.js';
 
 /** Validates field initial values are not null or undefined. */
 export const NonNull = defineFieldDecorator(nonNullFieldStage3);
@@ -412,6 +421,29 @@ export const Serializable = Object.assign(serializableClassDec, {
   Alias: SerializableAlias,
   Transform: SerializableTransform,
 });
+
+/** Marker-only — documents an adapter between two APIs (not `ValidatorAdapter`). */
+export function Adapter(options: AdapterOptions) {
+  return defineClassDecorator((backend, value, context) =>
+    adapterClassStage3(backend, value, context, options),
+  );
+}
+
+/** Marker-only — documents abstraction/implementation separation (Bridge pattern). */
+export const Bridge = defineClassDecorator(bridgeClassStage3);
+
+/** Marker-only — documents a simplified facade over subsystems. */
+export function Facade(options: FacadeOptions = {}) {
+  return defineClassDecorator((backend, value, context) =>
+    facadeClassStage3(backend, value, context, options),
+  );
+}
+
+/** Marker-only — documents a mediator coordination role. */
+export const Mediator = defineClassDecorator(mediatorClassStage3);
+
+/** Marker-only — documents an interpreter / DSL grammar role. */
+export const Interpreter = defineClassDecorator(interpreterClassStage3);
 
 export {
   createFromFactory,

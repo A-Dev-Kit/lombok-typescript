@@ -90,7 +90,14 @@ export {
   Serializable,
   SerializableAlias,
   SerializableTransform,
+  Adapter,
+  Bridge,
+  Facade,
+  Mediator,
+  Interpreter,
 } from '../decorators/stage3/index.js';
+export type { AdapterOptions, FacadeOptions } from '../decorators/shared/markers-gof.js';
+export { getGoFMarkerMetadata } from '../decorators/shared/markers-gof.js';
 
 /** Read the Stage 3 `Symbol.metadata` object from a class, if present. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

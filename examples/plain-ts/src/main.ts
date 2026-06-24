@@ -31,6 +31,7 @@ import {
 import { applyAllGenerated as applyStructuralGenerated } from '../.lombok/src/structural.lombok.js';
 import { demoPhase5Utilities, Profile, SignupDto } from './utilities.js';
 import { applyAllGenerated as applyUtilitiesGenerated } from '../.lombok/src/utilities.lombok.js';
+import { describeMarkers } from './markers.js';
 
 applyStructuralGenerated({
   DataExporter,
@@ -113,5 +114,6 @@ console.info('visitor square', square.accept(visitor));
 
 const phase5 = await demoPhase5Utilities();
 console.info('phase5 status', phase5.status, phase5.signupEmail, phase5.frozen);
+console.info('phase6 markers', describeMarkers());
 
 export { UserService };

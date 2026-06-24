@@ -94,6 +94,16 @@ export default defineConfig({
           { text: '@Serializable', link: '/decorators/serializable' },
         ],
       },
+      {
+        text: 'Decorators (Phase 6)',
+        items: [
+          { text: '@Adapter', link: '/decorators/adapter' },
+          { text: '@Bridge', link: '/decorators/bridge' },
+          { text: '@Facade', link: '/decorators/facade' },
+          { text: '@Mediator', link: '/decorators/mediator' },
+          { text: '@Interpreter', link: '/decorators/interpreter' },
+        ],
+      },
     ],
     socialLinks: [{ icon: 'github', link: 'https://github.com/A-Dev-Kit/lombok-typescript' }],
     editLink: {
