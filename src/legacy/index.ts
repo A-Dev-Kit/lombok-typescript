@@ -83,4 +83,11 @@ export {
   Serializable,
   SerializableAlias,
   SerializableTransform,
+  Adapter,
+  Bridge,
+  Facade,
+  Mediator,
+  Interpreter,
 } from '../decorators/legacy/index.js';
+export type { AdapterOptions, FacadeOptions } from '../decorators/shared/markers-gof.js';
+export { getGoFMarkerMetadata } from '../decorators/shared/markers-gof.js';
