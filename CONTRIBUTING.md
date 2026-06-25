@@ -96,17 +96,18 @@ Versions `0.2.0`/`0.3.0` share the Phase 2 merge tree; `0.5.0`/`0.6.0` share the
 
 Public npm publish uses the unscoped name **`lombok-typescript`** (ADR-17).
 
-| Mechanism                    | When                                                                                                  |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------- |
-| **`npm-daily-backfill.yml`** | While `NPM_BACKFILL_ACTIVE=true` — publishes next slot `0.2.0`–`0.10.0` once per day (14:00 UTC)      |
-| **`release.yml`**            | Manual `workflow_dispatch` only during backfill; **tag push disabled** until backfill ends            |
-| **Tag push → npm**           | After backfill: set `NPM_BACKFILL_ACTIVE=false` and restore `push: tags` on `release.yml` (see below) |
+| Mechanism                    | When                                                                                                               |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **`npm-daily-backfill.yml`** | While `NPM_BACKFILL_ACTIVE=true` — publishes next slot as `preview`, sets `latest` to previous version (14:00 UTC) |
+| **`release.yml`**            | Manual `workflow_dispatch` only during backfill; **tag push disabled** until backfill ends                         |
+| **Tag push → npm**           | After backfill: set `NPM_BACKFILL_ACTIVE=false` and restore `push: tags` on `release.yml` (see below)              |
 
 Repository variables:
 
 - `NPM_PUBLISH_ENABLED=true`
-- `NPM_DIST_TAG=preview` (until `0.10.0` on npm; then promote as needed)
 - `NPM_BACKFILL_ACTIVE=true` during daily backfill
+
+Dist-tags during backfill (no repo variable): each daily run publishes the next queue version as **`preview`** and moves **`latest`** to the previous version (e.g. publish `0.3.0` → `latest=0.2.0` + `preview=0.3.0`; next day publish `0.4.0` → `latest=0.3.0` + `preview=0.4.0`).
 
 Secret: `NPM_TOKEN` (granular token with publish scope, or Trusted Publishing when migrated).
 
@@ -115,7 +116,8 @@ Scripts:
 - `scripts/npm-prepare.mjs` — unscoped name, version, consumer `README.md` from `docs/npm-readme/{version}.md`
 - `scripts/npm-publish.mjs` — idempotent publish with provenance
 - `scripts/validate-npm-readme.mjs` — blocks internal/stale copy on npm
-- `scripts/npm-next-backfill-version.mjs` — next unpublished slot in `0.2.0`–`0.10.0`
+- `scripts/npm-backfill-plan.mjs` — next `latest` / `preview` pair and publish target
+- `scripts/npm-apply-dist-tags.mjs` — `npm dist-tag add` for `latest` and `preview`
 
 Consumer-facing npm readmes live in [`docs/npm-readme/`](../docs/npm-readme/). Regenerate templates: `node scripts/generate-npm-readmes.mjs`.
 
