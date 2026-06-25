@@ -98,7 +98,7 @@ Public npm publish uses the unscoped name **`lombok-typescript`** (ADR-17).
 
 | Mechanism                    | When                                                                                                               |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **`npm-daily-backfill.yml`** | While `NPM_BACKFILL_ACTIVE=true` — publishes next slot as `preview`, sets `latest` to previous version (14:00 UTC) |
+| **`npm-daily-backfill.yml`** | While `NPM_BACKFILL_ACTIVE=true` — publishes up to two slots per day (`latest` + `preview`), 14:00 UTC |
 | **`release.yml`**            | Manual `workflow_dispatch` only during backfill; **tag push disabled** until backfill ends                         |
 | **Tag push → npm**           | After backfill: set `NPM_BACKFILL_ACTIVE=false` and restore `push: tags` on `release.yml` (see below)              |
 
@@ -107,7 +107,7 @@ Repository variables:
 - `NPM_PUBLISH_ENABLED=true`
 - `NPM_BACKFILL_ACTIVE=true` during daily backfill
 
-Dist-tags during backfill (no repo variable): each daily run publishes the next queue version as **`preview`** and moves **`latest`** to the previous version (e.g. publish `0.3.0` → `latest=0.2.0` + `preview=0.3.0`; next day publish `0.4.0` → `latest=0.3.0` + `preview=0.4.0`).
+Dist-tags during backfill: when two or more slots remain, each daily run publishes **both** the next pair (e.g. `0.3.0` → `latest`, `0.4.0` → `preview`). When only `0.10.0` remains, it publishes as `preview` with `latest=0.9.0`.
 
 Secret: `NPM_TOKEN` (granular token with publish scope, or Trusted Publishing when migrated).
 

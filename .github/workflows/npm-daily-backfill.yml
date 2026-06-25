@@ -1,7 +1,7 @@
-# npm daily backfill: publish next queue version as `preview`, set `latest` to previous slot.
+# npm daily backfill: publish queue versions with rolling `latest` + `preview` dist-tags.
 #
-# Example: 0.2.0 on npm → publish 0.3.0 as preview, latest=0.2.0.
-# Next day → publish 0.4.0 as preview, latest=0.3.0.
+# When 2+ slots remain: publish both per run (e.g. 0.3.0 → latest, 0.4.0 → preview).
+# When 1 slot remains: publish 0.10.0 as preview, latest → 0.9.0.
 #
 # Requires: NPM_PUBLISH_ENABLED=true, NPM_BACKFILL_ACTIVE=true, NPM_TOKEN secret.
 
@@ -13,11 +13,11 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Force preview version to publish (e.g. 0.3.0); empty = next unpublished'
+        description: 'Force single-slot publish (e.g. 0.3.0); empty = auto plan'
         required: false
         type: string
       retag_only:
-        description: 'Only move dist-tags (no publish); use to set latest=0.2.0 before first preview'
+        description: 'Only move latest to newest published slot (no publish)'
         required: false
         type: boolean
         default: false
@@ -42,65 +42,88 @@ jobs:
       - name: Skip when backfill queue is complete
         if: steps.plan.outputs.skip == 'true'
         run: echo "Backfill queue complete. Set NPM_BACKFILL_ACTIVE=false and restore release.yml tag push."
-      - name: Checkout release tag
-        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.needs_publish == 'true'
-        run: git checkout "tags/${{ steps.plan.outputs.git_tag }}"
-      - name: Overlay npm scripts and README templates from main
-        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.needs_publish == 'true'
-        run: |
-          git fetch origin main --depth=1
-          git checkout origin/main -- scripts/npm-prepare.mjs scripts/npm-publish.mjs scripts/validate-npm-readme.mjs
-          git checkout origin/main -- scripts/npm-backfill-plan.mjs scripts/npm-apply-dist-tags.mjs
-          git checkout origin/main -- docs/npm-readme
-      - name: Set publish version
-        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.needs_publish == 'true'
-        run: echo "PUBLISH_VERSION=${{ steps.plan.outputs.publish_version }}" >> "$GITHUB_ENV"
       - uses: pnpm/action-setup@v6
-        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.needs_publish == 'true'
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.mode != 'retag-only'
       - uses: actions/setup-node@v6
-        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.needs_publish == 'true'
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.mode != 'retag-only'
         with:
           node-version: 24
           cache: pnpm
           registry-url: https://registry.npmjs.org
       - uses: actions/setup-node@v6
-        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.needs_publish != 'true'
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.mode == 'retag-only'
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
-      - name: Prepare package for npmjs.org
-        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.needs_publish == 'true'
+
+      - name: Publish latest slot (dual mode)
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.mode == 'dual' && steps.plan.outputs.needs_publish_latest == 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PUBLISH_VERSION: ${{ steps.plan.outputs.publish_latest }}
+          NPM_DIST_TAG: latest
+          GIT_TAG: v${{ steps.plan.outputs.publish_latest }}
+        run: bash scripts/npm-backfill-publish-one.sh
+
+      - name: Publish preview slot (dual mode)
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.mode == 'dual' && steps.plan.outputs.needs_publish_preview == 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PUBLISH_VERSION: ${{ steps.plan.outputs.publish_preview }}
+          NPM_DIST_TAG: preview
+          GIT_TAG: v${{ steps.plan.outputs.publish_preview }}
+        run: bash scripts/npm-backfill-publish-one.sh
+
+      - name: Checkout release tag (single mode)
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.mode == 'single' && steps.plan.outputs.needs_publish == 'true'
+        run: git checkout "tags/${{ steps.plan.outputs.git_tag }}"
+      - name: Overlay npm scripts and README templates from main (single)
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.mode == 'single' && steps.plan.outputs.needs_publish == 'true'
+        run: |
+          git fetch origin main --depth=1
+          git checkout origin/main -- scripts/npm-prepare.mjs scripts/npm-publish.mjs scripts/validate-npm-readme.mjs
+          git checkout origin/main -- scripts/npm-backfill-plan.mjs scripts/npm-apply-dist-tags.mjs scripts/npm-backfill-publish-one.sh
+          git checkout origin/main -- docs/npm-readme
+      - name: Set publish version (single)
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.mode == 'single' && steps.plan.outputs.needs_publish == 'true'
+        run: echo "PUBLISH_VERSION=${{ steps.plan.outputs.publish_version }}" >> "$GITHUB_ENV"
+      - name: Prepare package for npmjs.org (single)
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.mode == 'single' && steps.plan.outputs.needs_publish == 'true'
         run: node scripts/npm-prepare.mjs "$PUBLISH_VERSION"
-      - name: Validate npm README
-        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.needs_publish == 'true'
+      - name: Validate npm README (single)
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.mode == 'single' && steps.plan.outputs.needs_publish == 'true'
         run: node scripts/validate-npm-readme.mjs "$PUBLISH_VERSION"
       - run: pnpm install --frozen-lockfile
-        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.needs_publish == 'true'
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.mode == 'single' && steps.plan.outputs.needs_publish == 'true'
       - run: pnpm typecheck
-        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.needs_publish == 'true'
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.mode == 'single' && steps.plan.outputs.needs_publish == 'true'
       - run: pnpm test
-        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.needs_publish == 'true'
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.mode == 'single' && steps.plan.outputs.needs_publish == 'true'
       - run: pnpm build
-        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.needs_publish == 'true'
-      - name: Publish preview version to npmjs.org
-        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.needs_publish == 'true'
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.mode == 'single' && steps.plan.outputs.needs_publish == 'true'
+      - name: Publish preview version (single mode)
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.mode == 'single' && steps.plan.outputs.needs_publish == 'true'
         run: node scripts/npm-publish.mjs
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           PUBLISH_VERSION: ${{ env.PUBLISH_VERSION }}
           NPM_DIST_TAG: preview
+
       - name: Overlay dist-tag scripts from main
         if: steps.plan.outputs.skip != 'true'
         run: |
           git fetch origin main --depth=1
           git checkout origin/main -- scripts/npm-apply-dist-tags.mjs scripts/npm-backfill-plan.mjs
       - name: Apply latest and preview dist-tags
-        if: steps.plan.outputs.skip != 'true'
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.mode != 'retag-only'
         run: |
-          ARGS="${{ steps.plan.outputs.latest_version }}"
-          if [ -n "${{ steps.plan.outputs.preview_version }}" ]; then
-            ARGS="$ARGS ${{ steps.plan.outputs.preview_version }}"
-          fi
-          node scripts/npm-apply-dist-tags.mjs $ARGS
+          node scripts/npm-apply-dist-tags.mjs \
+            "${{ steps.plan.outputs.latest_version }}" \
+            "${{ steps.plan.outputs.preview_version }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Apply latest dist-tag only (retag-only)
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.mode == 'retag-only'
+        run: node scripts/npm-apply-dist-tags.mjs "${{ steps.plan.outputs.latest_version }}"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
