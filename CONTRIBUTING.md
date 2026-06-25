@@ -119,6 +119,8 @@ Scripts:
 
 Consumer-facing npm readmes live in [`docs/npm-readme/`](../docs/npm-readme/). Regenerate templates: `node scripts/generate-npm-readmes.mjs`.
 
+npm readmes must be **consumer-only**: install, decorators in that release, quick start, CLI summary, docs-site link. Do **not** include repo paths (`.lombok/`, `coverage/`), release-queue/version-chain wording, planning/CI links, or codegen internals (`applyAllGenerated`). `validate-npm-readme.mjs` enforces this before publish.
+
 #### Restoring tag-triggered npm (after slot 10 on npm)
 
 1. Confirm `0.1.0`–`0.10.0` are on [npmjs.org](https://www.npmjs.com/package/lombok-typescript).
