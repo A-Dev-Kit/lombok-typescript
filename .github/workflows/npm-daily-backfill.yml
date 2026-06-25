@@ -58,10 +58,15 @@ jobs:
       - uses: pnpm/action-setup@v6
         if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.needs_publish == 'true'
       - uses: actions/setup-node@v6
-        if: steps.plan.outputs.skip != 'true'
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.needs_publish == 'true'
         with:
           node-version: 24
           cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - uses: actions/setup-node@v6
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.needs_publish != 'true'
+        with:
+          node-version: 24
           registry-url: https://registry.npmjs.org
       - name: Prepare package for npmjs.org
         if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.needs_publish == 'true'
@@ -88,7 +93,7 @@ jobs:
         if: steps.plan.outputs.skip != 'true'
         run: |
           git fetch origin main --depth=1
-          git checkout origin/main -- scripts/npm-apply-dist-tags.mjs
+          git checkout origin/main -- scripts/npm-apply-dist-tags.mjs scripts/npm-backfill-plan.mjs
       - name: Apply latest and preview dist-tags
         if: steps.plan.outputs.skip != 'true'
         run: |
