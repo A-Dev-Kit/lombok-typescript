@@ -125,14 +125,12 @@ After codegen, call `applyAllGenerated` from the `.lombok/` companion file. See 
 
 ## CLI
 
-
 | Command              | Description                                   |
 | -------------------- | --------------------------------------------- |
 | `lombok-ts generate` | Emit `.lombok.ts` + `.lombok.d.ts` companions |
 | `lombok-ts init`     | Create `lombok.config.ts`                     |
 | `lombok-ts clean`    | Remove `.lombok/`, `dist/`, `coverage/`       |
 | `lombok-ts watch`    | Watch sources and regenerate on change        |
-
 
 ## Examples
 

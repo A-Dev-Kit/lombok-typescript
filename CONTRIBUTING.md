@@ -72,11 +72,11 @@ Optional: `gh release create vX.Y.Z --generate-notes`
 
 ### Install channels
 
-| Channel | Command |
-| ------- | ------- |
+| Channel         | Command                                          |
+| --------------- | ------------------------------------------------ |
 | GitHub Packages | `npm install @a-dev-kit/lombok-typescript@X.Y.Z` |
-| npm stable | `npm install lombok-typescript` |
-| npm preview | `npm install lombok-typescript@preview` |
+| npm stable      | `npm install lombok-typescript`                  |
+| npm preview     | `npm install lombok-typescript@preview`          |
 
 ## Architecture
 
