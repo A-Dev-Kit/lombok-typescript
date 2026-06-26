@@ -8,7 +8,7 @@
 | **Backends**            | `legacy`, `stage3`                |
 | **Requires `generate`** | No (declaration shim for `inner`) |
 
-Named `@Wraps` per [ADR-15](https://github.com/A-Dev-Kit/lombok-typescript-planning/blob/main/adr/0015-gof-decorator-pattern-naming.md) to avoid confusion with TypeScript decorators.
+Named `@Wraps` (not `@Decorator`) to avoid confusion with TypeScript decorators.
 
 ## Example
 

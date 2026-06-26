@@ -77,7 +77,7 @@ Validator adapters: `lombok-typescript/validators/{zod,yup,class-validator}` (op
 
 ## Phase 6 (v0.10.0) — Marker-only
 
-Complete GoF coverage with metadata-only decorators (no codegen). See [ADR-13](https://github.com/A-Dev-Kit/lombok-typescript-planning/blob/main/adr/0013-gof-coverage-strategy.md).
+Complete GoF coverage with metadata-only decorators (no codegen).
 
 | Decorator                                 | Kind         | Codegen? | Summary                            |
 | ----------------------------------------- | ------------ | -------- | ---------------------------------- |

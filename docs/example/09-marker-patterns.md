@@ -2,7 +2,7 @@
 
 > **Shipped in v0.10.0** — metadata-only GoF markers. No generated code.
 
-These five decorators complete GoF coverage per [ADR-13](https://github.com/A-Dev-Kit/lombok-typescript-planning/blob/main/adr/0013-gof-coverage-strategy.md). They store metadata and document intent; you still implement behavior by hand.
+These five decorators complete GoF coverage. They store metadata and document intent; you still implement behavior by hand.
 
 | Decorator      | Role                                         |
 | -------------- | -------------------------------------------- |
