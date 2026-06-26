@@ -1,13 +1,13 @@
 # lombok-typescript
 
-[Docs](https://a-dev-kit.github.io/lombok-typescript/)
-[GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript)
-[npm latest](https://www.npmjs.com/package/lombok-typescript)
-[npm preview](https://www.npmjs.com/package/lombok-typescript/v/preview)
-[coverage](https://codecov.io/gh/A-Dev-Kit/lombok-typescript)
-[Node](https://nodejs.org/)
-[TypeScript](https://www.typescriptlang.org/)
-[License: MIT](./LICENSE)
+[![Docs](https://img.shields.io/badge/docs-a--dev--kit.github.io-5c6bc0?style=flat-square)](https://a-dev-kit.github.io/lombok-typescript/)
+[![GitHub Packages](https://img.shields.io/badge/GitHub%20Packages-lombok--typescript-24292f?style=flat-square&logo=github)](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript)
+[![npm latest](https://img.shields.io/npm/v/lombok-typescript/latest?label=latest&logo=npm&color=CB3837)](https://www.npmjs.com/package/lombok-typescript)
+[![npm preview](https://img.shields.io/npm/v/lombok-typescript/preview?label=preview&logo=npm&color=CB3837)](https://www.npmjs.com/package/lombok-typescript/v/preview)
+[![codecov](https://codecov.io/gh/A-Dev-Kit/lombok-typescript/graph/badge.svg)](https://codecov.io/gh/A-Dev-Kit/lombok-typescript)
+[![Node](https://img.shields.io/badge/node-%E2%89%A522-brightgreen?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-%E2%89%A56.0-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 **Documentation:** [a-dev-kit.github.io/lombok-typescript](https://a-dev-kit.github.io/lombok-typescript/) — full guides and decorator reference.
 
