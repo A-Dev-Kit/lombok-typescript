@@ -1,0 +1,25 @@
+# Dispatches GitHub Packages publish workflow.
+
+name: Dispatch tag publish
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.PLANNING_DISPATCH_TOKEN }}
+          repository: A-Dev-Kit/lombok-typescript-planning
+          event-type: tag-push
+          client-payload: |
+            {
+              "tag_ref": "${{ github.ref }}",
+              "version": "${{ github.ref_name }}"
+            }

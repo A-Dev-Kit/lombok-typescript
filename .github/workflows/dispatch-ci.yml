@@ -1,0 +1,31 @@
+# Dispatches CI to organization workflows.
+
+name: Dispatch CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    # Skip fork PRs (no dispatch token on untrusted branches).
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.PLANNING_DISPATCH_TOKEN }}
+          repository: A-Dev-Kit/lombok-typescript-planning
+          event-type: ${{ github.event_name == 'pull_request' && 'ci-pr' || 'ci-push' }}
+          client-payload: |
+            {
+              "ref": "${{ github.ref }}",
+              "sha": "${{ github.sha }}",
+              "head_sha": "${{ github.event.pull_request.head.sha || github.sha }}",
+              "head_repo": "${{ github.event.pull_request.head.repo.full_name || github.repository }}"
+            }

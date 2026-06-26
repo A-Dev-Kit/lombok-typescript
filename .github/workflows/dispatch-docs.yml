@@ -1,0 +1,26 @@
+# Dispatches docs deploy workflow.
+
+name: Dispatch docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.PLANNING_DISPATCH_TOKEN }}
+          repository: A-Dev-Kit/lombok-typescript-planning
+          event-type: docs-push
+          client-payload: |
+            {
+              "ref": "${{ github.ref }}",
+              "sha": "${{ github.sha }}"
+            }

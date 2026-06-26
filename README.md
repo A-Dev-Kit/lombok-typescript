@@ -1,47 +1,33 @@
 # lombok-typescript
 
-[![CI](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/ci.yml/badge.svg)](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/ci.yml)
-[![Docs](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/docs.yml/badge.svg)](https://a-dev-kit.github.io/lombok-typescript/)
-[![Publish GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/publish-github-packages.yml/badge.svg)](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/publish-github-packages.yml)
-[![GitHub Packages](https://img.shields.io/github/v/tag/A-Dev-Kit/lombok-typescript?label=GitHub%20Packages&logo=github&color=24292f)](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript)
-[![npm](https://img.shields.io/npm/v/lombok-typescript?label=npm&logo=npm&color=CB3837)](https://www.npmjs.com/package/lombok-typescript)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
-[![coverage](https://img.shields.io/codecov/c/github/A-Dev-Kit/lombok-typescript/main?label=coverage)](https://codecov.io/gh/A-Dev-Kit/lombok-typescript)
-[![Node](https://img.shields.io/badge/node-%E2%89%A522-brightgreen)](https://nodejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-%E2%89%A56.0-blue?logo=typescript)](https://www.typescriptlang.org/)
+[Docs](https://a-dev-kit.github.io/lombok-typescript/)
+[GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript)
+[npm latest](https://www.npmjs.com/package/lombok-typescript)
+[npm preview](https://www.npmjs.com/package/lombok-typescript/v/preview)
+[coverage](https://codecov.io/gh/A-Dev-Kit/lombok-typescript)
+[Node](https://nodejs.org/)
+[TypeScript](https://www.typescriptlang.org/)
+[License: MIT](./LICENSE)
 
-**Documentation:** [a-dev-kit.github.io/lombok-typescript](https://a-dev-kit.github.io/lombok-typescript/) — full guides and decorator reference. This README is a quick technical entry point.
+**Documentation:** [a-dev-kit.github.io/lombok-typescript](https://a-dev-kit.github.io/lombok-typescript/) — full guides and decorator reference.
 
-A TypeScript port of Java's [Project Lombok](https://projectlombok.org/) with Gang-of-Four design patterns as decorators. Legacy `experimentalDecorators` and Stage 3 ECMAScript decorators are supported side-by-side.
+A TypeScript library inspired by Java's [Project Lombok](https://projectlombok.org/) and Gang-of-Four design patterns, delivered as decorators with compile-time codegen. Supports legacy `experimentalDecorators` and Stage 3 ECMAScript decorators via separate entry points. NestJS-friendly.
 
-## Status
+## What you get
 
-**Version `0.10.0` — Phase 6 complete.** Latest on [GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript) (`@a-dev-kit/lombok-typescript@0.10.0`). **npmjs.org:** daily backfill in progress — each run publishes the next version as `@preview` and moves `@latest` to the previous slot (`latest` = stable, `preview` = one version ahead). Git tags do **not** trigger npm publish during backfill. See [CHANGELOG.md](./CHANGELOG.md).
-
-**Phase 1:** `@NonNull`, `@ToString`, `@Builder`, `@Data`, `@Singleton`, `@Prototype`, `@Factory`, `@Memoize`
-
-**Phase 2 (v0.2.0–v0.4.0):** `@Value`, `@With`, `@Equals`, `@Getter`, `@Setter`, `@Log`, `@Accessors`, `@UtilityClass`, `@FieldDefaults`, `@Delegate`, plus CLI `watch` mode.
-
-**Phase 3 (v0.5.0–v0.6.0):** `@Strategy`, `@State`, `@Command`, `@Memento`, `@Observable`, `@ChainOfResponsibility`, `@Iterable`, observer adapters.
-
-**Phase 4a (v0.7.0):** `@Flyweight`, `@Proxy`, `@Composite`.
-
-**Phase 4b (v0.8.0):** `@Wraps`, `@Hook`, `@TemplateMethod`, `@AbstractFactory`, `@Visitor` / `@Visitable`.
-
-**Phase 5 (v0.9.0):** `@Retry`, `@Debounce`, `@Throttle`, `@Trace`, `@DeepFreeze`, `@Validate`, `@Serializable`.
-
-**Phase 6 (v0.10.0):** `@Adapter`, `@Bridge`, `@Facade`, `@Mediator`, `@Interpreter` (marker-only).
+- **Lombok-style codegen** — `@Data`, `@Builder`, `@Getter`/`@Setter`, `@Value`, `@With`, `@Equals`, `@ToString`, `@NonNull`, `@Log`, `@Accessors`, `@UtilityClass`, `@FieldDefaults`, `@Delegate`
+- **Design-pattern decorators** — creational (`@Singleton`, `@Factory`, …), behavioral (`@Strategy`, `@Observer`, …), structural (`@Proxy`, `@Composite`, …)
+- **TypeScript utilities** — `@Memoize`, `@Retry`, `@Validate`, `@Debounce`, `@Throttle`, `@Trace`, `@Serializable`, `@DeepFreeze`
+- **Dual decorator APIs** — `./legacy` for NestJS and existing decorator stacks; `./stage3` for TS 6.0+ without `experimentalDecorators`
+- **CLI** — `lombok-ts init`, `generate`, `clean`, `watch`
 
 ## Install
 
-From **GitHub Packages** (active today):
+### GitHub Packages (full release line)
 
 ```bash
 # .npmrc in your project (or user-level)
 echo "@a-dev-kit:registry=https://npm.pkg.github.com" >> .npmrc
-
-# Authenticate — use a GitHub PAT with read:packages (local dev)
-# npm login --registry=https://npm.pkg.github.com
 
 pnpm add @a-dev-kit/lombok-typescript@0.10.0
 # or: npm install @a-dev-kit/lombok-typescript@0.10.0
@@ -49,23 +35,51 @@ pnpm add @a-dev-kit/lombok-typescript@0.10.0
 
 Pin any released version (`0.1.0` through `0.10.0`). See [CONTRIBUTING.md — Release process](./CONTRIBUTING.md#release-process).
 
-**npmjs.org** (daily backfill — `latest` + `preview` dist-tags):
+### npmjs.org
 
 ```bash
-npm install lombok-typescript              # current latest on npm
-npm install lombok-typescript@preview      # next version (one ahead)
+npm install lombok-typescript              # @latest — current stable on npm
+npm install lombok-typescript@preview      # @preview — one version ahead
 ```
 
-Local development:
+`@latest` is the current stable release; `@preview` is one version ahead.
+
+### Local development
 
 ```bash
 git clone https://github.com/A-Dev-Kit/lombok-typescript.git
 cd lombok-typescript && pnpm install && pnpm build && pnpm link --global
 ```
 
+## Decorator catalog
+
+### Lombok-style
+
+`@NonNull`, `@ToString`, `@Builder`, `@Data`, `@Value`, `@With`, `@Equals`, `@Getter`, `@Setter`, `@Log`, `@Accessors`, `@UtilityClass`, `@FieldDefaults`, `@Delegate`
+
+### Creational patterns
+
+`@Singleton`, `@Prototype`, `@Factory`, `@AbstractFactory`
+
+### Behavioral patterns
+
+`@Strategy`, `@State`, `@Command`, `@Memento`, `@Observable`, `@ChainOfResponsibility`, `@Iterable`, `@Visitor`, `@Visitable`, `@Hook`, `@TemplateMethod`
+
+### Structural patterns
+
+`@Flyweight`, `@Proxy`, `@Composite`, `@Wraps`
+
+### TypeScript utilities
+
+`@Memoize`, `@Retry`, `@Validate`, `@Debounce`, `@Throttle`, `@Trace`, `@Serializable`, `@DeepFreeze`
+
+### Marker decorators
+
+`@Adapter`, `@Bridge`, `@Facade`, `@Mediator`, `@Interpreter` — document intent; no generated code in v0.10.0.
+
 ## Pick a decorator standard
 
-### Legacy (`@a-dev-kit/lombok-typescript/legacy`)
+### Legacy (`lombok-typescript/legacy`)
 
 For NestJS, TypeORM, and most existing decorator-based projects.
 
@@ -73,7 +87,7 @@ For NestJS, TypeORM, and most existing decorator-based projects.
 { "compilerOptions": { "experimentalDecorators": true, "emitDecoratorMetadata": true } }
 ```
 
-### Stage 3 (`@a-dev-kit/lombok-typescript/stage3`)
+### Stage 3 (`lombok-typescript/stage3`)
 
 For TS 6.0+ projects without `experimentalDecorators`.
 
@@ -111,12 +125,14 @@ After codegen, call `applyAllGenerated` from the `.lombok/` companion file. See 
 
 ## CLI
 
+
 | Command              | Description                                   |
 | -------------------- | --------------------------------------------- |
 | `lombok-ts generate` | Emit `.lombok.ts` + `.lombok.d.ts` companions |
 | `lombok-ts init`     | Create `lombok.config.ts`                     |
 | `lombok-ts clean`    | Remove `.lombok/`, `dist/`, `coverage/`       |
 | `lombok-ts watch`    | Watch sources and regenerate on change        |
+
 
 ## Examples
 

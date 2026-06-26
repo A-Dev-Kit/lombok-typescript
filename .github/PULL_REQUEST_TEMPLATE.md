@@ -16,7 +16,7 @@ Merge alone does **not** publish. After merge to `main`:
 - [ ] CI green on the merge commit
 - [ ] `package.json` version matches the release (e.g. `0.8.0`)
 - [ ] Tag pushed: `git tag -a vX.Y.Z -m "vX.Y.Z" && git push origin vX.Y.Z`
-- [ ] [Publish GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/publish-github-packages.yml) workflow succeeded
-- [ ] Planning repo `RELEASE_QUEUE.md` slot updated
+- [ ] New version visible on [GitHub Packages](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript)
+- [ ] New version visible on [npmjs.org](https://www.npmjs.com/package/lombok-typescript) when applicable
 
 See [CONTRIBUTING.md — Release process](./CONTRIBUTING.md#release-process).
