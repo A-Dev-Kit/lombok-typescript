@@ -4,10 +4,11 @@
 [![GitHub Packages](https://img.shields.io/github/v/tag/A-Dev-Kit/lombok-typescript?label=GitHub%20Packages&color=24292f&logo=github)](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript)
 [![npm latest](https://img.shields.io/npm/v/lombok-typescript/latest?label=latest&logo=npm&color=007ec6)](https://www.npmjs.com/package/lombok-typescript)
 [![npm preview](https://img.shields.io/npm/v/lombok-typescript/preview?label=preview&logo=npm&color=007ec6)](https://www.npmjs.com/package/lombok-typescript/v/preview)
+[![docs deploy](https://img.shields.io/github/actions/workflow/status/A-Dev-Kit/lombok-typescript/deploy-pages.yml?branch=main&label=docs&logo=github&color=5c6bc0)](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/deploy-pages.yml)
 
-[![CI](https://img.shields.io/github/actions/workflow/status/A-Dev-Kit/lombok-typescript-planning/ci.yml?branch=main&label=CI&logo=github&color=4c1)](https://github.com/A-Dev-Kit/lombok-typescript-planning/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/checks-status/A-Dev-Kit/lombok-typescript/main?label=ci%2Fplanning&color=4c1)](https://github.com/A-Dev-Kit/lombok-typescript-planning/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/A-Dev-Kit/lombok-typescript/graph/badge.svg)](https://codecov.io/gh/A-Dev-Kit/lombok-typescript)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com%2FA-Dev-Kit%2Flombok-typescript/badge)](https://securityscorecards.dev/viewer/?uri=github.com/A-Dev-Kit/lombok-typescript)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/A-Dev-Kit/lombok-typescript/badge)](https://scorecard.dev/viewer/?uri=github.com/A-Dev-Kit/lombok-typescript)
 [![Node.js](https://img.shields.io/badge/Node.js-22+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0+-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-007ec6.svg)](./LICENSE)
@@ -16,7 +17,7 @@
 [![deps.dev](https://img.shields.io/badge/deps.dev-package-007ec6?logo=googlechrome)](https://deps.dev/npm/lombok-typescript)
 [![Socket](https://img.shields.io/badge/Socket-Supply%20Chain%2078-007ec6?logo=socket)](https://socket.dev/npm/package/lombok-typescript)
 [![npm downloads](https://img.shields.io/npm/dm/lombok-typescript?label=downloads&color=007ec6&logo=npm)](https://www.npmjs.com/package/lombok-typescript)
-[![Snyk](https://img.shields.io/snyk/vulnerabilities/npm/lombok-typescript?label=snyk&color=007ec6)](https://snyk.io/advisor/npm-package/lombok-typescript)
+[![Snyk](https://img.shields.io/badge/Snyk-monitored-007ec6?logo=snyk)](https://snyk.io/advisor/npm-package/lombok-typescript)
 
 **Documentation:** [a-dev-kit.github.io/lombok-typescript](https://a-dev-kit.github.io/lombok-typescript/) — full guides and decorator reference.
 
