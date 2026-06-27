@@ -1,0 +1,51 @@
+# Build and deploy VitePress docs via GitHub Actions Pages (no gh-pages branch).
+# Triggered by repository_dispatch from lombok-typescript-planning docs.yml.
+
+name: Deploy Pages
+
+on:
+  repository_dispatch:
+    types: [docs-deploy]
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Commit SHA to deploy (defaults to main)
+        required: false
+        default: main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.client_payload.sha || inputs.sha || 'main' }}
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.34.3
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --dir docs-site install
+      - run: pnpm --dir docs-site build
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs-site/.vitepress/dist
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

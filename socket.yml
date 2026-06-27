@@ -1,0 +1,11 @@
+version: 2
+
+projectIgnorePaths:
+  - "docs-site/**"
+  - "examples/**"
+
+githubApp:
+  enabled: true
+  dependencyOverviewEnabled: true
+  pullRequestAlertsEnabled: true
+  projectReportsEnabled: true

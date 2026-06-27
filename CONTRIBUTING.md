@@ -14,6 +14,8 @@ pnpm build
 
 Requires Node 22+ and pnpm 10+.
 
+Optional peer dependencies (`class-validator`, `zod`, `yup`, etc.) may be auto-installed locally via pnpm `autoInstallPeers` for integration tests. They are **not** bundled in the published npm tarball (`files` is limited to `dist`, `README.md`, `LICENSE`).
+
 ## CI
 
 Push and pull request events run automated checks via GitHub Actions. All required status checks must pass before merge.
