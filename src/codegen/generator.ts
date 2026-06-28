@@ -208,6 +208,7 @@ function matchesGlob(filePath: string, pattern: string): boolean {
   const regex = new RegExp(
     '^' +
       pattern
+        .replace(/\\/g, '\\\\')
         .replace(/[.+^$()|[\]{}]/g, '\\$&')
         .replace(/\*\*\//g, '__GLOBSTAR_SLASH__')
         .replace(/\*\*/g, '__GLOBSTAR__')
