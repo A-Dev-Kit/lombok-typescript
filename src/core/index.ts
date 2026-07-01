@@ -12,3 +12,10 @@ export type {
 } from './types.js';
 export { MetadataKeys, METADATA_KEY_PREFIX } from './metadata-keys.js';
 export type { MetadataKey } from './metadata-keys.js';
+export {
+  registerLombokPlugin,
+  getLombokPlugin,
+  listLombokPlugins,
+  clearLombokPlugins,
+} from './plugins.js';
+export type { LombokPlugin } from './plugins.js';

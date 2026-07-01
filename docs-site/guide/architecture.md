@@ -46,11 +46,19 @@ Companion files import your sources with `.js` extensions and paths relative to 
 | `lombok-typescript/codegen` | Generator types (advanced)   |
 | `lombok-typescript`         | `defineConfig`, shared entry |
 
+## NestJS (Phase 7)
+
+| Package                     | Role                                                         |
+| --------------------------- | ------------------------------------------------------------ |
+| `@lombok-typescript/nestjs` | `LombokModule`, `@LogNest`, scope helpers (opt-in satellite) |
+
+See [NestJS integration](/guide/nestjs-integration).
+
 ## v0.1 limitations
 
 - `@Data` does not replace your class constructor; generated getters/setters are mixed onto the prototype via `apply*Generated`.
 - `@Builder` builds instances by assigning fields after `new Class()` — your class needs assignable properties.
-- `lombok-ts watch` is a Phase 2 stub.
-- NestJS integration is via examples only; no `@nestjs/lombok` satellite package yet.
+- `lombok-ts watch` regenerates companions on file changes (Phase 2+).
+- NestJS: use `@lombok-typescript/nestjs` for `LombokModule` and `@LogNest` (see [NestJS integration](/guide/nestjs-integration)).
 
 See [Examples](/guide/examples) for end-to-end projects.
