@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { Injectable } from '@nestjs/common';
+import { LogNest } from '@lombok-typescript/nestjs';
 import {
   Factory,
   Memoize,
@@ -10,6 +11,7 @@ import {
 @Injectable()
 @Singleton
 export class AppService {
+  @LogNest({ context: 'AppService' })
   @Memoize()
   greet(name: string): string {
     return `Hello, ${name}!`;
