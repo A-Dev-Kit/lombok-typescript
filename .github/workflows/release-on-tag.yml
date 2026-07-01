@@ -5,6 +5,12 @@ name: Release on tag
 on:
   push:
     tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to publish (e.g. v1.0.0); defaults to ref when run on a tag'
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -14,8 +20,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      packages: write
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          ref: ${{ inputs.tag || github.ref }}
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
         with:
           version: 10.34.3
@@ -23,12 +32,29 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@a-dev-kit'
+      - name: Set version from tag
+        run: |
+          if [ -n "${{ inputs.tag }}" ]; then
+            V="${{ inputs.tag }}"
+          else
+            V="${{ github.ref_name }}"
+          fi
+          echo "PUBLISH_VERSION=${V#v}" >> "$GITHUB_ENV"
+          echo "RELEASE_TAG=${V}" >> "$GITHUB_ENV"
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:all
+      - name: Publish to GitHub Packages
+        run: node scripts/publish-github-packages.mjs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLISH_VERSION: ${{ env.PUBLISH_VERSION }}
       - name: Pack dist tarball
-        run: tar -czf lombok-typescript-${{ github.ref_name }}.tar.gz dist
+        run: tar -czf lombok-typescript-${{ env.RELEASE_TAG }}.tar.gz dist
       - name: Create GitHub Release
         uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b # v3.0.1
         with:
-          files: lombok-typescript-${{ github.ref_name }}.tar.gz
+          tag_name: ${{ env.RELEASE_TAG }}
+          files: lombok-typescript-${{ env.RELEASE_TAG }}.tar.gz
           generate_release_notes: true
