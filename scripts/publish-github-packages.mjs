@@ -66,7 +66,15 @@ if (isV1Plus) {
   const nestPkgPath = 'packages/nestjs/package.json';
   const nestPkg = JSON.parse(readFileSync(nestPkgPath, 'utf8'));
   nestPkg.version = version;
+  // GitHub Packages scope must match the org owner (A-Dev-Kit → @a-dev-kit).
+  nestPkg.name = '@a-dev-kit/nestjs';
   nestPkg.publishConfig = { registry };
   writeFileSync(nestPkgPath, `${JSON.stringify(nestPkg, null, 2)}\n`);
-  publish('packages/nestjs', '@lombok-typescript/nestjs');
+  try {
+    publish('packages/nestjs', '@a-dev-kit/nestjs');
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`Warning: @a-dev-kit/nestjs GitHub Packages publish failed: ${message}`);
+    console.warn('Core @a-dev-kit/lombok-typescript publish succeeded; nestjs remains on npm as @lombok-typescript/nestjs.');
+  }
 }

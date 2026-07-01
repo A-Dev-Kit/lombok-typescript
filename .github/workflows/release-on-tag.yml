@@ -45,11 +45,6 @@ jobs:
           echo "RELEASE_TAG=${V}" >> "$GITHUB_ENV"
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:all
-      - name: Publish to GitHub Packages
-        run: node scripts/publish-github-packages.mjs
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PUBLISH_VERSION: ${{ env.PUBLISH_VERSION }}
       - name: Pack dist tarball
         run: tar -czf lombok-typescript-${{ env.RELEASE_TAG }}.tar.gz dist
       - name: Create GitHub Release
@@ -58,3 +53,8 @@ jobs:
           tag_name: ${{ env.RELEASE_TAG }}
           files: lombok-typescript-${{ env.RELEASE_TAG }}.tar.gz
           generate_release_notes: true
+      - name: Publish to GitHub Packages
+        run: node scripts/publish-github-packages.mjs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLISH_VERSION: ${{ env.PUBLISH_VERSION }}
