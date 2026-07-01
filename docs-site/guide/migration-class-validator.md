@@ -16,12 +16,12 @@ import '@lombok-typescript/validators/class-validator';
 
 ## Mapping
 
-| class-validator | lombok-typescript |
-|-----------------|-------------------|
-| `@IsEmail()` on field | `@Validate([IsEmail()])` |
-| `@MinLength(8)` | `@Validate([MinLength(8)])` |
-| `@IsOptional()` | Optional field `?` + validators |
-| DTO class | `@Validate` fields + `@Injectable()` in Nest |
+| class-validator       | lombok-typescript                            |
+| --------------------- | -------------------------------------------- |
+| `@IsEmail()` on field | `@Validate([IsEmail()])`                     |
+| `@MinLength(8)`       | `@Validate([MinLength(8)])`                  |
+| `@IsOptional()`       | Optional field `?` + validators              |
+| DTO class             | `@Validate` fields + `@Injectable()` in Nest |
 
 ## NestJS example
 

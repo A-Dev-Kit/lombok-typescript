@@ -1,8 +1,5 @@
 import { Logger } from '@nestjs/common';
-import {
-  defineClassDecorator,
-  defineMethodDecorator,
-} from '@a-dev-kit/lombok-typescript/legacy';
+import { defineClassDecorator, defineMethodDecorator } from '@a-dev-kit/lombok-typescript/legacy';
 import type { PropertyName } from '@a-dev-kit/lombok-typescript/core';
 
 export interface LogNestOptions {
@@ -31,7 +28,10 @@ function nestLogLevel(
   }
 }
 
-function wrapClassWithNestLogger(target: new (...args: unknown[]) => unknown, options: LogNestOptions = {}): void {
+function wrapClassWithNestLogger(
+  target: new (...args: unknown[]) => unknown,
+  options: LogNestOptions = {},
+): void {
   const logger = new Logger(options.context ?? target.name);
   const proto = target.prototype as Record<string, unknown>;
 
@@ -56,7 +56,8 @@ function wrapMethodWithNestLogger(
 ): PropertyDescriptor {
   const original = descriptor.value;
   if (typeof original !== 'function') return descriptor;
-  const className = (targetPrototype as { constructor?: { name?: string } }).constructor?.name ?? 'Method';
+  const className =
+    (targetPrototype as { constructor?: { name?: string } }).constructor?.name ?? 'Method';
   const logger = new Logger(options.context ?? className);
   const methodName = String(propertyKey);
   return {

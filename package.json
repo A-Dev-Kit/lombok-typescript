@@ -76,7 +76,7 @@
     "build:watch": "tsup --watch",
     "dev": "tsx watch src/index.ts",
     "test": "vitest run",
-    "test:all": "vitest run && pnpm --dir packages/nestjs test",
+    "test:all": "vitest run && pnpm build && pnpm --dir packages/nestjs test",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",

@@ -4,7 +4,11 @@ export {
   DEFAULT_LOMBOK_NEST_CONFIG,
   lombokNestConfigProvider,
 } from './lombok.constants.js';
-export type { LombokNestConfig, NestProviderScope, LombokNestDynamicModule } from './lombok.constants.js';
+export type {
+  LombokNestConfig,
+  NestProviderScope,
+  LombokNestDynamicModule,
+} from './lombok.constants.js';
 export { LogNest } from './log-nest.js';
 export type { LogNestOptions } from './log-nest.js';
 export { MemoizeNest } from './memoize-nest.js';

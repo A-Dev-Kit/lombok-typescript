@@ -48,8 +48,8 @@ Companion files import your sources with `.js` extensions and paths relative to 
 
 ## NestJS (Phase 7)
 
-| Package | Role |
-|---------|------|
+| Package                     | Role                                                         |
+| --------------------------- | ------------------------------------------------------------ |
 | `@lombok-typescript/nestjs` | `LombokModule`, `@LogNest`, scope helpers (opt-in satellite) |
 
 See [NestJS integration](/guide/nestjs-integration).

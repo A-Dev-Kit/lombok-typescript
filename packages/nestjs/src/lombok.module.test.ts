@@ -1,10 +1,7 @@
 import 'reflect-metadata';
 import { Test } from '@nestjs/testing';
 import { describe, expect, it } from 'vitest';
-import {
-  DEFAULT_LOMBOK_NEST_CONFIG,
-  LOMBOK_NEST_CONFIG,
-} from './lombok.constants.js';
+import { DEFAULT_LOMBOK_NEST_CONFIG, LOMBOK_NEST_CONFIG } from './lombok.constants.js';
 import { LombokModule } from './lombok.module.js';
 
 describe('LombokModule', () => {

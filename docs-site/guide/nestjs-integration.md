@@ -27,24 +27,24 @@ export class AppModule {}
 
 ## Decorators
 
-| Export | Purpose |
-|--------|---------|
-| `LombokModule.forRoot()` | Global config token (`LOMBOK_NEST_CONFIG`) |
-| `@LogNest` | `@Log` using Nest `Logger` |
-| `@MemoizeNest` | `@Memoize` with REQUEST-scope guidance |
-| `@RetryNest` | `@Retry` with interceptor composition notes |
-| `NEST_SCOPE_GUIDANCE` | Scope advisory table |
+| Export                   | Purpose                                     |
+| ------------------------ | ------------------------------------------- |
+| `LombokModule.forRoot()` | Global config token (`LOMBOK_NEST_CONFIG`)  |
+| `@LogNest`               | `@Log` using Nest `Logger`                  |
+| `@MemoizeNest`           | `@Memoize` with REQUEST-scope guidance      |
+| `@RetryNest`             | `@Retry` with interceptor composition notes |
+| `NEST_SCOPE_GUIDANCE`    | Scope advisory table                        |
 
 Runnable example: [examples/nestjs](https://github.com/A-Dev-Kit/lombok-typescript/tree/main/examples/nestjs).
 
 ## Provider scope
 
-| Decorator | Recommended `@Injectable` scope | Notes |
-|-----------|-----------------------------------|-------|
-| `@Singleton` | `DEFAULT` | One instance per Nest container |
-| `@Memoize` / `@MemoizeNest` | `REQUEST` for per-request cache | Singleton + memoize can leak request data |
-| `@Flyweight` | `DEFAULT` | Pool is process-wide |
-| `@Retry` / `@RetryNest` | `DEFAULT` | Method-level; use interceptors for HTTP retry |
+| Decorator                   | Recommended `@Injectable` scope | Notes                                         |
+| --------------------------- | ------------------------------- | --------------------------------------------- |
+| `@Singleton`                | `DEFAULT`                       | One instance per Nest container               |
+| `@Memoize` / `@MemoizeNest` | `REQUEST` for per-request cache | Singleton + memoize can leak request data     |
+| `@Flyweight`                | `DEFAULT`                       | Pool is process-wide                          |
+| `@Retry` / `@RetryNest`     | `DEFAULT`                       | Method-level; use interceptors for HTTP retry |
 
 ## Interceptors
 

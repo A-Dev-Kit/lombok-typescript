@@ -16,17 +16,20 @@ export const NEST_SCOPE_GUIDANCE: readonly ScopeGuidanceRow[] = [
   {
     decorator: '@Memoize / @MemoizeNest',
     defaultScope: 'REQUEST',
-    notes: 'Cache is per decorated method closure. On REQUEST-scoped providers each request gets a fresh instance and cache.',
+    notes:
+      'Cache is per decorated method closure. On REQUEST-scoped providers each request gets a fresh instance and cache.',
   },
   {
     decorator: '@Flyweight',
     defaultScope: 'DEFAULT',
-    notes: 'Shared pool is process-wide; avoid storing request-specific state in flyweight instances.',
+    notes:
+      'Shared pool is process-wide; avoid storing request-specific state in flyweight instances.',
   },
   {
     decorator: '@Retry / @RetryNest',
     defaultScope: 'DEFAULT',
-    notes: 'Method-level retries run inside the handler. Use Nest interceptors for HTTP-level retry policies.',
+    notes:
+      'Method-level retries run inside the handler. Use Nest interceptors for HTTP-level retry policies.',
   },
 ];
 
