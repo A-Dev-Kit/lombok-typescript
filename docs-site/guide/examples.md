@@ -25,16 +25,19 @@ pnpm exec tsc --noEmit
 
 **Path:** [examples/nestjs](https://github.com/A-Dev-Kit/lombok-typescript/tree/main/examples/nestjs)
 
-Shows interoperability with `@nestjs/common` decorators:
+Shows interoperability with `@nestjs/common` and **`@lombok-typescript/nestjs`**:
 
-- `@Injectable()` + `@Singleton` on `AppService`
+- `LombokModule.forRoot()` in `AppModule`
+- `@Injectable()` + `@Singleton` + `@LogNest` on `AppService`
 - `@Factory` registry with `createFromFactory`
 - `@Memoize` on service methods
+- `@Validate` + class-validator on `CreateUserDto`
 
 ```bash
 cd examples/nestjs
 node ../../dist/cli/index.js generate
 pnpm exec tsc --noEmit
+pnpm start
 ```
 
 ## What to try
