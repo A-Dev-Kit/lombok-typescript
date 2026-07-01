@@ -12,54 +12,104 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./core": {
-      "types": "./dist/core/index.d.ts",
-      "import": "./dist/core/index.js",
-      "require": "./dist/core/index.cjs"
+      "import": {
+        "types": "./dist/core/index.d.ts",
+        "default": "./dist/core/index.js"
+      },
+      "require": {
+        "types": "./dist/core/index.d.cts",
+        "default": "./dist/core/index.cjs"
+      }
     },
     "./legacy": {
-      "types": "./dist/legacy/index.d.ts",
-      "import": "./dist/legacy/index.js",
-      "require": "./dist/legacy/index.cjs"
+      "import": {
+        "types": "./dist/legacy/index.d.ts",
+        "default": "./dist/legacy/index.js"
+      },
+      "require": {
+        "types": "./dist/legacy/index.d.cts",
+        "default": "./dist/legacy/index.cjs"
+      }
     },
     "./stage3": {
-      "types": "./dist/stage3/index.d.ts",
-      "import": "./dist/stage3/index.js",
-      "require": "./dist/stage3/index.cjs"
+      "import": {
+        "types": "./dist/stage3/index.d.ts",
+        "default": "./dist/stage3/index.js"
+      },
+      "require": {
+        "types": "./dist/stage3/index.d.cts",
+        "default": "./dist/stage3/index.cjs"
+      }
     },
     "./codegen": {
-      "types": "./dist/codegen/index.d.ts",
-      "import": "./dist/codegen/index.js",
-      "require": "./dist/codegen/index.cjs"
+      "import": {
+        "types": "./dist/codegen/index.d.ts",
+        "default": "./dist/codegen/index.js"
+      },
+      "require": {
+        "types": "./dist/codegen/index.d.cts",
+        "default": "./dist/codegen/index.cjs"
+      }
     },
     "./observers/rxjs": {
-      "types": "./dist/observers/rxjs.d.ts",
-      "import": "./dist/observers/rxjs.js",
-      "require": "./dist/observers/rxjs.cjs"
+      "import": {
+        "types": "./dist/observers/rxjs.d.ts",
+        "default": "./dist/observers/rxjs.js"
+      },
+      "require": {
+        "types": "./dist/observers/rxjs.d.cts",
+        "default": "./dist/observers/rxjs.cjs"
+      }
     },
     "./observers/mobx": {
-      "types": "./dist/observers/mobx.d.ts",
-      "import": "./dist/observers/mobx.js",
-      "require": "./dist/observers/mobx.cjs"
+      "import": {
+        "types": "./dist/observers/mobx.d.ts",
+        "default": "./dist/observers/mobx.js"
+      },
+      "require": {
+        "types": "./dist/observers/mobx.d.cts",
+        "default": "./dist/observers/mobx.cjs"
+      }
     },
     "./validators/zod": {
-      "types": "./dist/validators/zod.d.ts",
-      "import": "./dist/validators/zod.js",
-      "require": "./dist/validators/zod.cjs"
+      "import": {
+        "types": "./dist/validators/zod.d.ts",
+        "default": "./dist/validators/zod.js"
+      },
+      "require": {
+        "types": "./dist/validators/zod.d.cts",
+        "default": "./dist/validators/zod.cjs"
+      }
     },
     "./validators/yup": {
-      "types": "./dist/validators/yup.d.ts",
-      "import": "./dist/validators/yup.js",
-      "require": "./dist/validators/yup.cjs"
+      "import": {
+        "types": "./dist/validators/yup.d.ts",
+        "default": "./dist/validators/yup.js"
+      },
+      "require": {
+        "types": "./dist/validators/yup.d.cts",
+        "default": "./dist/validators/yup.cjs"
+      }
     },
     "./validators/class-validator": {
-      "types": "./dist/validators/class-validator.d.ts",
-      "import": "./dist/validators/class-validator.js",
-      "require": "./dist/validators/class-validator.cjs"
+      "import": {
+        "types": "./dist/validators/class-validator.d.ts",
+        "default": "./dist/validators/class-validator.js"
+      },
+      "require": {
+        "types": "./dist/validators/class-validator.d.cts",
+        "default": "./dist/validators/class-validator.cjs"
+      }
     }
   },
   "bin": {
@@ -71,12 +121,13 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup",
-    "build:all": "tsup && pnpm --dir packages/nestjs build",
+    "gen-version": "node scripts/gen-version.mjs",
+    "build": "node scripts/gen-version.mjs && tsup",
+    "build:all": "node scripts/gen-version.mjs && tsup && pnpm --dir packages/nestjs build",
     "build:watch": "tsup --watch",
     "dev": "tsx watch src/index.ts",
     "test": "vitest run",
-    "test:all": "vitest run && pnpm build && pnpm --dir packages/nestjs test",
+    "test:all": "vitest run && pnpm build && pnpm --dir packages/nestjs test && pnpm --dir examples/commonjs-serverless typecheck",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
@@ -84,7 +135,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "node scripts/gen-version.mjs && tsc --noEmit",
     "clean": "rm -rf dist .lombok coverage .tsbuildinfo",
     "prepublishOnly": "pnpm run build"
   },

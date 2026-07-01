@@ -1,14 +1,20 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { CLI_NAME, CLI_VERSION, buildCli } from './index.js';
+
+const pkgVersion = JSON.parse(
+  readFileSync(resolve(import.meta.dirname, '../../package.json'), 'utf8'),
+).version as string;
 
 describe('CLI metadata', () => {
   it('exports a stable name', () => {
     expect(CLI_NAME).toBe('lombok-ts');
   });
 
-  it('exports a version string', () => {
+  it('exports a version string matching package.json', () => {
     expect(typeof CLI_VERSION).toBe('string');
-    expect(CLI_VERSION).toMatch(/\d+\.\d+\.\d+/);
+    expect(CLI_VERSION).toBe(pkgVersion);
   });
 });
 

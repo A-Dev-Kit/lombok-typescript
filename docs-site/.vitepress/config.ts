@@ -28,6 +28,7 @@ export default defineConfig({
           { text: 'Configuration', link: '/guide/configuration' },
           { text: 'CLI', link: '/guide/cli' },
           { text: 'Examples', link: '/guide/examples' },
+          { text: 'CommonJS and Serverless', link: '/guide/commonjs-and-serverless' },
           { text: 'NestJS integration', link: '/guide/nestjs-integration' },
           { text: 'Migration: Java Lombok', link: '/guide/migration-java-lombok' },
           { text: 'Migration: class-validator', link: '/guide/migration-class-validator' },

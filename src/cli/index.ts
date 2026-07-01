@@ -6,8 +6,10 @@ import { runGenerate } from './commands/generate.js';
 import { runInit } from './commands/init.js';
 import { runWatch } from './commands/watch.js';
 
+import { CLI_VERSION } from '../version.js';
+
 export const CLI_NAME = 'lombok-ts';
-export const CLI_VERSION = '0.6.0-pre';
+export { CLI_VERSION };
 
 /**
  * Build a fresh cac CLI instance. Exposed as a function (rather than a

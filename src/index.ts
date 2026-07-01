@@ -2,7 +2,7 @@
  * `lombok-typescript`: a TypeScript port of Project Lombok plus GoF design
  * patterns as decorators.
  *
- * Sub-paths:
+ * Decorators such as `@Data` and `@Builder` live on sub-paths (not this entry):
  * - `lombok-typescript/legacy`: legacy `experimentalDecorators` backend
  * - `lombok-typescript/stage3`: Stage 3 ECMAScript decorators backend
  * - `lombok-typescript/core`: backend-agnostic primitives
@@ -31,4 +31,4 @@ export type {
   CodegenConfig,
 } from './config.js';
 
-export const VERSION = '0.6.0-pre';
+export { VERSION } from './version.js';

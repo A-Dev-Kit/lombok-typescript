@@ -1,6 +1,6 @@
 # Examples
 
-Runnable examples live in the repository under `examples/`. CI runs `lombok-ts generate` and `tsc --noEmit` on both after every build.
+Runnable examples live in the repository under `examples/`. CI runs `lombok-ts generate` and `tsc --noEmit` on plain-ts and nestjs after every build; **commonjs-serverless** is typechecked on every PR.
 
 ## plain-ts
 
@@ -20,6 +20,19 @@ cd examples/plain-ts
 node ../../dist/cli/index.js generate
 pnpm exec tsc --noEmit
 ```
+
+## commonjs-serverless
+
+**Path:** [examples/commonjs-serverless](https://github.com/A-Dev-Kit/lombok-typescript/tree/main/examples/commonjs-serverless)
+
+Minimal **CommonJS** consumer (`module: commonjs`, `moduleResolution: nodenext`) importing `@Data` / `@Builder` from `/legacy`. Mirrors Serverless Framework projects that have not migrated to ESM.
+
+```bash
+cd examples/commonjs-serverless
+pnpm typecheck
+```
+
+See [CommonJS and Serverless](/guide/commonjs-and-serverless) for tsconfig requirements and troubleshooting.
 
 ## nestjs
 

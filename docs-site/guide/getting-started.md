@@ -2,7 +2,13 @@
 
 ## Install
 
-The package is **not on npm yet** (v0.1.0 code-complete). Use a local clone:
+Published on [npm](https://www.npmjs.com/package/lombok-typescript) (rolling `latest` / `preview` during the backfill window) and as `@a-dev-kit/lombok-typescript` on GitHub Packages:
+
+```bash
+npm install lombok-typescript@latest
+```
+
+For local development:
 
 ```bash
 git clone https://github.com/A-Dev-Kit/lombok-typescript.git
@@ -10,12 +16,6 @@ cd lombok-typescript
 pnpm install
 pnpm build
 pnpm link --global   # optional: use lombok-ts from anywhere
-```
-
-When published:
-
-```bash
-npm install lombok-typescript@preview
 ```
 
 ## Pick a backend
@@ -118,6 +118,7 @@ console.info(user.toString());
 
 ## Next steps
 
+- [CommonJS and Serverless](/guide/commonjs-and-serverless) — `module: commonjs` without full ESM migration
 - [CLI](/guide/cli) — all commands and flags
-- [Examples](/guide/examples) — plain-ts and nestjs sample apps
+- [Examples](/guide/examples) — plain-ts, commonjs-serverless, and nestjs sample apps
 - [Decorator overview](/decorators/overview) — per-decorator reference
