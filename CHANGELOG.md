@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 7 — NestJS satellite (v1.0.0)
+
+- New package `@lombok-typescript/nestjs`: `LombokModule.forRoot()`, `@LogNest`, `@MemoizeNest`, `@RetryNest`, scope guidance
+- Core: `registerLombokPlugin()` in `lombok-typescript/core`
+- Docs: NestJS integration + Java Lombok + class-validator migration guides
+- Example: `examples/nestjs` uses `LombokModule` and `@LogNest`
+
 ## [0.10.0] - 2026-06-24
 
 Phase 6 — GoF marker decorators (batch queue slot 10).
