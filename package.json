@@ -72,9 +72,11 @@
   ],
   "scripts": {
     "build": "tsup",
+    "build:all": "tsup && pnpm --dir packages/nestjs build",
     "build:watch": "tsup --watch",
     "dev": "tsx watch src/index.ts",
     "test": "vitest run",
+    "test:all": "vitest run && pnpm --dir packages/nestjs test",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
