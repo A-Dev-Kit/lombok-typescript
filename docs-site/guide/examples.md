@@ -38,7 +38,7 @@ See [CommonJS and Serverless](/guide/commonjs-and-serverless) for tsconfig requi
 
 **Path:** [examples/nestjs](https://github.com/A-Dev-Kit/lombok-typescript/tree/main/examples/nestjs)
 
-Shows interoperability with `@nestjs/common` and **`@lombok-typescript/nestjs`**:
+Shows interoperability with `@nestjs/common` and the built-in **`lombok-typescript/nestjs`** entry point:
 
 - `LombokModule.forRoot()` in `AppModule`
 - `@Injectable()` + `@Singleton` + `@LogNest` on `AppService`

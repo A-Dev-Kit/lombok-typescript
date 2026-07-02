@@ -63,6 +63,10 @@ export default defineConfig({
     exclude: ['node_modules', '**/*.test.ts', '**/*.spec.ts', 'dist', '.lombok'],
     tsConfigPath: 'tsconfig.json',
     watch: false,
+    // Package specifier that generated companion files import runtime helpers
+    // from (e.g. `runValidation` for @Validate). Defaults to the npm name.
+    // Set this to '@a-dev-kit/lombok-typescript' if you installed from GitHub Packages.
+    packageName: 'lombok-typescript',
   },
 });
 ```
@@ -99,7 +103,7 @@ export default defineConfig({
 A few NestJS-specific things to know:
 
 - `@Singleton` overlaps with NestJS provider scope (which is singleton by default within a module). Don't stack them; pick one per class.
-- The `@Log` adapter for NestJS's built-in `Logger` ships in Phase 7 alongside the `@lombok-typescript/nestjs` satellite package.
+- The `@Log` adapter for NestJS's built-in `Logger` (`@LogNest`) ships in the core package via the `lombok-typescript/nestjs` entry point.
 
 ## Loading the config programmatically
 

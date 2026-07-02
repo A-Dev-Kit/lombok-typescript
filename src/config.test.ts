@@ -54,13 +54,14 @@ describe('LombokConfig type surface', () => {
 });
 
 describe('CodegenConfig type', () => {
-  it('exposes outputDir, include, exclude, tsConfigPath, watch', () => {
+  it('exposes outputDir, include, exclude, tsConfigPath, watch, packageName', () => {
     expectTypeOf<CodegenConfig>().toMatchObjectType<{
       outputDir: string;
       include: string[];
       exclude: string[];
       tsConfigPath: string;
       watch: boolean;
+      packageName: string;
     }>();
   });
 });

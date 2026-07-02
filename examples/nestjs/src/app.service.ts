@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Injectable } from '@nestjs/common';
-import { LogNest } from '@lombok-typescript/nestjs';
+import { LogNest } from '@a-dev-kit/lombok-typescript/nestjs';
 import {
   Factory,
   Memoize,

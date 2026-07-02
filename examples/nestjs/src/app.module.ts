@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { LombokModule } from '@lombok-typescript/nestjs';
+import { LombokModule } from '@a-dev-kit/lombok-typescript/nestjs';
 import { AppService, EmailNotifier, SmsNotifier } from './app.service.js';
 
 @Module({

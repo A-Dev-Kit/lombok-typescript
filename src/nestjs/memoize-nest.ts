@@ -1,4 +1,4 @@
-import { Memoize } from '@a-dev-kit/lombok-typescript/legacy';
+import { Memoize } from '../legacy/index.js';
 
 export type MemoizeNestOptions = NonNullable<Parameters<typeof Memoize>[0]> & {
   /**

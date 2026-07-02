@@ -1,6 +1,6 @@
 {
   "name": "@a-dev-kit/lombok-typescript",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
@@ -110,6 +110,16 @@
         "types": "./dist/validators/class-validator.d.cts",
         "default": "./dist/validators/class-validator.cjs"
       }
+    },
+    "./nestjs": {
+      "import": {
+        "types": "./dist/nestjs/index.d.ts",
+        "default": "./dist/nestjs/index.js"
+      },
+      "require": {
+        "types": "./dist/nestjs/index.d.cts",
+        "default": "./dist/nestjs/index.cjs"
+      }
     }
   },
   "bin": {
@@ -123,19 +133,20 @@
   "scripts": {
     "gen-version": "node scripts/gen-version.mjs",
     "build": "node scripts/gen-version.mjs && tsup",
-    "build:all": "node scripts/gen-version.mjs && tsup && pnpm --dir packages/nestjs build",
+    "build:all": "node scripts/gen-version.mjs && tsup",
     "build:watch": "tsup --watch",
     "dev": "tsx watch src/index.ts",
-    "test": "vitest run",
-    "test:all": "vitest run && pnpm build && pnpm --dir packages/nestjs test && pnpm --dir examples/commonjs-serverless typecheck",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "test": "node scripts/gen-version.mjs && vitest run",
+    "test:all": "pnpm test && pnpm build && pnpm --dir examples/commonjs-serverless typecheck",
+    "test:watch": "node scripts/gen-version.mjs && vitest",
+    "test:coverage": "node scripts/gen-version.mjs && vitest run --coverage",
     "test:ui": "vitest --ui",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "node scripts/gen-version.mjs && tsc --noEmit",
+    "check:exports": "pnpm build && attw --pack . --profile node16 && publint",
     "clean": "rm -rf dist .lombok coverage .tsbuildinfo",
     "prepublishOnly": "pnpm run build"
   },
@@ -175,7 +186,11 @@
     "node": ">=22.0.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.0",
     "@eslint/js": "^10.0.1",
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/core": "^11.0.0",
+    "@nestjs/testing": "^11.0.0",
     "@types/node": "^26.0.1",
     "@vitest/coverage-v8": "^4.1.9",
     "@vitest/ui": "^4.1.9",
@@ -184,6 +199,7 @@
     "globals": "^17.7.0",
     "mobx": "^6.15.0",
     "prettier": "^3.9.1",
+    "publint": "^0.3.0",
     "rxjs": "^7.8.2",
     "yup": "^1.6.0",
     "zod": "^3.24.0",
@@ -205,7 +221,9 @@
     "mobx": ">=6.0.0",
     "zod": ">=3.0.0",
     "yup": ">=1.0.0",
-    "class-validator": ">=0.14.0"
+    "class-validator": ">=0.14.0",
+    "@nestjs/common": "^10.0.0 || ^11.0.0",
+    "@nestjs/core": "^10.0.0 || ^11.0.0"
   },
   "peerDependenciesMeta": {
     "rxjs": {
@@ -221,6 +239,12 @@
       "optional": true
     },
     "class-validator": {
+      "optional": true
+    },
+    "@nestjs/common": {
+      "optional": true
+    },
+    "@nestjs/core": {
       "optional": true
     }
   }
