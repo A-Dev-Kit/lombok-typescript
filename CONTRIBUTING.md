@@ -67,8 +67,7 @@ Publishing to GitHub Packages and npmjs.org is **fully automated** after you pus
    git tag -a vX.Y.Z -m "vX.Y.Z"
    git push origin vX.Y.Z
    ```
-4. Verify the new version appears on [GitHub Packages](https://github.com/orgs/A-Dev-Kit/packages/npm/package/a-dev-kit-lombok-typescript).
-5. When npm publish is enabled, verify the matching version on [npmjs.org](https://www.npmjs.com/package/lombok-typescript).
+4. Verify the new version appears on [GitHub Packages](https://github.com/orgs/A-Dev-Kit/packages/npm/package/a-dev-kit-lombok-typescript) and [npmjs.org](https://www.npmjs.com/package/lombok-typescript) (`latest` moves forward automatically).
 
 Optional: `gh release create vX.Y.Z --generate-notes`
 

@@ -1,4 +1,5 @@
-# Dispatches GitHub Packages publish workflow.
+# Dispatches planning repo on version tags: npm publish + tag validation.
+# GitHub Packages + GitHub Release run in release-on-tag.yml on the same tag push.
 
 name: Dispatch tag publish
 
