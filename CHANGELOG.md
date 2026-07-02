@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-07-02
+
+### Added
+
+- **NestJS support built into the core package** via the `lombok-typescript/nestjs` entry point: `LombokModule`, `@LogNest`, `@MemoizeNest`, `@RetryNest`, and scope guidance. `@nestjs/common` and `@nestjs/core` are optional peer dependencies.
+- Interop verification: `attw` (Are the Types Wrong) and `publint` gate the package `exports` map across node16 (CJS/ESM) and bundler resolution, in CI and via `pnpm check:exports`.
+
+### Changed
+
+- The NestJS integration is no longer a separate `@lombok-typescript/nestjs` package — it ships inside `lombok-typescript`. Import from `lombok-typescript/nestjs`.
+- Docs: expanded the Java Lombok migration guide (constructors, `@SneakyThrows`, `@Cleanup`, `@SuperBuilder`, and previously-unmapped shipped decorators); fixed the public README CI badge; standardized install/import examples on the npm package name.
+
+### Removed
+
+- Standalone `@lombok-typescript/nestjs` package (folded into core).
+
 ## [1.0.1] - 2026-07-02
 
 ### Fixed

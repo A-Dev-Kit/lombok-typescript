@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
-import { defineClassDecorator, defineMethodDecorator } from '@a-dev-kit/lombok-typescript/legacy';
-import type { PropertyName } from '@a-dev-kit/lombok-typescript/core';
+import { defineClassDecorator, defineMethodDecorator } from '../legacy/index.js';
+import type { PropertyName } from '../core/index.js';
 
 export interface LogNestOptions {
   /** Logger context. Defaults to the class name. */

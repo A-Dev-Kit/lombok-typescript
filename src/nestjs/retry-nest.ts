@@ -1,4 +1,4 @@
-import { Retry } from '@a-dev-kit/lombok-typescript/legacy';
+import { Retry } from '../legacy/index.js';
 
 export type RetryNestOptions = NonNullable<Parameters<typeof Retry>[0]> & {
   /**

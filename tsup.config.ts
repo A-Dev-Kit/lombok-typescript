@@ -13,6 +13,7 @@ export default defineConfig({
     'validators/zod': 'src/validators/zod.ts',
     'validators/yup': 'src/validators/yup.ts',
     'validators/class-validator': 'src/validators/class-validator.ts',
+    'nestjs/index': 'src/nestjs/index.ts',
   },
   format: ['esm', 'cjs'],
   dts: {
@@ -35,6 +36,8 @@ export default defineConfig({
     'zod',
     'yup',
     'class-validator',
+    '@nestjs/common',
+    '@nestjs/core',
   ],
   outExtension({ format }) {
     return { js: format === 'cjs' ? '.cjs' : '.js' };
