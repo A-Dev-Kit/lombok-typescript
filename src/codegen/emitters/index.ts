@@ -1,5 +1,6 @@
 import { dirname, relative } from 'node:path';
 import { validateAllClassCompositions } from '../../decorators/shared/composition.js';
+import { DEFAULT_PACKAGE_NAME } from '../types.js';
 import type { ClassInfo } from '../types.js';
 import { emitAccessorApplyAssignments, emitAccessorFns } from './accessors-emit.js';
 import { emitAbstractFactoryMixin } from './abstract-factory-emit.js';
@@ -26,7 +27,11 @@ import { emitTemplateMethodApplyAssignment, emitTemplateMethodFn } from './templ
 import { emitSerializableApplyAssignment, emitSerializableMethods } from './serializable-emit.js';
 import { emitVisitableAcceptApplyAssignment, emitVisitableAcceptFn } from './visitor-emit.js';
 
-function emitImports(classes: readonly ClassInfo[], importPath: string): string {
+function emitImports(
+  classes: readonly ClassInfo[],
+  importPath: string,
+  packageName: string,
+): string {
   const names = classes.filter(hasCodegenClassDecorator).map((c) => c.name);
   const productTypes = new Set<string>();
   for (const info of classes) {
@@ -45,9 +50,7 @@ function emitImports(classes: readonly ClassInfo[], importPath: string): string 
     importLines.push(`import type { ${extraProducts.join(', ')} } from '${importPath}';`);
   }
   if (needsValidateImport(classes)) {
-    importLines.push(
-      `import { runValidation } from '@a-dev-kit/lombok-typescript/validators/zod';`,
-    );
+    importLines.push(`import { runValidation } from '${packageName}/validators/zod';`);
   }
   if (needsZodImport(classes)) {
     importLines.push(`import { z } from 'zod';`);
@@ -178,6 +181,7 @@ export function emitCompanionFile(
   companionOutputPath: string,
   classes: readonly ClassInfo[],
   cwd: string,
+  packageName: string = DEFAULT_PACKAGE_NAME,
 ): { ts: string; dts: string } {
   validateAllClassCompositions(classes);
 
@@ -206,7 +210,7 @@ export function emitCompanionFile(
           .join('\n')}\n}\n`
       : '\nexport {};\n';
 
-  const imports = emitImports(classes, importPath);
+  const imports = emitImports(classes, importPath, packageName);
   const ts = header + imports + blocks.join('\n\n') + applyAll;
   const dts = emitDeclarationShim(sourcePath, companionOutputPath, classes);
 

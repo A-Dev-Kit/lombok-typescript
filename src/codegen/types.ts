@@ -1,3 +1,10 @@
+/**
+ * Package specifier used in generated companion-file imports of runtime helpers
+ * (e.g. the validator adapter). Defaults to the npm name, since that is how most
+ * consumers install the package.
+ */
+export const DEFAULT_PACKAGE_NAME = 'lombok-typescript';
+
 export interface GeneratorOptions {
   /** Where generated files go. Default `.lombok`. */
   outputDir: string;
@@ -13,6 +20,13 @@ export interface GeneratorOptions {
 
   /** Path to the project's tsconfig. Default `tsconfig.json`. */
   tsConfigPath: string;
+
+  /**
+   * Package specifier that generated companion files import runtime helpers from.
+   * Default {@link DEFAULT_PACKAGE_NAME} (`'lombok-typescript'`, the npm name).
+   * GitHub Packages consumers should set this to `'@a-dev-kit/lombok-typescript'`.
+   */
+  packageName: string;
 }
 
 export interface GeneratedFile {

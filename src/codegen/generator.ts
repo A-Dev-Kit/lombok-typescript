@@ -3,6 +3,7 @@ import { dirname, relative, resolve } from 'node:path';
 import { Project } from 'ts-morph';
 import { analyzeFile } from './analyzer.js';
 import { emitCompanionFile } from './emitters/index.js';
+import { DEFAULT_PACKAGE_NAME } from './types.js';
 import type { ClassInfo, GeneratedFile, GeneratorOptions } from './types.js';
 
 const DEFAULT_OPTIONS: GeneratorOptions = {
@@ -11,6 +12,7 @@ const DEFAULT_OPTIONS: GeneratorOptions = {
   include: ['src/**/*.ts'],
   exclude: ['node_modules', '**/*.test.ts', '**/*.spec.ts', 'dist', '.lombok'],
   tsConfigPath: 'tsconfig.json',
+  packageName: DEFAULT_PACKAGE_NAME,
 };
 
 /**
@@ -48,7 +50,13 @@ export class CodeGenerator {
 
       const sourcePath = sourceFile.getFilePath();
       const outputPath = this.computeOutputPath(sourcePath);
-      const { ts, dts } = emitCompanionFile(sourcePath, outputPath, classes, process.cwd());
+      const { ts, dts } = emitCompanionFile(
+        sourcePath,
+        outputPath,
+        classes,
+        process.cwd(),
+        this.options.packageName,
+      );
       const content = ts;
 
       this.writeOutput(outputPath, content);
@@ -76,7 +84,13 @@ export class CodeGenerator {
     if (classes.length === 0) return null;
 
     const outputPath = this.computeOutputPath(filePath);
-    const { ts, dts } = emitCompanionFile(filePath, outputPath, classes, process.cwd());
+    const { ts, dts } = emitCompanionFile(
+      filePath,
+      outputPath,
+      classes,
+      process.cwd(),
+      this.options.packageName,
+    );
     const content = ts;
     this.writeOutput(outputPath, content);
     this.writeOutput(outputPath.replace(/\.lombok\.ts$/u, '.lombok.augment.d.ts'), dts);

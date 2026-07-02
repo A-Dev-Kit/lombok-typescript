@@ -50,6 +50,14 @@ export interface CodegenConfig {
 
   /** Watch for source changes and regenerate companions. Default `false`. */
   watch: boolean;
+
+  /**
+   * Package specifier that generated companion files import runtime helpers from
+   * (e.g. `runValidation` for `@Validate`). Default `'lombok-typescript'` — the
+   * npm name, which is how most consumers install the package. Set this to
+   * `'@a-dev-kit/lombok-typescript'` if you installed from GitHub Packages.
+   */
+  packageName: string;
 }
 
 /**
