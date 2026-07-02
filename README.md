@@ -42,7 +42,7 @@ pnpm add @a-dev-kit/lombok-typescript@0.10.0
 # or: npm install @a-dev-kit/lombok-typescript@0.10.0
 ```
 
-Pin any released version (`0.1.0` through `0.10.0`). See [CONTRIBUTING.md — Release process](./CONTRIBUTING.md#release-process).
+Pin any released version (`0.1.0` through `1.0.1`). See [CONTRIBUTING.md — Release process](./CONTRIBUTING.md#release-process).
 
 ### npmjs.org
 

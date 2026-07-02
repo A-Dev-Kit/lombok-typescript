@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-07-02
+
+### Fixed
+
+- npm tarball README: remove legacy `preview` dist-tag badge and install instructions (npm page only; no code changes)
+
 ## [1.0.0] - 2026-06-18
 
 Phase 7 — NestJS satellite (batch queue slot 11).
