@@ -5,7 +5,7 @@
 [![npm latest](https://img.shields.io/npm/v/lombok-typescript/latest?label=latest&logo=npm&color=007ec6)](https://www.npmjs.com/package/lombok-typescript)
 [![docs deploy](https://img.shields.io/github/actions/workflow/status/A-Dev-Kit/lombok-typescript/deploy-pages.yml?branch=main&label=docs&logo=github&color=5c6bc0)](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/deploy-pages.yml)
 
-[![CI](https://img.shields.io/github/actions/workflow/status/A-Dev-Kit/lombok-typescript-planning/ci.yml?branch=main&label=ci%2Fplanning&color=4c1)](https://github.com/A-Dev-Kit/lombok-typescript-planning/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/checks-status/A-Dev-Kit/lombok-typescript/main?label=CI&logo=github)](https://github.com/A-Dev-Kit/lombok-typescript/commits/main)
 [![codecov](https://codecov.io/gh/A-Dev-Kit/lombok-typescript/graph/badge.svg)](https://codecov.io/gh/A-Dev-Kit/lombok-typescript)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/A-Dev-Kit/lombok-typescript/badge)](https://scorecard.dev/viewer/?uri=github.com/A-Dev-Kit/lombok-typescript)
 [![Node.js](https://img.shields.io/badge/Node.js-22+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
@@ -14,7 +14,7 @@
 
 [![bundle size](https://img.shields.io/bundlephobia/minzip/lombok-typescript?label=bundle%20size&color=007ec6)](https://bundlephobia.com/package/lombok-typescript)
 [![deps.dev](https://img.shields.io/badge/deps.dev-package-007ec6?logo=googlechrome)](https://deps.dev/npm/lombok-typescript)
-[![Socket](https://img.shields.io/badge/Socket-Supply%20Chain%2078-007ec6?logo=socket)](https://socket.dev/npm/package/lombok-typescript)
+[![Socket](https://img.shields.io/badge/Socket-monitored-007ec6?logo=socket)](https://socket.dev/npm/package/lombok-typescript)
 [![npm downloads](https://img.shields.io/npm/dm/lombok-typescript?label=downloads&color=007ec6&logo=npm)](https://www.npmjs.com/package/lombok-typescript)
 [![Snyk](https://img.shields.io/badge/Snyk-monitored-007ec6?logo=snyk)](https://snyk.io/advisor/npm-package/lombok-typescript)
 
@@ -32,25 +32,26 @@ A TypeScript library inspired by Java's [Project Lombok](https://projectlombok.o
 
 ## Install
 
+> **Package name differs by registry:** on **npm** it is `lombok-typescript`; on **GitHub Packages** it is `@a-dev-kit/lombok-typescript`. The examples in this README use the npm name.
+
+### npmjs.org (recommended)
+
+```bash
+npm install lombok-typescript              # resolves to the latest release
+# pin a version: npm install lombok-typescript@1.1.0
+```
+
 ### GitHub Packages (full release line)
 
 ```bash
 # .npmrc in your project (or user-level)
 echo "@a-dev-kit:registry=https://npm.pkg.github.com" >> .npmrc
 
-pnpm add @a-dev-kit/lombok-typescript@0.10.0
-# or: npm install @a-dev-kit/lombok-typescript@0.10.0
+pnpm add @a-dev-kit/lombok-typescript@1.1.0
+# or: npm install @a-dev-kit/lombok-typescript@1.1.0
 ```
 
-Pin any released version (`0.1.0` through `1.0.1`). See [CONTRIBUTING.md — Release process](./CONTRIBUTING.md#release-process).
-
-### npmjs.org
-
-```bash
-npm install lombok-typescript              # @latest — current release on npm
-```
-
-`npm install lombok-typescript` resolves to the `latest` dist-tag.
+Pin any released version (`0.1.0` through `1.1.0`). See [CONTRIBUTING.md — Release process](./CONTRIBUTING.md#release-process).
 
 ### Local development
 
@@ -83,7 +84,7 @@ cd lombok-typescript && pnpm install && pnpm build && pnpm link --global
 
 ### Marker decorators
 
-`@Adapter`, `@Bridge`, `@Facade`, `@Mediator`, `@Interpreter` — document intent; no generated code in v0.10.0.
+`@Adapter`, `@Bridge`, `@Facade`, `@Mediator`, `@Interpreter` — document intent; no generated code.
 
 ## Pick a decorator standard
 
@@ -111,7 +112,7 @@ npx lombok-ts generate
 ```
 
 ```ts
-import { Data, Builder, NonNull, Memoize, Singleton } from '@a-dev-kit/lombok-typescript/legacy';
+import { Data, Builder, NonNull, Memoize, Singleton } from 'lombok-typescript/legacy';
 
 @Data
 @Builder
@@ -130,6 +131,20 @@ class Cache {
 ```
 
 After codegen, call `applyAllGenerated` from the `.lombok/` companion file. See the [getting started guide](https://a-dev-kit.github.io/lombok-typescript/guide/getting-started).
+
+## NestJS
+
+NestJS support ships in the core package via the `lombok-typescript/nestjs` entry point — no separate install. It requires `@nestjs/common` and `@nestjs/core` (already present in a Nest app) as optional peers.
+
+```ts
+import { Module } from '@nestjs/common';
+import { LombokModule, LogNest } from 'lombok-typescript/nestjs';
+
+@Module({ imports: [LombokModule.forRoot({ logAdapter: 'nest' })] })
+export class AppModule {}
+```
+
+See the [NestJS integration guide](https://a-dev-kit.github.io/lombok-typescript/guide/nestjs-integration).
 
 ## CLI
 
