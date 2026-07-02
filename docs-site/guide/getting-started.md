@@ -2,7 +2,7 @@
 
 ## Install
 
-Published on [npm](https://www.npmjs.com/package/lombok-typescript) (rolling `latest` / `preview` during the backfill window) and as `@a-dev-kit/lombok-typescript` on GitHub Packages:
+Published on [npm](https://www.npmjs.com/package/lombok-typescript) (`latest` dist-tag) and as `@a-dev-kit/lombok-typescript` on GitHub Packages:
 
 ```bash
 npm install lombok-typescript@latest

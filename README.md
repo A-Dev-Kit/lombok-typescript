@@ -1,12 +1,11 @@
 # lombok-typescript
 
 [![Docs](https://img.shields.io/badge/docs-a--dev--kit.github.io-5c6bc0?style=flat-square)](https://a-dev-kit.github.io/lombok-typescript/)
-[![GitHub Packages](https://img.shields.io/github/v/tag/A-Dev-Kit/lombok-typescript?label=GitHub%20Packages&color=24292f&logo=github)](https://github.com/A-Dev-Kit/lombok-typescript/pkgs/npm/lombok-typescript)
+[![GitHub Packages](https://img.shields.io/github/v/tag/A-Dev-Kit/lombok-typescript?label=GitHub%20Packages&color=24292f&logo=github)](https://github.com/orgs/A-Dev-Kit/packages/npm/package/a-dev-kit-lombok-typescript)
 [![npm latest](https://img.shields.io/npm/v/lombok-typescript/latest?label=latest&logo=npm&color=007ec6)](https://www.npmjs.com/package/lombok-typescript)
-[![npm preview](https://img.shields.io/npm/v/lombok-typescript/preview?label=preview&logo=npm&color=007ec6)](https://www.npmjs.com/package/lombok-typescript/v/preview)
 [![docs deploy](https://img.shields.io/github/actions/workflow/status/A-Dev-Kit/lombok-typescript/deploy-pages.yml?branch=main&label=docs&logo=github&color=5c6bc0)](https://github.com/A-Dev-Kit/lombok-typescript/actions/workflows/deploy-pages.yml)
 
-[![CI](https://img.shields.io/github/checks-status/A-Dev-Kit/lombok-typescript/main?label=ci%2Fplanning&color=4c1)](https://github.com/A-Dev-Kit/lombok-typescript-planning/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/A-Dev-Kit/lombok-typescript-planning/ci.yml?branch=main&label=ci%2Fplanning&color=4c1)](https://github.com/A-Dev-Kit/lombok-typescript-planning/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/A-Dev-Kit/lombok-typescript/graph/badge.svg)](https://codecov.io/gh/A-Dev-Kit/lombok-typescript)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/A-Dev-Kit/lombok-typescript/badge)](https://scorecard.dev/viewer/?uri=github.com/A-Dev-Kit/lombok-typescript)
 [![Node.js](https://img.shields.io/badge/Node.js-22+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
@@ -48,11 +47,10 @@ Pin any released version (`0.1.0` through `0.10.0`). See [CONTRIBUTING.md — Re
 ### npmjs.org
 
 ```bash
-npm install lombok-typescript              # @latest — current stable on npm
-npm install lombok-typescript@preview      # @preview — one version ahead
+npm install lombok-typescript              # @latest — current release on npm
 ```
 
-`@latest` is the current stable release; `@preview` is one version ahead.
+`npm install lombok-typescript` resolves to the `latest` dist-tag.
 
 ### Local development
 

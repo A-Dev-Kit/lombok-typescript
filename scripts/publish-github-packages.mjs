@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Idempotent publish of @a-dev-kit/lombok-typescript (and nestjs satellite on v1+)
- * to GitHub Packages. Intended for release-on-tag.yml using GITHUB_TOKEN.
+ * Idempotent publish of @a-dev-kit/lombok-typescript to GitHub Packages.
+ * Intended for release-on-tag.yml using GITHUB_TOKEN.
  *
  * Env: PUBLISH_VERSION, NODE_AUTH_TOKEN
  */
@@ -56,25 +56,3 @@ rootPkg.publishConfig = { registry };
 writeFileSync(rootPkgPath, `${JSON.stringify(rootPkg, null, 2)}\n`);
 
 publish(process.cwd(), '@a-dev-kit/lombok-typescript');
-
-const isV1Plus =
-  version === '1.0.0' ||
-  version.startsWith('1.') ||
-  Number.parseInt(version.split('.')[0], 10) >= 1;
-
-if (isV1Plus) {
-  const nestPkgPath = 'packages/nestjs/package.json';
-  const nestPkg = JSON.parse(readFileSync(nestPkgPath, 'utf8'));
-  nestPkg.version = version;
-  // GitHub Packages scope must match the org owner (A-Dev-Kit → @a-dev-kit).
-  nestPkg.name = '@a-dev-kit/nestjs';
-  nestPkg.publishConfig = { registry };
-  writeFileSync(nestPkgPath, `${JSON.stringify(nestPkg, null, 2)}\n`);
-  try {
-    publish('packages/nestjs', '@a-dev-kit/nestjs');
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.warn(`Warning: @a-dev-kit/nestjs GitHub Packages publish failed: ${message}`);
-    console.warn('Core @a-dev-kit/lombok-typescript publish succeeded; nestjs remains on npm as @lombok-typescript/nestjs.');
-  }
-}
