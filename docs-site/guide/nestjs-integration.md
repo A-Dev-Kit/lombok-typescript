@@ -1,18 +1,18 @@
 # NestJS integration
 
-Phase 7 ships **`@lombok-typescript/nestjs`** — an opt-in satellite (ADR-14 Option 3). The core `lombok-typescript` package has **no** Nest dependency.
+NestJS support is **built into the core package** and exposed through the `lombok-typescript/nestjs` entry point. `@nestjs/common` and `@nestjs/core` are **optional peer dependencies** — nothing Nest-related is pulled in unless you import this subpath, so plain-TS users never see NestJS in their dependency tree.
 
 ## Install
 
 ```bash
-npm install lombok-typescript @lombok-typescript/nestjs @nestjs/common @nestjs/core reflect-metadata
+npm install lombok-typescript @nestjs/common @nestjs/core reflect-metadata
 ```
 
 ## Bootstrap
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { LombokModule } from '@lombok-typescript/nestjs';
+import { LombokModule } from 'lombok-typescript/nestjs';
 
 @Module({
   imports: [

@@ -35,7 +35,7 @@ export default defineConfig({
         ],
       },
       {
-        text: 'Decorators (v0.1)',
+        text: 'Essentials',
         items: [
           { text: 'Overview', link: '/decorators/overview' },
           { text: '@Data', link: '/decorators/data' },
@@ -49,7 +49,7 @@ export default defineConfig({
         ],
       },
       {
-        text: 'Decorators (Phase 2)',
+        text: 'Lombok-style',
         items: [
           { text: '@Value', link: '/decorators/value' },
           { text: '@With', link: '/decorators/with' },
@@ -63,7 +63,7 @@ export default defineConfig({
         ],
       },
       {
-        text: 'Decorators (Phase 3)',
+        text: 'Behavioral patterns',
         items: [
           { text: '@Strategy', link: '/decorators/strategy' },
           { text: '@State / @Transition', link: '/decorators/state' },
@@ -76,7 +76,7 @@ export default defineConfig({
         ],
       },
       {
-        text: 'Decorators (Phase 4)',
+        text: 'Structural & creational patterns',
         items: [
           { text: '@Flyweight', link: '/decorators/flyweight' },
           { text: '@Proxy', link: '/decorators/proxy' },
@@ -88,7 +88,7 @@ export default defineConfig({
         ],
       },
       {
-        text: 'Decorators (Phase 5)',
+        text: 'Utilities',
         items: [
           { text: '@Retry', link: '/decorators/retry' },
           { text: '@Debounce / @Throttle', link: '/decorators/debounce-throttle' },
@@ -99,7 +99,7 @@ export default defineConfig({
         ],
       },
       {
-        text: 'Decorators (Phase 6)',
+        text: 'Marker decorators',
         items: [
           { text: '@Adapter', link: '/decorators/adapter' },
           { text: '@Bridge', link: '/decorators/bridge' },
