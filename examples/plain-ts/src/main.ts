@@ -32,6 +32,10 @@ import { applyAllGenerated as applyStructuralGenerated } from '../.lombok/src/st
 import { demoPhase5Utilities, Profile, SignupDto } from './utilities.js';
 import { applyAllGenerated as applyUtilitiesGenerated } from '../.lombok/src/utilities.lombok.js';
 import { describeMarkers } from './markers.js';
+import { User } from './user.js';
+import { applyAllGenerated as applyUserGenerated } from '../.lombok/src/user.lombok.js';
+
+applyUserGenerated({ User });
 
 applyStructuralGenerated({
   DataExporter,
@@ -115,5 +119,11 @@ console.info('visitor square', square.accept(visitor));
 const phase5 = await demoPhase5Utilities();
 console.info('phase5 status', phase5.status, phase5.signupEmail, phase5.frozen);
 console.info('phase6 markers', describeMarkers());
+
+// @BuilderDefault: `role` keeps its initializer ('user') unless the builder sets it.
+const defaultUser = User.builder().name('Ada').age(36).build();
+const adminUser = User.builder().name('Neo').age(30).role('admin').build();
+console.info('builder default role', defaultUser.role);
+console.info('builder overridden role', adminUser.role);
 
 export { UserService };

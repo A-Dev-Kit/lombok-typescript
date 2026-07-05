@@ -12,7 +12,7 @@ clearly-labeled _planned_ feature.
 | `@Value`                                     | `@Value`                          | Immutable; `readonly` fields. Closest to a Java `record`              |
 | `@Builder`                                   | `@Builder`                        | `Class.builder()` fluent API                                          |
 | `@SuperBuilder`                              | `@Builder`                        | Single-level today; inheritance builders _planned_ (Phase 9)          |
-| `@Builder.Default`                           | —                                 | _planned_ (Phase 8)                                                   |
+| `@Builder.Default`                           | `@BuilderDefault`                 | Keeps the field initializer when the builder omits the field          |
 | `@Singular`                                  | —                                 | _planned_ (Phase 9)                                                   |
 | `@Getter` / `@Setter`                        | `@Getter` / `@Setter`             | Codegen                                                               |
 | `@Getter(lazy = true)`                       | `@Memoize`                        | Caches the computed value on first access                             |

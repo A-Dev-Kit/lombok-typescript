@@ -39,6 +39,37 @@ const order = Order.builder().item('Widget').qty(3).build();
 
 Static entry point: `Order.builder()` is mixed onto the class by `applyOrderGenerated`.
 
+## Field defaults — `@BuilderDefault`
+
+By default the builder overwrites **every** field, so a class field initializer is ignored
+when you don't call its setter (matching Java Lombok's behavior). Mark a field with
+`@BuilderDefault` to keep its initializer as the default when the builder omits it — the
+TypeScript equivalent of Java's `@Builder.Default`.
+
+```ts
+import { Builder, BuilderDefault } from 'lombok-typescript/legacy';
+
+@Builder
+export class Account {
+  name!: string;
+
+  @BuilderDefault
+  role: string = 'member';
+}
+```
+
+```ts
+Account.builder().name('ada').build().role; // 'member' — initializer kept
+Account.builder().name('neo').role('admin').build().role; // 'admin' — overridden
+```
+
+The generated `build()` only assigns a defaulted field when its setter was called, so the
+`new Account()` initializer survives otherwise.
+
+> **Requires an initializer.** `@BuilderDefault` on a field with no initializer (e.g.
+> `role!: string`) fails `lombok-ts generate` with a clear error — there is nothing to
+> default to.
+
 ## Codegen steps
 
 1. Generates `OrderBuilder` class in `.lombok/.../order.lombok.ts`.

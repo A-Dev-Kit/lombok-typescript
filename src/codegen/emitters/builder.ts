@@ -1,6 +1,7 @@
 import type { ClassInfo } from '../types.js';
 import {
   builderClassName,
+  fieldHasBuilderDefault,
   fieldsWithValidate,
   getValidateDecorator,
   hasClassDecorator,
@@ -27,20 +28,40 @@ export function emitBuilderClass(info: ClassInfo): string {
   }
 
   const builderName = builderClassName(info.name);
-  const fieldLines = info.fields.map((f) => {
-    if (f.isOptional) {
-      return `  private _${f.name}?: ${f.type};`;
+
+  for (const f of info.fields) {
+    if (fieldHasBuilderDefault(f) && !f.hasDefault) {
+      throw new Error(
+        `@BuilderDefault on ${info.name}.${f.name}: the field has no initializer to fall back to`,
+      );
     }
-    return `  private _${f.name}!: ${f.type};`;
+  }
+
+  const fieldLines = info.fields.flatMap((f) => {
+    if (fieldHasBuilderDefault(f)) {
+      return [`  private _${f.name}?: ${f.type};`, `  private _${f.name}Set = false;`];
+    }
+    if (f.isOptional) {
+      return [`  private _${f.name}?: ${f.type};`];
+    }
+    return [`  private _${f.name}!: ${f.type};`];
   });
 
-  const setterMethods = info.fields.map((f) =>
-    `
+  const setterMethods = info.fields.map((f) => {
+    const setFlag = fieldHasBuilderDefault(f) ? `\n    this._${f.name}Set = true;` : '';
+    return `
   ${f.name}(value: ${f.type}): ${builderName} {
-    this._${f.name} = value;
+    this._${f.name} = value;${setFlag}
     return this;
-  }`.trim(),
-  );
+  }`.trim();
+  });
+
+  const assignLines = info.fields.map((f) => {
+    if (fieldHasBuilderDefault(f)) {
+      return `    if (this._${f.name}Set) instance.${f.name} = this._${f.name}!;`;
+    }
+    return `    instance.${f.name} = this._${f.name}${f.isOptional ? '' : '!'};`;
+  });
 
   const validationLines = emitBuildValidation(info);
   const validationBlock = validationLines ? `\n${validationLines}\n` : '';
@@ -57,7 +78,7 @@ ${setterMethods.join('\n\n')}
 
   build(): ${info.name} {
     const instance = new ${info.name}();
-${info.fields.map((f) => `    instance.${f.name} = this._${f.name}${f.isOptional ? '' : '!'};`).join('\n')}${validationBlock}    return instance;
+${assignLines.join('\n')}${validationBlock}    return instance;
   }
 }`.trim();
 }
