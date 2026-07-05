@@ -64,7 +64,7 @@ cd lombok-typescript && pnpm install && pnpm build && pnpm link --global
 
 ### Lombok-style
 
-`@NonNull`, `@ToString`, `@Builder`, `@Data`, `@Value`, `@With`, `@Equals`, `@Getter`, `@Setter`, `@Log`, `@Accessors`, `@UtilityClass`, `@FieldDefaults`, `@Delegate`
+`@NonNull`, `@ToString`, `@Builder`, `@BuilderDefault`, `@Data`, `@Value`, `@With`, `@Equals`, `@Getter`, `@Setter`, `@Log`, `@Accessors`, `@UtilityClass`, `@FieldDefaults`, `@Delegate`
 
 ### Creational patterns
 
