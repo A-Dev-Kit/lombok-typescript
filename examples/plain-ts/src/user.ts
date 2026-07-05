@@ -1,5 +1,11 @@
 import 'reflect-metadata';
-import { Builder, Data, NonNull, ToString } from '@a-dev-kit/lombok-typescript/legacy';
+import {
+  Builder,
+  BuilderDefault,
+  Data,
+  NonNull,
+  ToString,
+} from '@a-dev-kit/lombok-typescript/legacy';
 
 @Data
 @Builder
@@ -8,4 +14,8 @@ export class User {
   @NonNull
   name!: string;
   age!: number;
+
+  // @BuilderDefault keeps this initializer when the builder omits `role`.
+  @BuilderDefault
+  role: string = 'user';
 }

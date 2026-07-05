@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-07-04
+
+### Added
+
+- **`@BuilderDefault`** (Phase 8) — a field marker so `@Builder` keeps a field's initializer as the default when the builder omits it (the TypeScript equivalent of Java Lombok's `@Builder.Default`). Available on both `legacy` and `stage3` backends. The field must have an initializer, otherwise `lombok-ts generate` fails with a clear error.
+
 ## [1.1.0] - 2026-07-02
 
 ### Added

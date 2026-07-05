@@ -51,6 +51,7 @@ export {
   FieldDefaults,
   Delegate,
   EqualsExclude,
+  BuilderDefault,
   createFromFactory,
   getFactoryRegistry,
   registerFactory,

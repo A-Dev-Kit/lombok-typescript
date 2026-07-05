@@ -21,6 +21,7 @@ import {
 import type { MemoizeOptions } from '../shared/memoize.js';
 import type { AccessorsOptions } from '../shared/accessors.js';
 import { accessorsClassStage3 } from '../shared/accessors.js';
+import { builderDefaultFieldStage3 } from '../shared/builder-default.js';
 import { delegateFieldStage3, parseDelegateMethods } from '../shared/delegate.js';
 import { equalsClassStage3, equalsExcludeFieldStage3 } from '../shared/equals.js';
 import type { FieldDefaultsOptions } from '../shared/field-defaults.js';
@@ -226,6 +227,9 @@ export function Delegate(...methods: string[]) {
 
 /** Exclude a field from generated `equals()`. */
 export const EqualsExclude = defineFieldDecorator(equalsExcludeFieldStage3);
+
+/** Keep a field's initializer as the `@Builder` default when the builder omits it. */
+export const BuilderDefault = defineFieldDecorator(builderDefaultFieldStage3);
 
 /** Registers a swappable strategy under `family` and `name`. */
 export function Strategy(family: string, name: string) {
