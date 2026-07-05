@@ -52,9 +52,7 @@ export function fieldHasDecorator(field: FieldInfo, name: string): boolean {
 
 /** True when a field is marked `@BuilderDefault` (or the Java-style `Builder.Default`). */
 export function fieldHasBuilderDefault(field: FieldInfo): boolean {
-  return field.decorators.some(
-    (d) => d.name === 'BuilderDefault' || d.name === 'Builder.Default',
-  );
+  return field.decorators.some((d) => d.name === 'BuilderDefault' || d.name === 'Builder.Default');
 }
 
 export function getValidateDecorator(decorators: DecoratorInfo[]): DecoratorInfo | undefined {
