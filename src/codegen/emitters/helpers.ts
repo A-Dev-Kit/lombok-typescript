@@ -55,6 +55,75 @@ export function fieldHasBuilderDefault(field: FieldInfo): boolean {
   return field.decorators.some((d) => d.name === 'BuilderDefault' || d.name === 'Builder.Default');
 }
 
+/** True when a field is marked `@Singular`. */
+export function fieldHasSingular(field: FieldInfo): boolean {
+  return field.decorators.some((d) => d.name === 'Singular');
+}
+
+/** Explicit add-one name from `@Singular('name')`, or undefined for auto-singularization. */
+export function singularNameArg(field: FieldInfo): string | undefined {
+  const raw = field.decorators.find((d) => d.name === 'Singular')?.arguments[0];
+  return raw === undefined ? undefined : String(raw).replace(/^['"]|['"]$/gu, '');
+}
+
+/** Element type of an array field (`string[]` -> `string`), or null when not an array. */
+export function arrayElementType(type: string): string | null {
+  const inner = type.trim().replace(/^readonly\s+/u, '');
+  const element = /^(.+)\[\]$/u.exec(inner)?.[1];
+  return element === undefined ? null : element.trim();
+}
+
+/** Naive English singularizer for builder add-one names; null when underivable. */
+export function singularize(word: string): string | null {
+  if (/(ch|sh|s|x|z)es$/u.test(word)) return word.slice(0, -2); // boxes->box, addresses->address
+  if (/[^aeiou]ies$/u.test(word)) return `${word.slice(0, -3)}y`; // categories->category
+  if (/(ss|us|is)$/u.test(word)) return null; // class, status, axis: ambiguous
+  if (/s$/u.test(word)) return word.slice(0, -1); // roles->role
+  return null;
+}
+
+export function capitalize(word: string): string {
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
+export interface SingularField {
+  /** Array element type, e.g. `string` for `roles: string[]`. */
+  element: string;
+  /** Add-one method name, e.g. `role`. */
+  adder: string;
+  /** Clear method name, e.g. `clearRoles`. */
+  clearName: string;
+}
+
+/** Resolve and validate every `@Singular` array field on a `@Builder` class. */
+export function resolveSingularFields(info: ClassInfo): Map<string, SingularField> {
+  const result = new Map<string, SingularField>();
+  for (const field of info.fields) {
+    if (!fieldHasSingular(field)) continue;
+    const where = `@Singular on ${info.name}.${field.name}`;
+    if (fieldHasBuilderDefault(field)) {
+      throw new Error(`${where}: cannot combine @Singular with @BuilderDefault`);
+    }
+    const element = arrayElementType(field.type);
+    if (!element) {
+      throw new Error(`${where}: requires an array field type (T[]), got '${field.type}'`);
+    }
+    const adder = singularNameArg(field) ?? singularize(field.name);
+    if (!adder) {
+      throw new Error(
+        `${where}: cannot derive a singular name from '${field.name}'; pass one, e.g. @Singular('item')`,
+      );
+    }
+    if (adder === field.name) {
+      throw new Error(
+        `${where}: the singular name matches the field name; pass a distinct name via @Singular('...')`,
+      );
+    }
+    result.set(field.name, { element, adder, clearName: `clear${capitalize(field.name)}` });
+  }
+  return result;
+}
+
 export function getValidateDecorator(decorators: DecoratorInfo[]): DecoratorInfo | undefined {
   return decorators.find((d) => d.name === 'Validate');
 }

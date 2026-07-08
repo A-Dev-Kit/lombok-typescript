@@ -4,6 +4,7 @@ import {
   BuilderDefault,
   Data,
   NonNull,
+  Singular,
   ToString,
 } from '@a-dev-kit/lombok-typescript/legacy';
 
@@ -18,4 +19,8 @@ export class User {
   // @BuilderDefault keeps this initializer when the builder omits `role`.
   @BuilderDefault
   role: string = 'user';
+
+  // @Singular generates tag()/tags()/clearTags() accumulator methods.
+  @Singular()
+  tags: string[] = [];
 }

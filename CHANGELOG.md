@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-07-05
+
+### Added
+
+- **`@Singular`** (Phase 9) — mark an array field on a `@Builder` class to generate accumulator methods (`role()` add-one, `roles()` add-all, `clearRoles()`) instead of a single setter, the TypeScript equivalent of Java Lombok's `@Singular`. The add-one name is auto-singularized (`roles` → `role`) with an explicit `@Singular('person')` override for irregulars. Arrays only this release; errors at generate time on non-array fields, underivable names, or when combined with `@BuilderDefault`.
+
 ## [1.2.0] - 2026-07-04
 
 ### Added

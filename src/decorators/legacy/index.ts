@@ -25,6 +25,7 @@ import type { AccessorsOptions } from '../shared/accessors.js';
 import { accessorsClassLegacy } from '../shared/accessors.js';
 import { builderDefaultFieldLegacy } from '../shared/builder-default.js';
 import { delegateFieldLegacy, parseDelegateMethods } from '../shared/delegate.js';
+import { singularFieldLegacy } from '../shared/singular.js';
 import { equalsClassLegacy, equalsExcludeFieldLegacy } from '../shared/equals.js';
 import type { FieldDefaultsOptions } from '../shared/field-defaults.js';
 import { fieldDefaultsClassLegacy } from '../shared/field-defaults.js';
@@ -226,6 +227,13 @@ export const EqualsExclude = defineFieldDecorator(equalsExcludeFieldLegacy);
 
 /** Keep a field's initializer as the `@Builder` default when the builder omits it. */
 export const BuilderDefault = defineFieldDecorator(builderDefaultFieldLegacy);
+
+/** Generate add-one / add-all / clear `@Builder` methods for an array field. */
+export function Singular(name?: string): PropertyDecorator {
+  return defineFieldDecorator((backend, proto, key) =>
+    singularFieldLegacy(backend, proto, key, name),
+  );
+}
 
 /** Registers a swappable strategy under `family` and `name`. */
 export function Strategy(family: string, name: string): ClassDecorator {
