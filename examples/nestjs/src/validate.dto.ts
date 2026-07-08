@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Injectable } from '@nestjs/common';
-import { Builder, BuilderDefault, Validate } from '@a-dev-kit/lombok-typescript/legacy';
+import { Builder, BuilderDefault, Singular, Validate } from '@a-dev-kit/lombok-typescript/legacy';
 import { IsEmail, MinLength } from 'class-validator';
 import '@a-dev-kit/lombok-typescript/validators/class-validator';
 import { applyAllGenerated } from '../.lombok/src/validate.dto.lombok.js';
@@ -21,6 +21,10 @@ export class AccountDto {
   // @BuilderDefault keeps 'member' unless the builder sets `role`.
   @BuilderDefault
   role: string = 'member';
+
+  // @Singular generates permission()/permissions()/clearPermissions().
+  @Singular()
+  permissions: string[] = [];
 }
 
 applyAllGenerated({ AccountDto });
@@ -30,10 +34,11 @@ export function demoValidateDto() {
   dto.email = 'user@example.com';
   dto.password = 'long-enough';
 
-  const account = AccountDto.builder().name('nest').build();
+  const account = AccountDto.builder().name('nest').permission('read').permission('write').build();
   return {
     email: dto.email,
     passwordLength: dto.password.length,
     defaultRole: account.role,
+    permissions: account.permissions,
   };
 }
