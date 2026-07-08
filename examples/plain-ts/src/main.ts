@@ -126,4 +126,8 @@ const adminUser = User.builder().name('Neo').age(30).role('admin').build();
 console.info('builder default role', defaultUser.role);
 console.info('builder overridden role', adminUser.role);
 
+// @Singular: accumulate `tags` one (or many) at a time.
+const taggedUser = User.builder().name('Ada').age(36).tag('admin').tags(['beta', 'early']).build();
+console.info('builder singular tags', taggedUser.tags);
+
 export { UserService };

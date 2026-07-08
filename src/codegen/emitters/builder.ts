@@ -5,7 +5,27 @@ import {
   fieldsWithValidate,
   getValidateDecorator,
   hasClassDecorator,
+  resolveSingularFields,
+  type SingularField,
 } from './helpers.js';
+
+function emitSingularMethods(fieldName: string, s: SingularField, builderName: string): string {
+  return `
+  ${s.adder}(value: ${s.element}): ${builderName} {
+    this._${fieldName}.push(value);
+    return this;
+  }
+
+  ${fieldName}(values: ${s.element}[]): ${builderName} {
+    this._${fieldName}.push(...values);
+    return this;
+  }
+
+  ${s.clearName}(): ${builderName} {
+    this._${fieldName} = [];
+    return this;
+  }`.trim();
+}
 
 function emitBuildValidation(info: ClassInfo): string {
   const lines: string[] = [];
@@ -28,6 +48,7 @@ export function emitBuilderClass(info: ClassInfo): string {
   }
 
   const builderName = builderClassName(info.name);
+  const singularOf = resolveSingularFields(info);
 
   for (const f of info.fields) {
     if (fieldHasBuilderDefault(f) && !f.hasDefault) {
@@ -38,6 +59,10 @@ export function emitBuilderClass(info: ClassInfo): string {
   }
 
   const fieldLines = info.fields.flatMap((f) => {
+    const singular = singularOf.get(f.name);
+    if (singular) {
+      return [`  private _${f.name}: ${singular.element}[] = [];`];
+    }
     if (fieldHasBuilderDefault(f)) {
       return [`  private _${f.name}?: ${f.type};`, `  private _${f.name}Set = false;`];
     }
@@ -48,6 +73,10 @@ export function emitBuilderClass(info: ClassInfo): string {
   });
 
   const setterMethods = info.fields.map((f) => {
+    const singular = singularOf.get(f.name);
+    if (singular) {
+      return emitSingularMethods(f.name, singular, builderName);
+    }
     const setFlag = fieldHasBuilderDefault(f) ? `\n    this._${f.name}Set = true;` : '';
     return `
   ${f.name}(value: ${f.type}): ${builderName} {
@@ -57,6 +86,9 @@ export function emitBuilderClass(info: ClassInfo): string {
   });
 
   const assignLines = info.fields.map((f) => {
+    if (singularOf.has(f.name)) {
+      return `    instance.${f.name} = this._${f.name};`;
+    }
     if (fieldHasBuilderDefault(f)) {
       return `    if (this._${f.name}Set) instance.${f.name} = this._${f.name}!;`;
     }

@@ -52,6 +52,7 @@ export {
   Delegate,
   EqualsExclude,
   BuilderDefault,
+  Singular,
   createFromFactory,
   getFactoryRegistry,
   registerFactory,
