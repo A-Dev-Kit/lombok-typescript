@@ -7,6 +7,7 @@ import {
   getDelegateMethods,
   getTemplateMethodName,
   hasClassDecorator,
+  resolveSingularFields,
   setterName,
   wantsEquals,
   wantsGetter,
@@ -23,10 +24,18 @@ function emitDeclarationModuleBlock(relSource: string, classes: readonly ClassIn
   for (const info of classes) {
     if (hasClassDecorator(info, 'Builder')) {
       const builderName = builderClassName(info.name);
+      const singularOf = resolveSingularFields(info);
       lines.push(`  export class ${builderName} {`);
       lines.push(`    static builder(): ${builderName};`);
       for (const f of info.fields) {
-        lines.push(`    ${f.name}(value: ${f.type}): ${builderName};`);
+        const singular = singularOf.get(f.name);
+        if (singular) {
+          lines.push(`    ${singular.adder}(value: ${singular.element}): ${builderName};`);
+          lines.push(`    ${f.name}(values: ${singular.element}[]): ${builderName};`);
+          lines.push(`    ${singular.clearName}(): ${builderName};`);
+        } else {
+          lines.push(`    ${f.name}(value: ${f.type}): ${builderName};`);
+        }
       }
       lines.push(`    build(): ${info.name};`);
       lines.push('  }');

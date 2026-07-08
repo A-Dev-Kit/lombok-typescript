@@ -6,30 +6,30 @@ clearly-labeled _planned_ feature.
 
 ## Annotation map
 
-| Java Lombok                                  | lombok-typescript                 | Notes                                                                 |
-| -------------------------------------------- | --------------------------------- | --------------------------------------------------------------------- |
-| `@Data`                                      | `@Data`                           | Codegen + `applyAllGenerated`                                         |
-| `@Value`                                     | `@Value`                          | Immutable; `readonly` fields. Closest to a Java `record`              |
-| `@Builder`                                   | `@Builder`                        | `Class.builder()` fluent API                                          |
-| `@SuperBuilder`                              | `@Builder`                        | Single-level today; inheritance builders _planned_ (Phase 9)          |
-| `@Builder.Default`                           | `@BuilderDefault`                 | Keeps the field initializer when the builder omits the field          |
-| `@Singular`                                  | —                                 | _planned_ (Phase 9)                                                   |
-| `@Getter` / `@Setter`                        | `@Getter` / `@Setter`             | Codegen                                                               |
-| `@Getter(lazy = true)`                       | `@Memoize`                        | Caches the computed value on first access                             |
-| `@ToString`                                  | `@ToString`                       | Codegen `toString()`                                                  |
-| `@EqualsAndHashCode`                         | `@Equals`                         | Generates `equals()` + `toHash()` (TS name for Java's `hashCode()`)   |
-| `@With`                                      | `@With`                           | Immutable `withX()` codegen                                           |
-| `@Accessors`                                 | `@Accessors`                      | Fluent / chained accessor style                                       |
-| `@Delegate`                                  | `@Delegate`                       | Forward methods to a delegate field                                   |
-| `@FieldDefaults`                             | `@FieldDefaults`                  | Default field visibility / `readonly`                                 |
-| `@UtilityClass`                              | `@UtilityClass`                   | Static-only holder                                                    |
-| `@Slf4j` / `@Log`                            | `@Log` (or `@LogNest` for NestJS) | BYOL logger adapters                                                  |
-| `@NonNull`                                   | `@NonNull`                        | Runtime null checks                                                   |
-| `@NoArgsConstructor` / `@AllArgsConstructor` | —                                 | Not needed — use `@Builder`, field initializers, or object literals   |
-| `@RequiredArgsConstructor`                   | Nest constructor DI               | In NestJS, `@Injectable()` classes get constructor injection natively |
-| `@SneakyThrows`                              | —                                 | Not needed — TypeScript has no checked exceptions                     |
-| `@Cleanup`                                   | —                                 | Use `try/finally` or `using` (TS 5.2 explicit resource management)    |
-| `@Synchronized`                              | —                                 | _planned_ (Phase 12); JS is single-threaded, so rarely needed         |
+| Java Lombok                                  | lombok-typescript                 | Notes                                                                            |
+| -------------------------------------------- | --------------------------------- | -------------------------------------------------------------------------------- |
+| `@Data`                                      | `@Data`                           | Codegen + `applyAllGenerated`                                                    |
+| `@Value`                                     | `@Value`                          | Immutable; `readonly` fields. Closest to a Java `record`                         |
+| `@Builder`                                   | `@Builder`                        | `Class.builder()` fluent API                                                     |
+| `@SuperBuilder`                              | `@Builder`                        | Single-level today; inheritance builders _planned_ (Phase 9)                     |
+| `@Builder.Default`                           | `@BuilderDefault`                 | Keeps the field initializer when the builder omits the field                     |
+| `@Singular`                                  | `@Singular`                       | Accumulator builder methods (`role()`/`roles()`/`clearRoles()`) for array fields |
+| `@Getter` / `@Setter`                        | `@Getter` / `@Setter`             | Codegen                                                                          |
+| `@Getter(lazy = true)`                       | `@Memoize`                        | Caches the computed value on first access                                        |
+| `@ToString`                                  | `@ToString`                       | Codegen `toString()`                                                             |
+| `@EqualsAndHashCode`                         | `@Equals`                         | Generates `equals()` + `toHash()` (TS name for Java's `hashCode()`)              |
+| `@With`                                      | `@With`                           | Immutable `withX()` codegen                                                      |
+| `@Accessors`                                 | `@Accessors`                      | Fluent / chained accessor style                                                  |
+| `@Delegate`                                  | `@Delegate`                       | Forward methods to a delegate field                                              |
+| `@FieldDefaults`                             | `@FieldDefaults`                  | Default field visibility / `readonly`                                            |
+| `@UtilityClass`                              | `@UtilityClass`                   | Static-only holder                                                               |
+| `@Slf4j` / `@Log`                            | `@Log` (or `@LogNest` for NestJS) | BYOL logger adapters                                                             |
+| `@NonNull`                                   | `@NonNull`                        | Runtime null checks                                                              |
+| `@NoArgsConstructor` / `@AllArgsConstructor` | —                                 | Not needed — use `@Builder`, field initializers, or object literals              |
+| `@RequiredArgsConstructor`                   | Nest constructor DI               | In NestJS, `@Injectable()` classes get constructor injection natively            |
+| `@SneakyThrows`                              | —                                 | Not needed — TypeScript has no checked exceptions                                |
+| `@Cleanup`                                   | —                                 | Use `try/finally` or `using` (TS 5.2 explicit resource management)               |
+| `@Synchronized`                              | —                                 | _planned_ (Phase 12); JS is single-threaded, so rarely needed                    |
 
 ## Workflow differences
 
