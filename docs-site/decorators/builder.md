@@ -70,6 +70,42 @@ The generated `build()` only assigns a defaulted field when its setter was calle
 > `role!: string`) fails `lombok-ts generate` with a clear error — there is nothing to
 > default to.
 
+## Collections — `@Singular`
+
+Mark an **array** field with `@Singular` and the builder generates _accumulator_ methods
+instead of a single setter — the TypeScript equivalent of Java Lombok's `@Singular`:
+
+```ts
+import { Builder, Singular } from 'lombok-typescript/legacy';
+
+@Builder
+export class User {
+  name!: string;
+
+  @Singular()
+  roles: string[] = [];
+}
+```
+
+Generates three methods (the add-one name is auto-singularized: `roles` → `role`):
+
+```ts
+User.builder().name('ada').role('admin').role('user').build().roles; // ['admin', 'user']
+User.builder().roles(['a', 'b']).clearRoles().role('c').build().roles; // ['c']
+```
+
+- `role(value)` — append one item
+- `roles(values)` — append many
+- `clearRoles()` — reset to empty
+- an unset `@Singular` field builds to `[]`.
+
+**Irregular plurals:** pass an explicit name — `@Singular('person') people: string[]` →
+`person()` / `people()` / `clearPeople()`.
+
+> **Arrays only (this release).** `@Singular` requires a `T[]` / `Array<T>` field. It errors
+> at `lombok-ts generate` on a non-array field, on a name it can't singularize (pass one via
+> `@Singular('...')`), or when combined with `@BuilderDefault` on the same field.
+
 ## Codegen steps
 
 1. Generates `OrderBuilder` class in `.lombok/.../order.lombok.ts`.
