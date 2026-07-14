@@ -68,7 +68,7 @@ cd lombok-typescript && pnpm install && pnpm build && pnpm link --global
 
 ### Creational patterns
 
-`@Singleton`, `@Prototype`, `@Factory`, `@AbstractFactory`
+`@Singleton`, `@Prototype`, `@Factory`, `@AbstractFactory`, `@Pool`
 
 ### Behavioral patterns
 
