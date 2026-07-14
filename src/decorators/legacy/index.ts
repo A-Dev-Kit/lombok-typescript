@@ -64,6 +64,8 @@ import type { HandlerOptions } from '../shared/chain-of-responsibility.js';
 import { iterableClassLegacy, iterateOverFieldLegacy } from '../shared/iterable.js';
 import type { FlyweightOptions } from '../shared/flyweight.js';
 import { flyweightClassLegacy } from '../shared/flyweight.js';
+import type { PoolOptions } from '../shared/pool.js';
+import { poolClassLegacy } from '../shared/pool.js';
 import { compositeClassLegacy } from '../shared/composite.js';
 import type { ProxyHooks } from '../shared/proxy.js';
 import { proxyClassLegacy } from '../shared/proxy.js';
@@ -302,6 +304,13 @@ export const IterateOver = defineFieldDecorator(iterateOverFieldLegacy);
 /** Shared instance pool keyed by constructor arguments. */
 export function Flyweight(options: FlyweightOptions): ClassDecorator {
   return defineClassDecorator((backend, target) => flyweightClassLegacy(backend, target, options));
+}
+
+/** Object pool with `Class.acquire()` / `Class.release(x)` statics. */
+export function Pool<T>(options: PoolOptions<T>): ClassDecorator {
+  return defineClassDecorator((backend, target) =>
+    poolClassLegacy(backend, target, options as PoolOptions),
+  );
 }
 
 /** Tree composite API — add, remove, traverse children. */

@@ -62,6 +62,8 @@ import type { HandlerOptions } from '../shared/chain-of-responsibility.js';
 import { iterableClassStage3, iterateOverFieldStage3 } from '../shared/iterable.js';
 import type { FlyweightOptions } from '../shared/flyweight.js';
 import { flyweightClassStage3 } from '../shared/flyweight.js';
+import type { PoolOptions } from '../shared/pool.js';
+import { poolClassStage3 } from '../shared/pool.js';
 import { compositeClassStage3 } from '../shared/composite.js';
 import type { ProxyHooks } from '../shared/proxy.js';
 import { proxyClassStage3 } from '../shared/proxy.js';
@@ -301,6 +303,13 @@ export const IterateOver = defineFieldDecorator(iterateOverFieldStage3);
 export function Flyweight(options: FlyweightOptions) {
   return defineClassDecorator((backend, value, context) =>
     flyweightClassStage3(backend, value, context, options),
+  );
+}
+
+/** Object pool with `Class.acquire()` / `Class.release(x)` statics. */
+export function Pool<T>(options: PoolOptions<T>) {
+  return defineClassDecorator((backend, value, context) =>
+    poolClassStage3(backend, value, context, options as PoolOptions),
   );
 }
 

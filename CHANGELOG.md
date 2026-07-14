@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-07-11
+
+### Added
+
+- **`@Pool`** (Phase 10) — a class-level decorator that turns any class into a bounded Object Pool. Adds `Class.acquire()` / `Class.release(x)` statics to check out and return reusable instances. Options: `size` (required), `factory` (defaults to `new Class()`), `reset` (cleanup on release). `acquire()` throws `PoolExhaustedError` (also exported) when the pool is at capacity and all instances are leased; if `reset` throws, the instance is discarded rather than returned to the pool. A `Pooled<T>` type helper is exported for typed access. Object Pool is the [ADR-16](https://github.com/A-Dev-Kit/lombok-typescript-planning/blob/main/adr/0016-23-vs-24-gof-patterns.md) "24th GoF pattern" candidate.
+
 ## [1.3.0] - 2026-07-05
 
 ### Added
