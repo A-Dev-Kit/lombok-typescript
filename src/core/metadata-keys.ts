@@ -34,6 +34,7 @@ export const MetadataKeys = {
   WRAPS: `${PREFIX}wraps`,
   FACADE: `${PREFIX}facade`,
   FLYWEIGHT: `${PREFIX}flyweight`,
+  POOL: `${PREFIX}pool`,
   PROXY: `${PREFIX}proxy`,
   CHAIN_OF_RESPONSIBILITY: `${PREFIX}chainOfResponsibility`,
   COMMAND: `${PREFIX}command`,

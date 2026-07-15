@@ -67,6 +67,7 @@ export {
   Iterable,
   IterateOver,
   Flyweight,
+  Pool,
   Composite,
   Proxy,
   Wraps,
@@ -93,3 +94,5 @@ export {
 } from '../decorators/legacy/index.js';
 export type { AdapterOptions, FacadeOptions } from '../decorators/shared/markers-gof.js';
 export { getGoFMarkerMetadata } from '../decorators/shared/markers-gof.js';
+export type { PoolOptions, Pooled } from '../decorators/shared/pool.js';
+export { PoolExhaustedError } from '../decorators/shared/pool.js';
