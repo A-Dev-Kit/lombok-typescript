@@ -22,6 +22,7 @@ import {
   Circle,
   Coffee,
   DataExporter,
+  BufferPool,
   FileNode,
   Service,
   Square,
@@ -96,6 +97,15 @@ console.info('iterable', [...new Playlist()]);
 const treeA = new TreeType('green');
 const treeB = new TreeType('green');
 console.info('flyweight same', treeA === treeB);
+
+// @Pool: checkout/return lifecycle. Reset callback clears the buffer on release.
+const buf = BufferPool.acquire();
+buf.push(1);
+buf.push(2);
+BufferPool.release(buf);
+const reused = BufferPool.acquire();
+console.info('pool reused', reused === buf, 'reset applied', reused.data.length);
+BufferPool.release(reused);
 
 const root = new FileNode();
 const leaf = new FileNode();

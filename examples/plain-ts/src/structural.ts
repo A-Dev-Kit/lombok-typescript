@@ -3,6 +3,8 @@ import {
   Composite,
   Flyweight,
   Hook,
+  Pool,
+  type Pooled,
   Proxy,
   TemplateMethod,
   Visitable,
@@ -14,6 +16,22 @@ import {
 export class TreeType {
   constructor(public color: string) {}
 }
+
+/** GoF Object Pool — checkout/return lifecycle with `acquire()`/`release()` statics. */
+@Pool({
+  size: 3,
+  reset: (buf: Buffer) => buf.clear(),
+})
+export class Buffer {
+  data: number[] = [];
+  push(n: number): void {
+    this.data.push(n);
+  }
+  clear(): void {
+    this.data.length = 0;
+  }
+}
+export const BufferPool = Buffer as Pooled<typeof Buffer>;
 
 @Composite
 export class FileNode {

@@ -79,6 +79,7 @@ export default defineConfig({
         text: 'Structural & creational patterns',
         items: [
           { text: '@Flyweight', link: '/decorators/flyweight' },
+          { text: '@Pool', link: '/decorators/pool' },
           { text: '@Proxy', link: '/decorators/proxy' },
           { text: '@Composite', link: '/decorators/composite' },
           { text: '@Wraps', link: '/decorators/wraps' },
