@@ -4,6 +4,7 @@ import { LogNest } from '@a-dev-kit/lombok-typescript/nestjs';
 import {
   Factory,
   Memoize,
+  NullObject,
   Pool,
   type Pooled,
   Singleton,
@@ -33,6 +34,16 @@ export class SmsNotifier {
 }
 
 /**
+ * @NullObject marks a safe do-nothing implementation of the {@link EmailNotifier}
+ * contract — use it as a default when the real notifier isn't wired.
+ */
+@NullObject({ of: EmailNotifier })
+@Injectable()
+export class NullNotifier {
+  channel = 'null';
+}
+
+/**
  * @Pool reuses helper instances *within* the (Nest-singleton) provider — this is
  * object reuse, not a Nest provider-scope replacement. @Pool coexists with any
  * @Injectable scope.
@@ -54,10 +65,13 @@ export function demoNestInterop() {
   const h = HasherPool.acquire();
   const digest = h.hash('nest');
   HasherPool.release(h);
+  // Fall back to the null implementation when the real notifier isn't provided.
+  const notifier = email ?? new NullNotifier();
   return {
     singleton: service === same,
     memoized: service.greet('Nest') === service.greet('Nest'),
     factory: email.channel,
     pooled: digest,
+    notifier: notifier.channel,
   };
 }

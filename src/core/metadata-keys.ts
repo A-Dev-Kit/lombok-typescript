@@ -40,6 +40,7 @@ export const MetadataKeys = {
   COMMAND: `${PREFIX}command`,
   INTERPRETER: `${PREFIX}interpreter`,
   ITERABLE: `${PREFIX}iterable`,
+  NULL_OBJECT: `${PREFIX}nullObject`,
   MEDIATOR: `${PREFIX}mediator`,
   MEMENTO: `${PREFIX}memento`,
   MEMENTO_EXCLUDE: `${PREFIX}memento:exclude`,

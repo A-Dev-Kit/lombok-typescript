@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-07-18
+
+### Added
+
+- **`@NullObject`** (Phase 11) — a class-level marker that documents a class is a safe do-nothing implementation of some contract. Takes an `{ of: Class }` option that is type-checked at decoration time (mirroring `@Adapter`'s pattern) and stored in metadata; tools can read it via the existing `getGoFMarkerMetadata(cls, MetadataKeys.NULL_OBJECT)` helper. Marker-only — no runtime behavior beyond one metadata write. Java Lombok has no equivalent; this is a GoF-only addition.
+
 ## [1.4.0] - 2026-07-11
 
 ### Added
