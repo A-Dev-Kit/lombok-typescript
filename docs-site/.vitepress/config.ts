@@ -107,6 +107,7 @@ export default defineConfig({
           { text: '@Facade', link: '/decorators/facade' },
           { text: '@Mediator', link: '/decorators/mediator' },
           { text: '@Interpreter', link: '/decorators/interpreter' },
+          { text: '@NullObject', link: '/decorators/null-object' },
         ],
       },
     ],
