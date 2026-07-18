@@ -3,13 +3,14 @@ import { describe, expect, it } from 'vitest';
 import { MetadataKeys } from '../../core/metadata-keys.js';
 import { legacyBackend } from '../../legacy/backend.js';
 import { stage3Backend } from '../../stage3/backend.js';
-import { Adapter, Bridge, Facade, Interpreter, Mediator } from '../../legacy/index.js';
+import { Adapter, Bridge, Facade, Interpreter, Mediator, NullObject } from '../../legacy/index.js';
 import {
   Adapter as AdapterS3,
   Bridge as BridgeS3,
   Facade as FacadeS3,
   Interpreter as InterpreterS3,
   Mediator as MediatorS3,
+  NullObject as NullObjectS3,
 } from '../../stage3/index.js';
 import {
   adapterClassLegacy,
@@ -23,6 +24,8 @@ import {
   interpreterClassStage3,
   mediatorClassLegacy,
   mediatorClassStage3,
+  nullObjectClassLegacy,
+  nullObjectClassStage3,
 } from './markers-gof.js';
 
 function makeClassContext(name: string): ClassDecoratorContext {
@@ -210,5 +213,45 @@ describe('GoF marker decorators (stage3 exports)', () => {
     FacadeS3()(Shop, ctx);
     (Shop as { [Symbol.metadata]?: object })[Symbol.metadata] = ctx.metadata as object;
     expect(getGoFMarkerMetadata(Shop, MetadataKeys.FACADE)).toEqual({});
+  });
+});
+
+describe('@NullObject marker', () => {
+  it('legacy: stores { of } metadata retrievable via getGoFMarkerMetadata', () => {
+    class Logger {}
+    @NullObject({ of: Logger })
+    class NullLogger {}
+    expect(getGoFMarkerMetadata(NullLogger, MetadataKeys.NULL_OBJECT)).toEqual({ of: Logger });
+  });
+
+  it('legacy: rejects a non-constructor `of` with a clear error', () => {
+    expect(() =>
+      nullObjectClassLegacy(legacyBackend, class X {}, {
+        of: 'nope' as unknown as new () => object,
+      }),
+    ).toThrow(/@NullObject of/);
+  });
+
+  it('legacy: rejects missing `of`', () => {
+    expect(() =>
+      nullObjectClassLegacy(legacyBackend, class X {}, {} as unknown as { of: new () => object }),
+    ).toThrow(/@NullObject of/);
+  });
+
+  it('stage3: stores { of } metadata on Symbol.metadata', () => {
+    class Notifier {}
+    class NullNotifier {}
+    const ctx = makeClassContext('NullNotifier');
+    NullObjectS3({ of: Notifier })(NullNotifier, ctx);
+    (NullNotifier as { [Symbol.metadata]?: object })[Symbol.metadata] = ctx.metadata as object;
+    expect(getGoFMarkerMetadata(NullNotifier, MetadataKeys.NULL_OBJECT)).toEqual({ of: Notifier });
+  });
+
+  it('stage3: rejects a non-constructor `of`', () => {
+    expect(() =>
+      nullObjectClassStage3(stage3Backend, class X {}, makeClassContext('X'), {
+        of: 42 as unknown as new () => object,
+      }),
+    ).toThrow(/@NullObject of/);
   });
 });

@@ -5,6 +5,7 @@ import {
   Facade,
   Interpreter,
   Mediator,
+  NullObject,
 } from '@a-dev-kit/lombok-typescript/legacy';
 
 class TargetApi {
@@ -41,6 +42,20 @@ class ChatRoom {}
 @Interpreter
 class MiniLang {}
 
+// GoF Null Object — a safe do-nothing implementation of the ConsoleLogger contract.
+class ConsoleLogger {
+  log(msg: string) {
+    console.info(msg);
+  }
+}
+
+@NullObject({ of: ConsoleLogger })
+class NullLogger implements ConsoleLogger {
+  log(_msg: string) {
+    /* no-op */
+  }
+}
+
 export function describeMarkers(): string {
   return [
     new LegacyAdapter().ping(),
@@ -48,5 +63,6 @@ export function describeMarkers(): string {
     CheckoutFacade.name,
     ChatRoom.name,
     MiniLang.name,
+    (new NullLogger().log('quiet'), NullLogger.name),
   ].join(',');
 }

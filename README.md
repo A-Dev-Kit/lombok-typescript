@@ -84,7 +84,7 @@ cd lombok-typescript && pnpm install && pnpm build && pnpm link --global
 
 ### Marker decorators
 
-`@Adapter`, `@Bridge`, `@Facade`, `@Mediator`, `@Interpreter` — document intent; no generated code.
+`@Adapter`, `@Bridge`, `@Facade`, `@Mediator`, `@Interpreter`, `@NullObject` — document intent; no generated code.
 
 ## Pick a decorator standard
 

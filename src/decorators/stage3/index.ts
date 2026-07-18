@@ -108,8 +108,10 @@ import {
   facadeClassStage3,
   interpreterClassStage3,
   mediatorClassStage3,
+  nullObjectClassStage3,
   type AdapterOptions,
   type FacadeOptions,
+  type NullObjectOptions,
 } from '../shared/markers-gof.js';
 
 /** Validates field initial values are not null or undefined. */
@@ -463,6 +465,13 @@ export const Mediator = defineClassDecorator(mediatorClassStage3);
 
 /** Marker-only — documents an interpreter / DSL grammar role. */
 export const Interpreter = defineClassDecorator(interpreterClassStage3);
+
+/** Marker + type-aid — documents a null implementation of `options.of` (Null Object). */
+export function NullObject(options: NullObjectOptions) {
+  return defineClassDecorator((backend, value, context) =>
+    nullObjectClassStage3(backend, value, context, options),
+  );
+}
 
 export {
   createFromFactory,
