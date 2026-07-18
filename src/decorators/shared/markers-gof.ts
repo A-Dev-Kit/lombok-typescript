@@ -14,6 +14,11 @@ export interface FacadeOptions {
   subsystems?: AnyClass[];
 }
 
+export interface NullObjectOptions {
+  /** The class or interface constructor this null implementation stands in for. */
+  of: AnyClass;
+}
+
 function assertConstructor(value: unknown, label: string): asserts value is AnyClass {
   if (typeof value !== 'function') {
     throw new Error(`${label} must be a constructor function`);
@@ -114,4 +119,23 @@ export function interpreterClassStage3(
   context: ClassDecoratorContext,
 ): void {
   codegenClassMarkerStage3(backend, value, context, MetadataKeys.INTERPRETER);
+}
+
+export function nullObjectClassLegacy(
+  backend: Backend,
+  target: AnyClass,
+  options: NullObjectOptions,
+): void {
+  assertConstructor(options?.of, '@NullObject of');
+  backend.metadata.set(MetadataKeys.NULL_OBJECT, target, undefined, options);
+}
+
+export function nullObjectClassStage3(
+  backend: Backend,
+  _value: AnyClass,
+  context: ClassDecoratorContext,
+  options: NullObjectOptions,
+): void {
+  assertConstructor(options?.of, '@NullObject of');
+  backend.metadata.set(MetadataKeys.NULL_OBJECT, context.metadata as object, undefined, options);
 }
