@@ -29,7 +29,7 @@ clearly-labeled _planned_ feature.
 | `@RequiredArgsConstructor`                   | Nest constructor DI               | In NestJS, `@Injectable()` classes get constructor injection natively            |
 | `@SneakyThrows`                              | —                                 | Not needed — TypeScript has no checked exceptions                                |
 | `@Cleanup`                                   | —                                 | Use `try/finally` or `using` (TS 5.2 explicit resource management)               |
-| `@Synchronized`                              | —                                 | _planned_ (Phase 12); JS is single-threaded, so rarely needed                    |
+| `@Synchronized`                              | `@Synchronized`                   | Async mutex: shared per-instance lock, named locks, optional acquisition timeout |
 
 ## Workflow differences
 
