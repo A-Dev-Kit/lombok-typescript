@@ -78,6 +78,7 @@ export {
   Visitable,
   getVisitableRegistry,
   Retry,
+  Synchronized,
   Debounce,
   Throttle,
   Trace,
@@ -101,3 +102,5 @@ export type {
 export { getGoFMarkerMetadata } from '../decorators/shared/markers-gof.js';
 export type { PoolOptions, Pooled } from '../decorators/shared/pool.js';
 export { PoolExhaustedError } from '../decorators/shared/pool.js';
+export type { SynchronizedOptions } from '../decorators/shared/synchronized.js';
+export { SynchronizedTimeoutError } from '../decorators/shared/synchronized.js';

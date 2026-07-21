@@ -86,10 +86,12 @@ import type { TraceOptions } from '../shared/trace.js';
 import {
   debounceMethodStage3,
   retryMethodStage3,
+  synchronizedMethodStage3,
   throttleMethodStage3,
   traceClassStage3,
   traceMethodStage3,
 } from '../shared/phase5-logic.js';
+import type { SynchronizedOptions } from '../shared/synchronized.js';
 import { deepFreezeClassStage3 } from '../shared/deep-freeze-logic.js';
 import {
   validateClassStage3,
@@ -370,6 +372,14 @@ export const Visitable = defineClassDecorator(visitableClassStage3);
 export function Retry(options: RetryOptions = {}) {
   return defineMethodDecorator((backend, value, context) =>
     retryMethodStage3(backend, value, context, options),
+  );
+}
+
+/** Async mutex: overlapping calls queue FIFO. Instance methods share `'$lock'` by default. */
+export function Synchronized(nameOrOptions: string | SynchronizedOptions = {}) {
+  const options = typeof nameOrOptions === 'string' ? { name: nameOrOptions } : nameOrOptions;
+  return defineMethodDecorator((backend, value, context) =>
+    synchronizedMethodStage3(backend, value, context, options),
   );
 }
 

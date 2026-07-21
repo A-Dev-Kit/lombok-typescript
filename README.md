@@ -26,7 +26,7 @@ A TypeScript library inspired by Java's [Project Lombok](https://projectlombok.o
 
 - **Lombok-style codegen** — `@Data`, `@Builder`, `@Getter`/`@Setter`, `@Value`, `@With`, `@Equals`, `@ToString`, `@NonNull`, `@Log`, `@Accessors`, `@UtilityClass`, `@FieldDefaults`, `@Delegate`
 - **Design-pattern decorators** — creational (`@Singleton`, `@Factory`, …), behavioral (`@Strategy`, `@Observer`, …), structural (`@Proxy`, `@Composite`, …)
-- **TypeScript utilities** — `@Memoize`, `@Retry`, `@Validate`, `@Debounce`, `@Throttle`, `@Trace`, `@Serializable`, `@DeepFreeze`
+- **TypeScript utilities** — `@Memoize`, `@Retry`, `@Synchronized`, `@Validate`, `@Debounce`, `@Throttle`, `@Trace`, `@Serializable`, `@DeepFreeze`
 - **Dual decorator APIs** — `./legacy` for NestJS and existing decorator stacks; `./stage3` for TS 6.0+ without `experimentalDecorators`
 - **CLI** — `lombok-ts init`, `generate`, `clean`, `watch`
 
@@ -80,7 +80,7 @@ cd lombok-typescript && pnpm install && pnpm build && pnpm link --global
 
 ### TypeScript utilities
 
-`@Memoize`, `@Retry`, `@Validate`, `@Debounce`, `@Throttle`, `@Trace`, `@Serializable`, `@DeepFreeze`
+`@Memoize`, `@Retry`, `@Synchronized`, `@Validate`, `@Debounce`, `@Throttle`, `@Trace`, `@Serializable`, `@DeepFreeze`
 
 ### Marker decorators
 

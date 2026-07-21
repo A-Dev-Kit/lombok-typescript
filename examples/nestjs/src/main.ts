@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
   const service = app.get(AppService);
 
-  const interop = demoNestInterop();
+  const interop = await demoNestInterop();
   demoValidateDto();
   const greeted = service.greet('Nest');
 

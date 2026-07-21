@@ -92,6 +92,7 @@ export default defineConfig({
         text: 'Utilities',
         items: [
           { text: '@Retry', link: '/decorators/retry' },
+          { text: '@Synchronized', link: '/decorators/synchronized' },
           { text: '@Debounce / @Throttle', link: '/decorators/debounce-throttle' },
           { text: '@Trace', link: '/decorators/trace' },
           { text: '@DeepFreeze', link: '/decorators/deep-freeze' },

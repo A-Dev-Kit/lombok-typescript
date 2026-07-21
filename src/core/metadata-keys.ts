@@ -72,6 +72,7 @@ export const MetadataKeys = {
   DEBOUNCE: `${PREFIX}debounce`,
   THROTTLE: `${PREFIX}throttle`,
   RETRY: `${PREFIX}retry`,
+  SYNCHRONIZED: `${PREFIX}synchronized`,
   HANDLER: `${PREFIX}handler`,
   TRANSITION: `${PREFIX}transition`,
   HOOK: `${PREFIX}hook`,

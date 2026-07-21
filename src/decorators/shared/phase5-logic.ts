@@ -4,6 +4,7 @@ import type { PropertyName } from '../../core/types.js';
 import type { AnyClass } from '../../legacy/decorate.js';
 import { debounceMethod, type DebounceOptions } from './debounce.js';
 import { retryMethod, type RetryOptions } from './retry.js';
+import { synchronizedMethod, type SynchronizedOptions } from './synchronized.js';
 import { throttleMethod } from './throttle.js';
 import { traceClassMethods, traceMethod, type TraceOptions } from './trace.js';
 
@@ -146,6 +147,40 @@ export function traceMethodStage3<This, Args extends unknown[], Return>(
   backend.metadata.set(MetadataKeys.TRACE, context.metadata as object, context.name, options);
   const contextName = `${options.name ?? 'Method'}.${String(context.name)}`;
   return traceMethod(value as (...args: unknown[]) => unknown, options, contextName) as (
+    this: This,
+    ...args: Args
+  ) => Return;
+}
+
+export function synchronizedMethodLegacy(
+  backend: Backend,
+  targetPrototype: object,
+  propertyKey: PropertyName,
+  descriptor: PropertyDescriptor,
+  options: SynchronizedOptions = {},
+): PropertyDescriptor | void {
+  backend.metadata.set(MetadataKeys.SYNCHRONIZED, targetPrototype, propertyKey, options);
+  const original = descriptor.value;
+  if (typeof original !== 'function') return;
+  return {
+    ...descriptor,
+    value: synchronizedMethod(original as (...args: unknown[]) => unknown, options),
+  };
+}
+
+export function synchronizedMethodStage3<This, Args extends unknown[], Return>(
+  backend: Backend,
+  value: (this: This, ...args: Args) => Return,
+  context: ClassMethodDecoratorContext<This, (this: This, ...args: Args) => Return>,
+  options: SynchronizedOptions = {},
+): (this: This, ...args: Args) => Return {
+  backend.metadata.set(
+    MetadataKeys.SYNCHRONIZED,
+    context.metadata as object,
+    context.name,
+    options,
+  );
+  return synchronizedMethod(value as (...args: unknown[]) => unknown, options) as unknown as (
     this: This,
     ...args: Args
   ) => Return;
