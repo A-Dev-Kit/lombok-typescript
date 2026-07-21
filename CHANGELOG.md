@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-07-21
+
+### Added
+
+- **`@Synchronized`** (Phase 12) — an async mutex for methods, the TypeScript equivalent of Java Lombok's `@Synchronized`. Overlapping calls queue FIFO and run one at a time, preventing async read-modify-write races. Java parity: all `@Synchronized` methods on an instance share one lock (`'$lock'`) by default; `@Synchronized('name')` uses a separate named lock. Extension: `{ timeout: ms }` rejects a queued call with `SynchronizedTimeoutError` (exported) if the lock isn't acquired in time — a timed-out call never runs and the queue continues in order. Locks are per-instance (WeakMap) and garbage-collected with the instance. The wrapped method always returns a Promise; reentrant calls on the same lock deadlock (documented, with the un-decorated-private-method workaround). Static/class-level locks deferred.
+
 ## [1.5.0] - 2026-07-18
 
 ### Added

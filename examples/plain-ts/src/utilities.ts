@@ -5,6 +5,7 @@ import {
   DeepFreeze,
   Retry,
   Serializable,
+  Synchronized,
   Trace,
   Validate,
 } from '@a-dev-kit/lombok-typescript/legacy';
@@ -47,9 +48,26 @@ class Profile {
   }
 }
 
+/** Synchronized: overlapping async calls queue, so read-modify-write can't interleave. */
+class Wallet {
+  balance = 100;
+
+  @Synchronized()
+  async withdraw(amount: number) {
+    const before = this.balance;
+    await new Promise((r) => setTimeout(r, 5)); // interleaving point without the mutex
+    this.balance = before - amount;
+  }
+}
+
 export async function demoPhase5Utilities() {
   const api = new ApiClient();
   const status = await api.fetchStatus();
+
+  const wallet = new Wallet();
+  await Promise.all([wallet.withdraw(50), wallet.withdraw(50)]);
+  // 0 with Synchronized; 50 if the two calls had interleaved.
+  const synchronizedBalance = wallet.balance;
 
   const signup = SignupDto.builder().email('user@example.com').build();
 
@@ -67,6 +85,7 @@ export async function demoPhase5Utilities() {
     status,
     signupEmail: signup.email,
     frozen,
+    synchronizedBalance,
     profileJson: { name: 'Ana', internalId: 'secret' },
   };
 }
