@@ -60,6 +60,7 @@ export default defineConfig({
           { text: '@UtilityClass', link: '/decorators/utility-class' },
           { text: '@FieldDefaults', link: '/decorators/field-defaults' },
           { text: '@Delegate', link: '/decorators/delegate' },
+          { text: 'Cleanup', link: '/decorators/cleanup' },
         ],
       },
       {
