@@ -65,6 +65,7 @@ export const MetadataKeys = {
   SERIALIZABLE_ALIAS: `${PREFIX}serializable:alias`,
   BUILDER_DEFAULT: `${PREFIX}builder:default`,
   SINGULAR: `${PREFIX}singular`,
+  CLEANUP: `${PREFIX}cleanup`,
   ITERATE_OVER: `${PREFIX}iterateOver`,
 
   // Method-level

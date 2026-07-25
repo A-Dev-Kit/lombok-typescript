@@ -50,6 +50,7 @@ export {
   UtilityClass,
   FieldDefaults,
   Delegate,
+  Cleanup,
   EqualsExclude,
   BuilderDefault,
   Singular,
@@ -111,6 +112,7 @@ export type { PoolOptions, Pooled } from '../decorators/shared/pool.js';
 export { PoolExhaustedError } from '../decorators/shared/pool.js';
 export type { SynchronizedOptions } from '../decorators/shared/synchronized.js';
 export { SynchronizedTimeoutError } from '../decorators/shared/synchronized.js';
+export type { CleanupOptions } from '../decorators/shared/cleanup.js';
 
 /** Read the Stage 3 `Symbol.metadata` object from a class, if present. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

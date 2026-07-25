@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import {
+  Cleanup,
   Data,
   Builder,
   DeepFreeze,
@@ -48,6 +49,14 @@ class Profile {
   }
 }
 
+/** Cleanup: fields with `close()`/custom methods auto-torn-down at `[Symbol.dispose]()`. */
+class Session implements Disposable {
+  @Cleanup() readonly conn = { close: () => teardownOrder.push('conn.close') };
+  @Cleanup('end') readonly stream = { end: () => teardownOrder.push('stream.end') };
+  declare [Symbol.dispose]: () => void;
+}
+const teardownOrder: string[] = [];
+
 /** Synchronized: overlapping async calls queue, so read-modify-write can't interleave. */
 class Wallet {
   balance = 100;
@@ -69,6 +78,15 @@ export async function demoPhase5Utilities() {
   // 0 with Synchronized; 50 if the two calls had interleaved.
   const synchronizedBalance = wallet.balance;
 
+  // Cleanup: `using` fires [Symbol.dispose]() which walks Cleanup fields in reverse.
+  teardownOrder.length = 0;
+  {
+    using _session = new Session();
+    // …use _session.conn / _session.stream…
+  }
+  // teardownOrder is now ['stream.end', 'conn.close'] (LIFO).
+  const cleanupOrder = [...teardownOrder];
+
   const signup = SignupDto.builder().email('user@example.com').build();
 
   const flags = new FeatureFlags();
@@ -86,6 +104,7 @@ export async function demoPhase5Utilities() {
     signupEmail: signup.email,
     frozen,
     synchronizedBalance,
+    cleanupOrder,
     profileJson: { name: 'Ana', internalId: 'secret' },
   };
 }

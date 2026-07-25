@@ -129,6 +129,7 @@ console.info('visitor square', square.accept(visitor));
 const phase5 = await demoPhase5Utilities();
 console.info('phase5 status', phase5.status, phase5.signupEmail, phase5.frozen);
 console.info('synchronized balance (0 = no interleaving)', phase5.synchronizedBalance);
+console.info('cleanup teardown order (LIFO)', phase5.cleanupOrder);
 console.info('phase6 markers', describeMarkers());
 
 // @BuilderDefault: `role` keeps its initializer ('user') unless the builder sets it.

@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { Injectable } from '@nestjs/common';
 import { LogNest } from '@a-dev-kit/lombok-typescript/nestjs';
 import {
+  Cleanup,
   Factory,
   Memoize,
   NullObject,
@@ -73,6 +74,17 @@ export class RequestHasher {
 }
 const HasherPool = RequestHasher as Pooled<typeof RequestHasher>;
 
+/**
+ * Cleanup on a plain helper class (not a Nest provider — Nest 10's `OnModuleDestroy`
+ * hook is the right fit for provider lifecycles). Works with TS 5.2 `using`.
+ */
+export class ScopedSession implements Disposable {
+  @Cleanup() readonly conn = { close: () => cleanupTrace.push('conn.close') };
+  @Cleanup('end') readonly stream = { end: () => cleanupTrace.push('stream.end') };
+  declare [Symbol.dispose]: () => void;
+}
+const cleanupTrace: string[] = [];
+
 export async function demoNestInterop() {
   const service = new AppService();
   const same = new AppService();
@@ -84,6 +96,11 @@ export async function demoNestInterop() {
   const notifier = email ?? new NullNotifier();
   // Overlapping calls serialize on the shared instance lock: count is exactly 2.
   await Promise.all([service.recordRequest(), service.recordRequest()]);
+  cleanupTrace.length = 0;
+  {
+    using _session = new ScopedSession();
+    // …scoped work…
+  }
   return {
     singleton: service === same,
     memoized: service.greet('Nest') === service.greet('Nest'),
@@ -91,5 +108,6 @@ export async function demoNestInterop() {
     pooled: digest,
     notifier: notifier.channel,
     synchronizedCount: service.requestCount,
+    cleanupOrder: [...cleanupTrace],
   };
 }

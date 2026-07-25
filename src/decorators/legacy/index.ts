@@ -24,6 +24,7 @@ import type { MemoizeOptions } from '../shared/memoize.js';
 import type { AccessorsOptions } from '../shared/accessors.js';
 import { accessorsClassLegacy } from '../shared/accessors.js';
 import { builderDefaultFieldLegacy } from '../shared/builder-default.js';
+import { cleanupFieldLegacy, type CleanupOptions } from '../shared/cleanup.js';
 import { delegateFieldLegacy, parseDelegateMethods } from '../shared/delegate.js';
 import { singularFieldLegacy } from '../shared/singular.js';
 import { equalsClassLegacy, equalsExcludeFieldLegacy } from '../shared/equals.js';
@@ -225,6 +226,15 @@ export function FieldDefaults(options: FieldDefaultsOptions = {}): ClassDecorato
 export function Delegate(...methods: string[]): PropertyDecorator {
   return defineFieldDecorator((backend, proto, key) =>
     delegateFieldLegacy(backend, proto, key, parseDelegateMethods(methods)),
+  );
+}
+
+/** Auto-close a field at `[Symbol.dispose]()`. Default method `'close'`; also usable with `using`. */
+export function Cleanup(nameOrOptions: string | CleanupOptions = {}): PropertyDecorator {
+  const options: CleanupOptions =
+    typeof nameOrOptions === 'string' ? { method: nameOrOptions } : nameOrOptions;
+  return defineFieldDecorator((backend, proto, key) =>
+    cleanupFieldLegacy(backend, proto, key, options),
   );
 }
 
