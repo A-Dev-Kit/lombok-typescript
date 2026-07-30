@@ -43,6 +43,7 @@ export {
   UtilityClass,
   FieldDefaults,
   Delegate,
+  Cleanup,
   EqualsExclude,
   BuilderDefault,
   Singular,
@@ -104,3 +105,4 @@ export type { PoolOptions, Pooled } from '../decorators/shared/pool.js';
 export { PoolExhaustedError } from '../decorators/shared/pool.js';
 export type { SynchronizedOptions } from '../decorators/shared/synchronized.js';
 export { SynchronizedTimeoutError } from '../decorators/shared/synchronized.js';
+export type { CleanupOptions } from '../decorators/shared/cleanup.js';

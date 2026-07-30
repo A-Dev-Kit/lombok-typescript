@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-07-24
+
+### Added
+
+- **`Cleanup`** (Phase 13) — a field decorator that marks resources to be closed at dispose time. The enclosing class automatically implements `[Symbol.dispose]()`, so it works out of the box with TypeScript 5.2 `using`. Options: `Cleanup('methodName')` or `Cleanup({ method: 'end' })`; default is `close`. Fields are torn down in **reverse declaration order** (LIFO, matching Java's block-scope semantics). Null/undefined field values skip silently; a missing method throws a clear error. Best-effort teardown: one throwing field doesn't stop later ones, and the first error is rethrown. A pre-existing `[Symbol.dispose]()` is preserved and chained: user-defined runs first, an ancestor `Cleanup` install runs last (LIFO across inheritance). Sync only; `Symbol.asyncDispose` deferred.
+
 ## [1.6.0] - 2026-07-21
 
 ### Added

@@ -22,6 +22,7 @@ import type { MemoizeOptions } from '../shared/memoize.js';
 import type { AccessorsOptions } from '../shared/accessors.js';
 import { accessorsClassStage3 } from '../shared/accessors.js';
 import { builderDefaultFieldStage3 } from '../shared/builder-default.js';
+import { cleanupFieldStage3, type CleanupOptions } from '../shared/cleanup.js';
 import { delegateFieldStage3, parseDelegateMethods } from '../shared/delegate.js';
 import { singularFieldStage3 } from '../shared/singular.js';
 import { equalsClassStage3, equalsExcludeFieldStage3 } from '../shared/equals.js';
@@ -230,6 +231,13 @@ export function Delegate(...methods: string[]) {
   return defineFieldDecorator((backend, context) =>
     delegateFieldStage3(backend, context, parseDelegateMethods(methods)),
   );
+}
+
+/** Auto-close a field at `[Symbol.dispose]()`. Default method `'close'`; also usable with `using`. */
+export function Cleanup(nameOrOptions: string | CleanupOptions = {}) {
+  const options: CleanupOptions =
+    typeof nameOrOptions === 'string' ? { method: nameOrOptions } : nameOrOptions;
+  return defineFieldDecorator((backend, context) => cleanupFieldStage3(backend, context, options));
 }
 
 /** Exclude a field from generated `equals()`. */

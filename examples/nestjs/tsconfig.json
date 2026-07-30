@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2022",
+    "lib": ["ES2023", "ESNext.Disposable", "DOM"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "types": ["node"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "strict": true,
