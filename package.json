@@ -197,7 +197,7 @@
     "eslint": "^10.6.0",
     "expect-type": "^1.4.0",
     "globals": "^17.7.0",
-    "mobx": "^6.15.0",
+    "mobx": "^7.0.0",
     "prettier": "^3.9.1",
     "publint": "^0.3.0",
     "rxjs": "^7.8.2",
@@ -205,7 +205,7 @@
     "zod": "^4.4.3",
     "tsup": "^8.5.1",
     "tsx": "^4.22.4",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "typescript-eslint": "^8.62.0",
     "vitest": "^4.1.9"
   },
