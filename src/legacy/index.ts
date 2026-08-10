@@ -44,6 +44,7 @@ export {
   FieldDefaults,
   Delegate,
   Cleanup,
+  ExtensionMethod,
   EqualsExclude,
   BuilderDefault,
   Singular,
@@ -106,3 +107,8 @@ export { PoolExhaustedError } from '../decorators/shared/pool.js';
 export type { SynchronizedOptions } from '../decorators/shared/synchronized.js';
 export { SynchronizedTimeoutError } from '../decorators/shared/synchronized.js';
 export type { CleanupOptions } from '../decorators/shared/cleanup.js';
+export type {
+  ExtensionHelper,
+  ExtensionConflictPolicy,
+  ExtensionMethodOptions,
+} from '../decorators/shared/extension-method.js';

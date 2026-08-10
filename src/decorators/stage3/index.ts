@@ -23,6 +23,11 @@ import type { AccessorsOptions } from '../shared/accessors.js';
 import { accessorsClassStage3 } from '../shared/accessors.js';
 import { builderDefaultFieldStage3 } from '../shared/builder-default.js';
 import { cleanupFieldStage3, type CleanupOptions } from '../shared/cleanup.js';
+import {
+  extensionMethodClassStage3,
+  type ExtensionHelper,
+  type ExtensionMethodOptions,
+} from '../shared/extension-method.js';
 import { delegateFieldStage3, parseDelegateMethods } from '../shared/delegate.js';
 import { singularFieldStage3 } from '../shared/singular.js';
 import { equalsClassStage3, equalsExcludeFieldStage3 } from '../shared/equals.js';
@@ -238,6 +243,21 @@ export function Cleanup(nameOrOptions: string | CleanupOptions = {}) {
   const options: CleanupOptions =
     typeof nameOrOptions === 'string' ? { method: nameOrOptions } : nameOrOptions;
   return defineFieldDecorator((backend, context) => cleanupFieldStage3(backend, context, options));
+}
+
+/**
+ * Installs each helper class's static methods as instance methods on the
+ * decorated class prototype, forwarding `this` as the first argument. TS
+ * equivalent of Java Lombok's `@ExtensionMethod`, scoped to the decorated
+ * class (no source rewriting; no built-in prototype pollution).
+ */
+export function ExtensionMethod(
+  helpers: readonly ExtensionHelper[],
+  options: ExtensionMethodOptions = {},
+) {
+  return defineClassDecorator((backend, value, context) =>
+    extensionMethodClassStage3(backend, value, context, helpers, options),
+  );
 }
 
 /** Exclude a field from generated `equals()`. */
