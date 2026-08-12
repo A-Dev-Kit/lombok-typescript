@@ -27,9 +27,10 @@ clearly-labeled _planned_ feature.
 | `@NonNull`                                   | `@NonNull`                        | Runtime null checks                                                                    |
 | `@NoArgsConstructor` / `@AllArgsConstructor` | —                                 | Not needed — use `@Builder`, field initializers, or object literals                    |
 | `@RequiredArgsConstructor`                   | Nest constructor DI               | In NestJS, `@Injectable()` classes get constructor injection natively                  |
-| `@SneakyThrows`                              | —                                 | Not needed — TypeScript has no checked exceptions                                      |
+| `@SneakyThrows`                              | —                                 | Won't ship — TypeScript has no checked exceptions (see ADR-18)                         |
 | `@Cleanup`                                   | `Cleanup`                         | Field-level; auto-installs `[Symbol.dispose]()` for use with TS 5.2 `using`; sync only |
 | `@Synchronized`                              | `@Synchronized`                   | Async mutex: shared per-instance lock, named locks, optional acquisition timeout       |
+| `@ExtensionMethod`                           | `@ExtensionMethod`                | Class-level runtime install of a helper class's static methods as instance methods; `this` forwarded as the first argument. Not a source-level rewrite. |
 
 ## Workflow differences
 
