@@ -1,6 +1,6 @@
 {
   "name": "@a-dev-kit/lombok-typescript",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },

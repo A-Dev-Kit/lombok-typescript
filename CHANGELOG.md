@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-08-14
+
+### Added
+
+- **`@ExtensionMethod`** (Phase 14) — a class-level decorator that installs each listed helper class's static methods as instance methods on the decorated class prototype, with `this` forwarded as the first argument. TS equivalent of Java Lombok's `@ExtensionMethod`, with one honest divergence: this is a runtime prototype install scoped to the decorated class, not a compile-time source rewrite (TypeScript decorators can't rewrite arbitrary call sites). Options: `onConflict: 'error' | 'skip' | 'override'` (default `'error'` — fail fast, matching `@BuilderDefault` and `@Singular`), `include` / `exclude` filters. Non-function statics and reserved keys (`name`, `length`, `prototype`) are ignored. Conflict detection ignores `Object.prototype` members but catches methods you defined on the class or a non-`Object` ancestor. Records `{ helperName, methods }[]` under `MetadataKeys.EXTENSION_METHOD` for tooling introspection. Both `legacy` and `stage3` backends supported.
+
+### Removed
+
+- Phase 14 slot previously scheduled for `@SneakyThrows` — retired without shipping. TypeScript has no checked-exception system, so there is nothing to bypass; see [ADR-18](https://github.com/A-Dev-Kit/lombok-typescript-planning/blob/main/adr/0018-sneakythrows-not-shipping.md). The migration guide still documents the mapping. Later phase version numbers are unchanged.
+
 ## [1.7.0] - 2026-07-24
 
 ### Added
@@ -194,7 +204,8 @@ Code-complete Phase 1 release. **Not published to npm** — batch publish deferr
 - VitePress documentation site and GitHub Pages deploy workflow
 - Release workflow placeholder (disabled until batch publish queue is full)
 
-[Unreleased]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v1.7.0...v1.8.0
 [1.0.0]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v0.10.0...v1.0.0
 [0.10.0]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v0.9.0...v0.10.0
 [0.4.0]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v0.3.0...v0.4.0
