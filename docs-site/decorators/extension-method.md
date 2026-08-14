@@ -49,11 +49,11 @@ b.double(); // 42
 
 ## Options
 
-| Option       | Type                              | Default   | Purpose                                                                                                                    |
-| ------------ | --------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Option       | Type                              | Default   | Purpose                                                                                                                     |
+| ------------ | --------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `onConflict` | `'error' \| 'skip' \| 'override'` | `'error'` | What to do when a helper method's name already exists on the class (own or ancestor, excluding `Object.prototype` members). |
-| `include`    | `readonly string[]`               | —         | Only install methods with these names.                                                                                     |
-| `exclude`    | `readonly string[]`               | —         | Skip methods with these names.                                                                                             |
+| `include`    | `readonly string[]`               | —         | Only install methods with these names.                                                                                      |
+| `exclude`    | `readonly string[]`               | —         | Skip methods with these names.                                                                                              |
 
 `onConflict: 'error'` fails fast at decoration time with a message naming the class,
 method, and helper — matching the fail-fast style of `@BuilderDefault` and `@Singular`.
@@ -65,7 +65,7 @@ method, and helper — matching the fail-fast style of `@BuilderDefault` and `@S
 - **Multiple helpers.** Pass them in a list: `@ExtensionMethod([A, B, C])`. They're
   processed in order; under `override`, later helpers win when names clash.
 - **Conflict detection ignores `Object.prototype`.** A helper named `toString` doesn't
-  clash with the default `Object.prototype.toString`, but it *does* clash with a
+  clash with the default `Object.prototype.toString`, but it _does_ clash with a
   `toString()` you (or a parent class) declared explicitly.
 - **`this` forwarding.** The installed wrapper calls `Helper.method(this, ...args)`, so
   the helper receives the instance as its first argument. Keep your helpers pure —
@@ -83,7 +83,7 @@ method, and helper — matching the fail-fast style of `@BuilderDefault` and `@S
 
 ## Java Lombok migrants
 
-| Java pattern                               | Port                                                                            |
-| ------------------------------------------ | ------------------------------------------------------------------------------- |
-| `@ExtensionMethod(StringUtils.class)` at class level | `@ExtensionMethod([StringUtils])` — installs statics on the decorated class only |
-| `s.reverse()` compiler-rewritten to `StringUtils.reverse(s)` | Call `instance.method(...)` on the decorated class; not on unrelated strings.  |
+| Java pattern                                                 | Port                                                                             |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| `@ExtensionMethod(StringUtils.class)` at class level         | `@ExtensionMethod([StringUtils])` — installs statics on the decorated class only |
+| `s.reverse()` compiler-rewritten to `StringUtils.reverse(s)` | Call `instance.method(...)` on the decorated class; not on unrelated strings.    |
