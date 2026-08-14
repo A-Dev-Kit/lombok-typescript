@@ -46,10 +46,8 @@ describe('@ExtensionMethod (legacy)', () => {
     @ExtensionMethod([BoxUtils])
     class Box {
       constructor(public value: number) {}
-    }
-    interface Box {
-      describe(prefix: string): string;
-      double(): number;
+      declare describe: (prefix: string) => string;
+      declare double: () => number;
     }
 
     const b = new Box(21);
@@ -59,10 +57,9 @@ describe('@ExtensionMethod (legacy)', () => {
 
   it('installs across multiple helpers', () => {
     @ExtensionMethod([StringUtils, IntUtils])
-    class Mixed {}
-    interface Mixed {
-      reverse(): string;
-      abs(): number;
+    class Mixed {
+      declare reverse: () => string;
+      declare abs: () => number;
     }
     const m = new Mixed();
     expect(typeof m.reverse).toBe('function');
@@ -82,7 +79,6 @@ describe('@ExtensionMethod (legacy)', () => {
   it('default onConflict=error throws when a helper method name clashes with a user method', () => {
     expect(() => {
       @ExtensionMethod([StringUtils])
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars -- decoration triggers the throw
       class Clash {
         reverse(): string {
           return 'user';
@@ -110,9 +106,6 @@ describe('@ExtensionMethod (legacy)', () => {
         return 'user';
       }
     }
-    interface Overridden {
-      reverse(): string;
-    }
     const o = new Overridden();
     // Extension forwards `this` — StringUtils.reverse expects a string, so use the string form.
     const result = (o.reverse as (this: string) => string).call('abc');
@@ -132,7 +125,6 @@ describe('@ExtensionMethod (legacy)', () => {
     }
     expect(() => {
       @ExtensionMethod([HelperA, HelperB])
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class C {}
       void C;
     }).toThrow(/method 'shared' from HelperB conflicts/);
@@ -170,7 +162,6 @@ describe('@ExtensionMethod (legacy)', () => {
   it('rejects a non-function helper at decoration time', () => {
     expect(() => {
       @ExtensionMethod([{} as unknown as new () => unknown])
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Bad {}
       void Bad;
     }).toThrow(/every helper must be a class or function/);
@@ -185,7 +176,6 @@ describe('@ExtensionMethod (legacy)', () => {
     // Should NOT throw — user did not define their own toString.
     expect(() => {
       @ExtensionMethod([WithToString])
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Ok {}
       void Ok;
     }).not.toThrow();
@@ -204,7 +194,6 @@ describe('@ExtensionMethod (legacy)', () => {
     }
     expect(() => {
       @ExtensionMethod([Helper])
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Derived extends Base {}
       void Derived;
     }).toThrow(/method 'shared' from Helper conflicts/);
