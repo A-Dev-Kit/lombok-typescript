@@ -4,6 +4,7 @@ import {
   Data,
   Builder,
   DeepFreeze,
+  ExtensionMethod,
   Retry,
   Serializable,
   Synchronized,
@@ -57,6 +58,23 @@ class Session implements Disposable {
 }
 const teardownOrder: string[] = [];
 
+/** ExtensionMethod: a helper class's statics are installed as instance methods forwarding `this`. */
+class BoxUtils {
+  static describe(box: { value: number }, prefix: string): string {
+    return `${prefix}:${box.value}`;
+  }
+  static double(box: { value: number }): number {
+    return box.value * 2;
+  }
+}
+
+@ExtensionMethod([BoxUtils])
+class Box {
+  constructor(public value: number) {}
+  declare describe: (prefix: string) => string;
+  declare double: () => number;
+}
+
 /** Synchronized: overlapping async calls queue, so read-modify-write can't interleave. */
 class Wallet {
   balance = 100;
@@ -99,6 +117,9 @@ export async function demoPhase5Utilities() {
     }
   })();
 
+  const box = new Box(21);
+  const boxExt = { described: box.describe('n'), doubled: box.double() };
+
   return {
     status,
     signupEmail: signup.email,
@@ -106,7 +127,8 @@ export async function demoPhase5Utilities() {
     synchronizedBalance,
     cleanupOrder,
     profileJson: { name: 'Ana', internalId: 'secret' },
+    boxExt,
   };
 }
 
-export { ApiClient, SignupDto, FeatureFlags, Profile };
+export { ApiClient, SignupDto, FeatureFlags, Profile, Box };

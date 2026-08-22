@@ -61,6 +61,7 @@ export default defineConfig({
           { text: '@FieldDefaults', link: '/decorators/field-defaults' },
           { text: '@Delegate', link: '/decorators/delegate' },
           { text: 'Cleanup', link: '/decorators/cleanup' },
+          { text: 'ExtensionMethod', link: '/decorators/extension-method' },
         ],
       },
       {

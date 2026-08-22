@@ -68,6 +68,9 @@ export const MetadataKeys = {
   CLEANUP: `${PREFIX}cleanup`,
   ITERATE_OVER: `${PREFIX}iterateOver`,
 
+  // Class-level (TS-only, Lombok parity)
+  EXTENSION_METHOD: `${PREFIX}extensionMethod`,
+
   // Method-level
   MEMOIZE: `${PREFIX}memoize`,
   DEBOUNCE: `${PREFIX}debounce`,

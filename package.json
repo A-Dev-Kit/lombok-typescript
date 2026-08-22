@@ -1,6 +1,6 @@
 {
   "name": "@a-dev-kit/lombok-typescript",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
@@ -197,7 +197,7 @@
     "eslint": "^10.6.0",
     "expect-type": "^1.4.0",
     "globals": "^17.7.0",
-    "mobx": "^6.15.0",
+    "mobx": "^7.0.0",
     "prettier": "^3.9.1",
     "publint": "^0.3.0",
     "rxjs": "^7.8.2",

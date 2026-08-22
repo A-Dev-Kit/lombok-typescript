@@ -25,6 +25,11 @@ import type { AccessorsOptions } from '../shared/accessors.js';
 import { accessorsClassLegacy } from '../shared/accessors.js';
 import { builderDefaultFieldLegacy } from '../shared/builder-default.js';
 import { cleanupFieldLegacy, type CleanupOptions } from '../shared/cleanup.js';
+import {
+  extensionMethodClassLegacy,
+  type ExtensionHelper,
+  type ExtensionMethodOptions,
+} from '../shared/extension-method.js';
 import { delegateFieldLegacy, parseDelegateMethods } from '../shared/delegate.js';
 import { singularFieldLegacy } from '../shared/singular.js';
 import { equalsClassLegacy, equalsExcludeFieldLegacy } from '../shared/equals.js';
@@ -235,6 +240,21 @@ export function Cleanup(nameOrOptions: string | CleanupOptions = {}): PropertyDe
     typeof nameOrOptions === 'string' ? { method: nameOrOptions } : nameOrOptions;
   return defineFieldDecorator((backend, proto, key) =>
     cleanupFieldLegacy(backend, proto, key, options),
+  );
+}
+
+/**
+ * Installs each helper class's static methods as instance methods on the
+ * decorated class prototype, forwarding `this` as the first argument. TS
+ * equivalent of Java Lombok's `@ExtensionMethod`, scoped to the decorated
+ * class (no source rewriting; no built-in prototype pollution).
+ */
+export function ExtensionMethod(
+  helpers: readonly ExtensionHelper[],
+  options: ExtensionMethodOptions = {},
+): ClassDecorator {
+  return defineClassDecorator((backend, target) =>
+    extensionMethodClassLegacy(backend, target, helpers, options),
   );
 }
 
