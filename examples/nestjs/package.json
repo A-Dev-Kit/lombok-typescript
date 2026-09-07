@@ -8,8 +8,8 @@
     "generate": "node ../../dist/cli/index.js generate"
   },
   "dependencies": {
-    "@nestjs/common": "^11.0.0",
-    "@nestjs/core": "^11.0.0",
+    "@nestjs/common": "^12.0.1",
+    "@nestjs/core": "^12.0.1",
     "@a-dev-kit/lombok-typescript": "workspace:*",
     "class-validator": "^0.15.1",
     "reflect-metadata": "^0.2.2",

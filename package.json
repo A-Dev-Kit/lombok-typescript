@@ -188,12 +188,12 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.0",
     "@eslint/js": "^10.0.1",
-    "@nestjs/common": "^11.0.0",
-    "@nestjs/core": "^11.0.0",
-    "@nestjs/testing": "^11.0.0",
+    "@nestjs/common": "^12.0.1",
+    "@nestjs/core": "^12.0.1",
+    "@nestjs/testing": "^12.0.1",
     "@types/node": "^26.0.1",
-    "@vitest/coverage-v8": "^4.1.9",
-    "@vitest/ui": "^4.1.9",
+    "@vitest/coverage-v8": "^5.0.0",
+    "@vitest/ui": "^5.0.0",
     "eslint": "^10.6.0",
     "expect-type": "^1.4.0",
     "globals": "^17.7.0",
@@ -205,9 +205,9 @@
     "zod": "^4.4.3",
     "tsup": "^8.5.1",
     "tsx": "^4.22.4",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "typescript-eslint": "^8.62.0",
-    "vitest": "^4.1.9"
+    "vitest": "^5.0.0"
   },
   "dependencies": {
     "bundle-require": "^5.1.0",
