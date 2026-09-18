@@ -45,6 +45,7 @@ export {
   Delegate,
   Cleanup,
   ExtensionMethod,
+  AllArgsConstructor,
   EqualsExclude,
   BuilderDefault,
   Singular,
@@ -112,3 +113,7 @@ export type {
   ExtensionConflictPolicy,
   ExtensionMethodOptions,
 } from '../decorators/shared/extension-method.js';
+export type {
+  AllArgsConstructorOptions,
+  AllArgsConstructorAccess,
+} from '../decorators/shared/all-args-constructor.js';
