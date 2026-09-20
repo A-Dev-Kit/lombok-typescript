@@ -26,6 +26,10 @@ import { emitWithFns } from './with-emit.js';
 import { emitTemplateMethodApplyAssignment, emitTemplateMethodFn } from './template-method-emit.js';
 import { emitSerializableApplyAssignment, emitSerializableMethods } from './serializable-emit.js';
 import { emitVisitableAcceptApplyAssignment, emitVisitableAcceptFn } from './visitor-emit.js';
+import {
+  emitAllArgsConstructorApplyAssignment,
+  emitAllArgsConstructorFn,
+} from './all-args-constructor-emit.js';
 
 function emitImports(
   classes: readonly ClassInfo[],
@@ -113,6 +117,9 @@ function emitApplyMixin(info: ClassInfo): string {
   const serializableApply = emitSerializableApplyAssignment(info);
   if (serializableApply) assignments.push(serializableApply);
 
+  const allArgsApply = emitAllArgsConstructorApplyAssignment(info);
+  if (allArgsApply) assignments.push(allArgsApply);
+
   if (assignments.length === 0) return '';
 
   return `
@@ -169,6 +176,9 @@ function emitClassCompanionBlocks(info: ClassInfo): string {
 
   const serializable = emitSerializableMethods(info);
   if (serializable) blocks.push(serializable);
+
+  const allArgsFn = emitAllArgsConstructorFn(info);
+  if (allArgsFn) blocks.push(allArgsFn);
 
   const apply = emitApplyMixin(info);
   if (apply) blocks.push(apply);

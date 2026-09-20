@@ -19,6 +19,7 @@ const CODEGEN_CLASS_DECORATORS = [
   'AbstractFactory',
   'Visitable',
   'Serializable',
+  'AllArgsConstructor',
 ] as const;
 
 export function hasCodegenClassDecorator(info: ClassInfo): boolean {

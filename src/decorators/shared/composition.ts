@@ -3,6 +3,10 @@ import type { ClassInfo } from '../../codegen/types.js';
 /** Pairs of class decorators that must not appear on the same class. */
 export const CONFLICTING_CLASS_DECORATOR_PAIRS: readonly (readonly [string, string])[] = [
   ['Data', 'Value'],
+  // `@Data` and `@Value` already emit a constructor via `emitDataConstructor`;
+  // stacking `@AllArgsConstructor` would duplicate state assignment.
+  ['AllArgsConstructor', 'Data'],
+  ['AllArgsConstructor', 'Value'],
 ];
 
 export function classHasDecorator(info: Pick<ClassInfo, 'decorators'>, name: string): boolean {
