@@ -35,4 +35,37 @@ describe('composition rules', () => {
     `);
     expect(() => validateAllClassCompositions(classes)).toThrow(/Bad/);
   });
+
+  it('rejects @AllArgsConstructor with @Data on the same class', () => {
+    const [info] = analyzeSourceString(`
+      @AllArgsConstructor()
+      @Data
+      class User { name: string; }
+    `);
+    expect(() => validateClassComposition(info!)).toThrow(
+      /@AllArgsConstructor and @Data cannot be used together/,
+    );
+  });
+
+  it('rejects @AllArgsConstructor with @Value on the same class', () => {
+    const [info] = analyzeSourceString(`
+      @AllArgsConstructor()
+      @Value
+      class User { name: string; }
+    `);
+    expect(() => validateClassComposition(info!)).toThrow(
+      /@AllArgsConstructor and @Value cannot be used together/,
+    );
+  });
+
+  it('allows @AllArgsConstructor alone and with @Builder', () => {
+    const classes = analyzeSourceString(`
+      @AllArgsConstructor()
+      class A { x: number; }
+      @AllArgsConstructor({ staticName: 'of' })
+      @Builder
+      class B { y: string; }
+    `);
+    expect(() => validateAllClassCompositions(classes)).not.toThrow();
+  });
 });

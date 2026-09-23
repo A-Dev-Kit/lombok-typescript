@@ -5,6 +5,14 @@ import { emitDataAccessors, emitDataConstructor, emitDataEquals, emitDataMethods
 import { emitCompanionFile } from './index.js';
 import { emitSerializableApplyAssignment, emitSerializableMethods } from './serializable-emit.js';
 import { emitToStringMethod, emitToStringMixin } from './toString.js';
+import {
+  DEFAULT_ALL_ARGS_STATIC_NAME,
+  emitAllArgsConstructorApplyAssignment,
+  emitAllArgsConstructorFn,
+  emitAllArgsConstructorNamespaceLines,
+  getAllArgsStaticName,
+  hasAllArgsConstructor,
+} from './all-args-constructor-emit.js';
 
 describe('codegen emitters', () => {
   it('emits builder and data mixins for decorated classes', () => {
@@ -331,5 +339,139 @@ describe('codegen emitters', () => {
     expect(() =>
       emitCompanionFile('/proj/src/bad.ts', '/proj/.lombok/bad.lombok.ts', classes, '/proj'),
     ).toThrow(/missing @Hook method/);
+  });
+
+  it('@AllArgsConstructor emits a static-factory function via Object.create', () => {
+    const classes = analyzeSourceString(`
+      @AllArgsConstructor()
+      class User { name: string; age: number; }
+    `);
+    const info = classes[0]!;
+    expect(hasAllArgsConstructor(info)).toBe(true);
+    expect(getAllArgsStaticName(info)).toBe(DEFAULT_ALL_ARGS_STATIC_NAME);
+
+    const fn = emitAllArgsConstructorFn(info);
+    expect(fn).toContain('function User_allArgs(name: string, age: number): User');
+    expect(fn).toContain('Object.create(User.prototype)');
+    expect(fn).toContain('instance.name = name');
+    expect(fn).toContain('instance.age = age');
+    expect(fn).toContain('return instance');
+  });
+
+  it('@AllArgsConstructor emit returns empty strings without the decorator', () => {
+    const classes = analyzeSourceString(`class Plain { x: number; }`);
+    const info = classes[0]!;
+    expect(hasAllArgsConstructor(info)).toBe(false);
+    expect(emitAllArgsConstructorFn(info)).toBe('');
+    expect(emitAllArgsConstructorApplyAssignment(info)).toBe('');
+    expect(emitAllArgsConstructorNamespaceLines(info)).toEqual([]);
+  });
+
+  it('@AllArgsConstructor honours staticName from the decorator arguments', () => {
+    const classes = analyzeSourceString(`
+      @AllArgsConstructor({ staticName: 'of' })
+      class Order { item: string; qty: number; }
+    `);
+    const info = classes[0]!;
+    expect(getAllArgsStaticName(info)).toBe('of');
+    const apply = emitAllArgsConstructorApplyAssignment(info);
+    expect(apply).toContain('.of = Order_allArgs');
+    expect(apply).toContain('of(item: string, qty: number): Order');
+  });
+
+  it('@AllArgsConstructor falls back to the default when option shape is unrecognised', () => {
+    const classes = analyzeSourceString(`
+      @AllArgsConstructor({ /* intentionally no staticName */ })
+      class Blank { x: number; }
+    `);
+    expect(getAllArgsStaticName(classes[0]!)).toBe(DEFAULT_ALL_ARGS_STATIC_NAME);
+  });
+
+  it('@AllArgsConstructor handles optional fields in the signature', () => {
+    const classes = analyzeSourceString(`
+      @AllArgsConstructor()
+      class Patch { id: string; note?: string; }
+    `);
+    const info = classes[0]!;
+    const fn = emitAllArgsConstructorFn(info);
+    expect(fn).toContain('note?: string');
+    expect(fn).not.toContain('note?: string | undefined');
+  });
+
+  it('@AllArgsConstructor on an empty class emits a parameter-less factory with no assignments', () => {
+    const classes = analyzeSourceString(`
+      @AllArgsConstructor()
+      class Marker {}
+    `);
+    const fn = emitAllArgsConstructorFn(classes[0]!);
+    expect(fn).toContain('function Marker_allArgs(): Marker');
+    expect(fn).not.toContain('instance.');
+    expect(fn).toContain('return instance');
+  });
+
+  it('@AllArgsConstructor emits the .d.ts namespace shim', () => {
+    const classes = analyzeSourceString(`
+      @AllArgsConstructor({ staticName: 'of' })
+      class User { name: string; age: number; }
+    `);
+    const lines = emitAllArgsConstructorNamespaceLines(classes[0]!);
+    expect(lines.join('\n')).toContain('namespace User {');
+    expect(lines.join('\n')).toContain('export function of(name: string, age: number): User');
+  });
+
+  it('@AllArgsConstructor end-to-end: companion file wires function + apply + .d.ts', () => {
+    const classes = analyzeSourceString(`
+      import { AllArgsConstructor } from 'lombok-typescript/legacy';
+      @AllArgsConstructor()
+      class Point { x: number; y: number; }
+    `);
+    const { ts, dts } = emitCompanionFile(
+      '/proj/src/point.ts',
+      '/proj/.lombok/src/point.lombok.ts',
+      classes,
+      '/proj',
+    );
+    expect(ts).toContain("import { Point } from '../../src/point.js'");
+    expect(ts).toContain('function Point_allArgs(x: number, y: number): Point');
+    expect(ts).toContain('applyPointGenerated');
+    expect(ts).toContain('.allArgs = Point_allArgs');
+    expect(dts).toContain('namespace Point');
+    expect(dts).toContain('export function allArgs(x: number, y: number): Point');
+  });
+
+  it('@AllArgsConstructor + @Builder compose cleanly (no conflict)', () => {
+    const classes = analyzeSourceString(`
+      import { AllArgsConstructor, Builder } from 'lombok-typescript/legacy';
+      @AllArgsConstructor({ staticName: 'of' })
+      @Builder
+      class Order { item: string; qty: number; }
+    `);
+    const { ts } = emitCompanionFile(
+      '/proj/src/order.ts',
+      '/proj/.lombok/src/order.lombok.ts',
+      classes,
+      '/proj',
+    );
+    expect(ts).toContain('class OrderBuilder');
+    expect(ts).toContain('function Order_allArgs(item: string, qty: number): Order');
+    expect(ts).toContain('.of = Order_allArgs');
+    expect(ts).toContain('.builder = Order_builder');
+  });
+
+  it('@AllArgsConstructor + @Data is rejected at codegen time (composition)', () => {
+    const classes = analyzeSourceString(`
+      import { AllArgsConstructor, Data } from 'lombok-typescript/legacy';
+      @AllArgsConstructor()
+      @Data
+      class Bad { name: string; }
+    `);
+    expect(() =>
+      emitCompanionFile(
+        '/proj/src/bad.ts',
+        '/proj/.lombok/src/bad.lombok.ts',
+        classes,
+        '/proj',
+      ),
+    ).toThrow(/@AllArgsConstructor and @Data cannot be used together/);
   });
 });
