@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import {
+  AllArgsConstructor,
   Cleanup,
   Data,
   Builder,
@@ -75,6 +76,15 @@ class Box {
   declare double: () => number;
 }
 
+/** AllArgsConstructor: codegen a static factory that assigns every declared field. */
+@AllArgsConstructor({ staticName: 'of' })
+class Point {
+  x!: number;
+  y!: number;
+  // Type shim; `lombok-ts generate` installs the real body via applyAllGenerated().
+  declare static of: (x: number, y: number) => Point;
+}
+
 /** Synchronized: overlapping async calls queue, so read-modify-write can't interleave. */
 class Wallet {
   balance = 100;
@@ -120,6 +130,12 @@ export async function demoPhase5Utilities() {
   const box = new Box(21);
   const boxExt = { described: box.describe('n'), doubled: box.double() };
 
+  // AllArgsConstructor: Point.of(x, y) returns a Point instance via Object.create.
+  // The runtime body is installed by applyAllGenerated() from the companion file.
+  // In this example we don't call applyAllGenerated here (no .lombok runtime wired),
+  // but the static shim keeps type-checking happy at authoring time.
+  void Point;
+
   return {
     status,
     signupEmail: signup.email,
@@ -131,4 +147,4 @@ export async function demoPhase5Utilities() {
   };
 }
 
-export { ApiClient, SignupDto, FeatureFlags, Profile, Box };
+export { ApiClient, SignupDto, FeatureFlags, Profile, Box, Point };
