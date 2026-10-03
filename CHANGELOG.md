@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-10-03
+
+### Added
+
+- **`@AllArgsConstructor`** (Phase 15) — codegen a static factory on the decorated class that constructs an instance via `Object.create(Class.prototype)` and assigns every declared field in declaration order. Default factory name is `allArgs`; pass `{ staticName: 'of' }` to generate `Class.of(...)` (Java Lombok parity for `@AllArgsConstructor(staticName = "of")`). An `{ access }` option is accepted and recorded in metadata for tooling; TypeScript has no runtime access modifiers, so the factory is always callable at runtime (documented honestly). Honest divergence from Java: this is a **static factory alongside the user's own constructor**, not a constructor rewrite — TypeScript decorators can't replace an existing class's constructor without wrapping-and-replacing the class reference (breaks `instanceof` identity). Mutually exclusive with `@Data` and `@Value` (which already emit a constructor via `emitDataConstructor`); the composition validator rejects stacking at codegen time with a clear class-name error. Shared infrastructure is reusable for Phase 16 `@NoArgsConstructor` and Phase 17 `@RequiredArgsConstructor` without modification.
+
+### Changed
+
+- Dependency bumps absorbed from Dependabot: `@a-dev-kit` all-actions group (#58, 5 bumps) and all-dependencies group (#59, 16 bumps). TypeScript kept pinned at `^6.0.3` because TS 7 still breaks `pnpm lint` (eslint TS parser plugin) and `pnpm build` (tsup DTS emit).
+
 ## [1.8.0] - 2026-08-14
 
 ### Added
@@ -204,7 +214,8 @@ Code-complete Phase 1 release. **Not published to npm** — batch publish deferr
 - VitePress documentation site and GitHub Pages deploy workflow
 - Release workflow placeholder (disabled until batch publish queue is full)
 
-[Unreleased]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v1.8.0...HEAD
+[Unreleased]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v1.7.0...v1.8.0
 [1.0.0]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v0.10.0...v1.0.0
 [0.10.0]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v0.9.0...v0.10.0

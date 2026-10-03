@@ -24,7 +24,7 @@ A TypeScript library inspired by Java's [Project Lombok](https://projectlombok.o
 
 ## What you get
 
-- **Lombok-style codegen** — `@Data`, `@Builder`, `@Getter`/`@Setter`, `@Value`, `@With`, `@Equals`, `@ToString`, `@NonNull`, `@Log`, `@Accessors`, `@UtilityClass`, `@FieldDefaults`, `@Delegate`, `Cleanup`, `@ExtensionMethod`
+- **Lombok-style codegen** — `@Data`, `@Builder`, `@Getter`/`@Setter`, `@Value`, `@With`, `@Equals`, `@ToString`, `@NonNull`, `@Log`, `@Accessors`, `@UtilityClass`, `@FieldDefaults`, `@Delegate`, `Cleanup`, `@ExtensionMethod`, `@AllArgsConstructor`
 - **Design-pattern decorators** — creational (`@Singleton`, `@Factory`, …), behavioral (`@Strategy`, `@Observer`, …), structural (`@Proxy`, `@Composite`, …)
 - **TypeScript utilities** — `@Memoize`, `@Retry`, `@Synchronized`, `@Validate`, `@Debounce`, `@Throttle`, `@Trace`, `@Serializable`, `@DeepFreeze`
 - **Dual decorator APIs** — `./legacy` for NestJS and existing decorator stacks; `./stage3` for TS 6.0+ without `experimentalDecorators`
@@ -64,7 +64,7 @@ cd lombok-typescript && pnpm install && pnpm build && pnpm link --global
 
 ### Lombok-style
 
-`@NonNull`, `@ToString`, `@Builder`, `@BuilderDefault`, `@Singular`, `@Data`, `@Value`, `@With`, `@Equals`, `@Getter`, `@Setter`, `@Log`, `@Accessors`, `@UtilityClass`, `@FieldDefaults`, `@Delegate`, `Cleanup`, `@ExtensionMethod`
+`@NonNull`, `@ToString`, `@Builder`, `@BuilderDefault`, `@Singular`, `@Data`, `@Value`, `@With`, `@Equals`, `@Getter`, `@Setter`, `@Log`, `@Accessors`, `@UtilityClass`, `@FieldDefaults`, `@Delegate`, `Cleanup`, `@ExtensionMethod`, `@AllArgsConstructor`
 
 ### Creational patterns
 
