@@ -24,3 +24,11 @@ export {
   type AllArgsConstructorAccess,
   type AllArgsConstructorMetadata,
 } from './all-args-constructor.js';
+export {
+  noArgsConstructorClassLegacy,
+  noArgsConstructorClassStage3,
+  DEFAULT_NO_ARGS_STATIC_NAME,
+  type NoArgsConstructorOptions,
+  type NoArgsConstructorAccess,
+  type NoArgsConstructorMetadata,
+} from './no-args-constructor.js';

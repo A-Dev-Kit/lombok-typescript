@@ -71,6 +71,7 @@ export const MetadataKeys = {
   // Class-level (TS-only, Lombok parity)
   EXTENSION_METHOD: `${PREFIX}extensionMethod`,
   ALL_ARGS_CONSTRUCTOR: `${PREFIX}allArgsConstructor`,
+  NO_ARGS_CONSTRUCTOR: `${PREFIX}noArgsConstructor`,
 
   // Method-level
   MEMOIZE: `${PREFIX}memoize`,
