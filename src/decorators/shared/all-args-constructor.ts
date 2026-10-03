@@ -36,7 +36,7 @@ function normalize(input: AllArgsConstructorOptions | undefined): AllArgsConstru
   const staticName = input?.staticName ?? DEFAULT_ALL_ARGS_STATIC_NAME;
   if (typeof staticName !== 'string' || staticName.trim().length === 0) {
     throw new TypeError(
-      "@AllArgsConstructor: `staticName` must be a non-empty string when provided",
+      '@AllArgsConstructor: `staticName` must be a non-empty string when provided',
     );
   }
   return {
@@ -55,12 +55,7 @@ export function allArgsConstructorClassLegacy(
   target: AnyClass,
   options: AllArgsConstructorOptions = {},
 ): void {
-  backend.metadata.set(
-    MetadataKeys.ALL_ARGS_CONSTRUCTOR,
-    target,
-    undefined,
-    normalize(options),
-  );
+  backend.metadata.set(MetadataKeys.ALL_ARGS_CONSTRUCTOR, target, undefined, normalize(options));
 }
 
 /** Stage 3 backend entry. Mirrors the legacy flow against the context metadata bag. */

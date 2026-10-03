@@ -466,12 +466,7 @@ describe('codegen emitters', () => {
       class Bad { name: string; }
     `);
     expect(() =>
-      emitCompanionFile(
-        '/proj/src/bad.ts',
-        '/proj/.lombok/src/bad.lombok.ts',
-        classes,
-        '/proj',
-      ),
+      emitCompanionFile('/proj/src/bad.ts', '/proj/.lombok/src/bad.lombok.ts', classes, '/proj'),
     ).toThrow(/@AllArgsConstructor and @Data cannot be used together/);
   });
 });

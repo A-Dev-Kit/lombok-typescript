@@ -43,10 +43,10 @@ function emittedParams(info: ClassInfo): EmittedParam[] {
 export function emitAllArgsConstructorFn(info: ClassInfo): string {
   if (!hasAllArgsConstructor(info)) return '';
 
-  const params = emittedParams(info).map((p) => p.typeAnnotation).join(', ');
-  const assigns = info.fields
-    .map((f) => `  instance.${f.name} = ${f.name};`)
-    .join('\n');
+  const params = emittedParams(info)
+    .map((p) => p.typeAnnotation)
+    .join(', ');
+  const assigns = info.fields.map((f) => `  instance.${f.name} = ${f.name};`).join('\n');
   const body = info.fields.length === 0 ? '' : `\n${assigns}`;
 
   return `
@@ -65,7 +65,9 @@ function ${info.name}_allArgs(${params}): ${info.name} {
 export function emitAllArgsConstructorApplyAssignment(info: ClassInfo): string {
   if (!hasAllArgsConstructor(info)) return '';
   const staticName = getAllArgsStaticName(info);
-  const paramsType = emittedParams(info).map((p) => p.typeAnnotation).join(', ');
+  const paramsType = emittedParams(info)
+    .map((p) => p.typeAnnotation)
+    .join(', ');
   return `(ctor as typeof ${info.name} & { ${staticName}(${paramsType}): ${info.name} }).${staticName} = ${info.name}_allArgs;`;
 }
 
@@ -78,7 +80,9 @@ export function emitAllArgsConstructorApplyAssignment(info: ClassInfo): string {
 export function emitAllArgsConstructorNamespaceLines(info: ClassInfo): string[] {
   if (!hasAllArgsConstructor(info)) return [];
   const staticName = getAllArgsStaticName(info);
-  const paramsType = emittedParams(info).map((p) => p.typeAnnotation).join(', ');
+  const paramsType = emittedParams(info)
+    .map((p) => p.typeAnnotation)
+    .join(', ');
   return [
     `  namespace ${info.name} {`,
     `    export function ${staticName}(${paramsType}): ${info.name};`,
