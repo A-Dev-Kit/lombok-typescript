@@ -7,6 +7,9 @@ export const CONFLICTING_CLASS_DECORATOR_PAIRS: readonly (readonly [string, stri
   // stacking `@AllArgsConstructor` would duplicate state assignment.
   ['AllArgsConstructor', 'Data'],
   ['AllArgsConstructor', 'Value'],
+  // `@Data` and `@Value` already emit a constructor via `emitDataConstructor`.
+  ['NoArgsConstructor', 'Data'],
+  ['NoArgsConstructor', 'Value'],
 ];
 
 export function classHasDecorator(info: Pick<ClassInfo, 'decorators'>, name: string): boolean {

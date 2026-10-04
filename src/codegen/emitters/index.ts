@@ -30,6 +30,10 @@ import {
   emitAllArgsConstructorApplyAssignment,
   emitAllArgsConstructorFn,
 } from './all-args-constructor-emit.js';
+import {
+  emitNoArgsConstructorApplyAssignment,
+  emitNoArgsConstructorFn,
+} from './no-args-constructor-emit.js';
 
 function emitImports(
   classes: readonly ClassInfo[],
@@ -120,6 +124,9 @@ function emitApplyMixin(info: ClassInfo): string {
   const allArgsApply = emitAllArgsConstructorApplyAssignment(info);
   if (allArgsApply) assignments.push(allArgsApply);
 
+  const noArgsApply = emitNoArgsConstructorApplyAssignment(info);
+  if (noArgsApply) assignments.push(noArgsApply);
+
   if (assignments.length === 0) return '';
 
   return `
@@ -179,6 +186,9 @@ function emitClassCompanionBlocks(info: ClassInfo): string {
 
   const allArgsFn = emitAllArgsConstructorFn(info);
   if (allArgsFn) blocks.push(allArgsFn);
+
+  const noArgsFn = emitNoArgsConstructorFn(info);
+  if (noArgsFn) blocks.push(noArgsFn);
 
   const apply = emitApplyMixin(info);
   if (apply) blocks.push(apply);
