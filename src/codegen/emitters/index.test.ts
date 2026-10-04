@@ -13,6 +13,15 @@ import {
   getAllArgsStaticName,
   hasAllArgsConstructor,
 } from './all-args-constructor-emit.js';
+import {
+  DEFAULT_NO_ARGS_STATIC_NAME,
+  emitNoArgsConstructorApplyAssignment,
+  emitNoArgsConstructorFn,
+  emitNoArgsConstructorNamespaceLines,
+  getNoArgsForce,
+  getNoArgsStaticName,
+  hasNoArgsConstructor,
+} from './no-args-constructor-emit.js';
 
 describe('codegen emitters', () => {
   it('emits builder and data mixins for decorated classes', () => {
@@ -474,6 +483,223 @@ describe('codegen emitters', () => {
     expect(fn).not.toContain('origin');
     expect(fn).not.toMatch(/instance\.of = of/);
     expect(emitAllArgsConstructorNamespaceLines(info)).toEqual([]);
+  });
+
+  it('@NoArgsConstructor emits a parameter-less Object.create factory', () => {
+    const classes = analyzeSourceString(`
+      @NoArgsConstructor()
+      class Marker {}
+    `);
+    const info = classes[0]!;
+    expect(hasNoArgsConstructor(info)).toBe(true);
+    expect(getNoArgsStaticName(info)).toBe(DEFAULT_NO_ARGS_STATIC_NAME);
+    expect(getNoArgsForce(info)).toBe(false);
+    const fn = emitNoArgsConstructorFn(info);
+    expect(fn).toContain('function Marker_noArgs(): Marker');
+    expect(fn).toContain('Object.create(Marker.prototype)');
+    expect(fn).not.toContain('instance.');
+    expect(fn).toContain('return instance');
+  });
+
+  it('@NoArgsConstructor emit returns empty strings without the decorator', () => {
+    const classes = analyzeSourceString(`class Plain { x = 1; }`);
+    const info = classes[0]!;
+    expect(hasNoArgsConstructor(info)).toBe(false);
+    expect(emitNoArgsConstructorFn(info)).toBe('');
+    expect(emitNoArgsConstructorApplyAssignment(info)).toBe('');
+    expect(emitNoArgsConstructorNamespaceLines(info)).toEqual([]);
+  });
+
+  it('@NoArgsConstructor honours staticName from the decorator arguments', () => {
+    const classes = analyzeSourceString(`
+      @NoArgsConstructor({ staticName: 'create' })
+      class Token { id = ''; }
+    `);
+    const info = classes[0]!;
+    expect(getNoArgsStaticName(info)).toBe('create');
+    const apply = emitNoArgsConstructorApplyAssignment(info);
+    expect(apply).toContain('.create = Token_noArgs');
+    expect(apply).toContain('create(): Token');
+  });
+
+  it('@NoArgsConstructor falls back to the default when option shape is unrecognised', () => {
+    const classes = analyzeSourceString(`
+      @NoArgsConstructor({ /* intentionally no staticName */ })
+      class Blank {}
+    `);
+    expect(getNoArgsStaticName(classes[0]!)).toBe(DEFAULT_NO_ARGS_STATIC_NAME);
+    expect(getNoArgsForce(classes[0]!)).toBe(false);
+  });
+
+  it('@NoArgsConstructor rejects required fields that have no initializer', () => {
+    const classes = analyzeSourceString(`
+      @NoArgsConstructor()
+      class User { name: string; }
+    `);
+    expect(() => emitNoArgsConstructorFn(classes[0]!)).toThrow(
+      /Class "User": @NoArgsConstructor requires \{ force: true \} because field "name" has no initializer/,
+    );
+  });
+
+  it('@NoArgsConstructor names every required field when several lack initializers', () => {
+    const classes = analyzeSourceString(`
+      @NoArgsConstructor()
+      class User { name: string; age: number; }
+    `);
+    expect(() => emitNoArgsConstructorFn(classes[0]!)).toThrow(
+      /Class "User": @NoArgsConstructor requires \{ force: true \} because fields "name", "age" have no initializer/,
+    );
+  });
+
+  it('@NoArgsConstructor with force emits a zero-assignment factory', () => {
+    const classes = analyzeSourceString(`
+      @NoArgsConstructor({ force: true })
+      class User { name: string; age: number; }
+    `);
+    expect(getNoArgsForce(classes[0]!)).toBe(true);
+    const fn = emitNoArgsConstructorFn(classes[0]!);
+    expect(fn).toContain('function User_noArgs(): User');
+    expect(fn).not.toContain('instance.name');
+    expect(fn).not.toContain('instance.age');
+  });
+
+  it('@NoArgsConstructor allows optional fields and fields with initializers without force', () => {
+    const classes = analyzeSourceString(`
+      @NoArgsConstructor()
+      class Patch { id = ''; note?: string; }
+    `);
+    expect(emitNoArgsConstructorFn(classes[0]!)).toContain('function Patch_noArgs(): Patch');
+  });
+
+  it('@NoArgsConstructor skips a static method that already uses the factory name', () => {
+    const classes = analyzeSourceString(`
+      @NoArgsConstructor()
+      class Marker {
+        static noArgs(): Marker {
+          return new Marker();
+        }
+      }
+    `);
+    expect(emitNoArgsConstructorNamespaceLines(classes[0]!)).toEqual([]);
+  });
+
+  it('@NoArgsConstructor skips a declare-static type shim in the .d.ts namespace', () => {
+    const classes = analyzeSourceString(`
+      @NoArgsConstructor()
+      class Marker {
+        declare static noArgs: () => Marker;
+      }
+    `);
+    expect(emitNoArgsConstructorNamespaceLines(classes[0]!)).toEqual([]);
+    expect(emitNoArgsConstructorFn(classes[0]!)).toContain('function Marker_noArgs(): Marker');
+  });
+
+  it('@NoArgsConstructor emits the .d.ts namespace shim', () => {
+    const classes = analyzeSourceString(`
+      @NoArgsConstructor({ staticName: 'create' })
+      class Marker {}
+    `);
+    const lines = emitNoArgsConstructorNamespaceLines(classes[0]!);
+    expect(lines.join('\n')).toContain('namespace Marker {');
+    expect(lines.join('\n')).toContain('export function create(): Marker');
+  });
+
+  it('@NoArgsConstructor end-to-end: companion file wires function + apply + .d.ts', () => {
+    const classes = analyzeSourceString(`
+      import { NoArgsConstructor } from 'lombok-typescript/legacy';
+      @NoArgsConstructor()
+      class Marker {}
+    `);
+    const { ts, dts } = emitCompanionFile(
+      '/proj/src/marker.ts',
+      '/proj/.lombok/src/marker.lombok.ts',
+      classes,
+      '/proj',
+    );
+    expect(ts).toContain("import { Marker } from '../../src/marker.js'");
+    expect(ts).toContain('function Marker_noArgs(): Marker');
+    expect(ts).toContain('applyMarkerGenerated');
+    expect(ts).toContain('.noArgs = Marker_noArgs');
+    expect(dts).toContain('namespace Marker');
+    expect(dts).toContain('export function noArgs(): Marker');
+  });
+
+  it('@NoArgsConstructor + @AllArgsConstructor compose as two factories', () => {
+    const classes = analyzeSourceString(`
+      @NoArgsConstructor()
+      @AllArgsConstructor()
+      class Point { x = 0; y = 0; }
+    `);
+    const { ts } = emitCompanionFile(
+      '/proj/src/point.ts',
+      '/proj/.lombok/src/point.lombok.ts',
+      classes,
+      '/proj',
+    );
+    expect(ts).toContain('function Point_noArgs(): Point');
+    expect(ts).toContain('function Point_allArgs(x: number, y: number): Point');
+    expect(ts).toContain('.noArgs = Point_noArgs');
+    expect(ts).toContain('.allArgs = Point_allArgs');
+  });
+
+  it('@NoArgsConstructor + @Builder compose cleanly', () => {
+    const classes = analyzeSourceString(`
+      @NoArgsConstructor({ staticName: 'create' })
+      @Builder
+      class Order { item = ''; }
+    `);
+    const { ts } = emitCompanionFile(
+      '/proj/src/order.ts',
+      '/proj/.lombok/src/order.lombok.ts',
+      classes,
+      '/proj',
+    );
+    expect(ts).toContain('class OrderBuilder');
+    expect(ts).toContain('.create = Order_noArgs');
+    expect(ts).toContain('.builder = Order_builder');
+  });
+
+  it('@NoArgsConstructor rejects a shared staticName with @AllArgsConstructor', () => {
+    const classes = analyzeSourceString(`
+      @NoArgsConstructor({ staticName: 'of' })
+      @AllArgsConstructor({ staticName: 'of' })
+      class Item { sku = ''; }
+    `);
+    expect(() => emitNoArgsConstructorFn(classes[0]!)).toThrow(
+      /Class "Item": @NoArgsConstructor and @AllArgsConstructor cannot share staticName "of"/,
+    );
+  });
+
+  it('@NoArgsConstructor on a subclass does not replace the parent factory', () => {
+    const classes = analyzeSourceString(`
+      @NoArgsConstructor()
+      class Base {}
+      @NoArgsConstructor({ staticName: 'create' })
+      class Child extends Base {}
+    `);
+    const { ts } = emitCompanionFile(
+      '/proj/src/tree.ts',
+      '/proj/.lombok/src/tree.lombok.ts',
+      classes,
+      '/proj',
+    );
+    expect(ts).toContain('function Base_noArgs(): Base');
+    expect(ts).toContain('function Child_noArgs(): Child');
+    expect(ts).toContain('.noArgs = Base_noArgs');
+    expect(ts).toContain('.create = Child_noArgs');
+    expect(ts).not.toContain('Base.prototype.noArgs = Child_noArgs');
+  });
+
+  it('@NoArgsConstructor + @Data is rejected at codegen time (composition)', () => {
+    const classes = analyzeSourceString(`
+      import { NoArgsConstructor, Data } from 'lombok-typescript/legacy';
+      @NoArgsConstructor()
+      @Data
+      class Bad { name: string; }
+    `);
+    expect(() =>
+      emitCompanionFile('/proj/src/bad.ts', '/proj/.lombok/src/bad.lombok.ts', classes, '/proj'),
+    ).toThrow(/Class "Bad": @NoArgsConstructor and @Data cannot be used together/);
   });
 
   it('@AllArgsConstructor + @Data is rejected at codegen time (composition)', () => {
