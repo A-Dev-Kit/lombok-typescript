@@ -78,11 +78,11 @@ class Box {
 
 /** AllArgsConstructor: codegen a static factory that assigns every declared field. */
 @AllArgsConstructor({ staticName: 'of' })
-class Point {
+class Coord {
   x!: number;
   y!: number;
   // Type shim; `lombok-ts generate` installs the real body via applyAllGenerated().
-  declare static of: (x: number, y: number) => Point;
+  declare static of: (x: number, y: number) => Coord;
 }
 
 /** Synchronized: overlapping async calls queue, so read-modify-write can't interleave. */
@@ -130,11 +130,8 @@ export async function demoPhase5Utilities() {
   const box = new Box(21);
   const boxExt = { described: box.describe('n'), doubled: box.double() };
 
-  // AllArgsConstructor: Point.of(x, y) returns a Point instance via Object.create.
-  // The runtime body is installed by applyAllGenerated() from the companion file.
-  // In this example we don't call applyAllGenerated here (no .lombok runtime wired),
-  // but the static shim keeps type-checking happy at authoring time.
-  void Point;
+  // AllArgsConstructor: Coord.of(x, y) is installed by applyAllGenerated() in main.ts.
+  const coord = Coord.of(3, 4);
 
   return {
     status,
@@ -144,7 +141,8 @@ export async function demoPhase5Utilities() {
     cleanupOrder,
     profileJson: { name: 'Ana', internalId: 'secret' },
     boxExt,
+    coord: { x: coord.x, y: coord.y, isCoord: coord instanceof Coord },
   };
 }
 
-export { ApiClient, SignupDto, FeatureFlags, Profile, Box, Point };
+export { ApiClient, SignupDto, FeatureFlags, Profile, Box, Coord };

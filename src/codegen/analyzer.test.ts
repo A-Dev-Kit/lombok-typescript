@@ -55,6 +55,7 @@ describe('analyzeClass', () => {
 
     const name = info.fields.find((f) => f.name === 'name')!;
     expect(name.isOptional).toBe(false);
+    expect(name.isStatic).toBe(false);
     expect(name.hasDefault).toBe(true);
     expect(name.defaultValue).toBe("''");
     expect(name.decorators.map((d) => d.name)).toEqual(['__TestField']);
@@ -85,6 +86,22 @@ describe('analyzeClass', () => {
 
     const fetchM = info.methods.find((m) => m.name === 'fetch')!;
     expect(fetchM.isAsync).toBe(true);
+  });
+
+  it('flags static fields including declare-static type shims', () => {
+    const info = analyzeClass(
+      `
+class Box {
+  value: number;
+  static DEFAULT = 0;
+  declare static of: (value: number) => Box;
+}
+`,
+      'Box',
+    );
+    expect(info.fields.find((f) => f.name === 'value')!.isStatic).toBe(false);
+    expect(info.fields.find((f) => f.name === 'DEFAULT')!.isStatic).toBe(true);
+    expect(info.fields.find((f) => f.name === 'of')!.isStatic).toBe(true);
   });
 
   it('throws if the requested class is not present', () => {

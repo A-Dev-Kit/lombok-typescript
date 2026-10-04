@@ -71,6 +71,7 @@ function toFieldInfo(prop: PropertyDeclaration): FieldInfo {
     type: prop.getType().getText(prop),
     isOptional: prop.hasQuestionToken(),
     isReadonly: prop.isReadonly(),
+    isStatic: prop.isStatic(),
     hasDefault: initializer !== undefined,
     defaultValue: initializer?.getText(),
     decorators: prop.getDecorators().map(toDecoratorInfo),

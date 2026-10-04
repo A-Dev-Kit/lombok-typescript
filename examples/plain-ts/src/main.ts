@@ -30,7 +30,7 @@ import {
   WithMilk,
 } from './structural.js';
 import { applyAllGenerated as applyStructuralGenerated } from '../.lombok/src/structural.lombok.js';
-import { demoPhase5Utilities, Profile, SignupDto } from './utilities.js';
+import { Coord, demoPhase5Utilities, Profile, SignupDto } from './utilities.js';
 import { applyAllGenerated as applyUtilitiesGenerated } from '../.lombok/src/utilities.lombok.js';
 import { describeMarkers } from './markers.js';
 import { User } from './user.js';
@@ -45,7 +45,7 @@ applyStructuralGenerated({
 });
 
 applyPointGenerated({ Point });
-applyUtilitiesGenerated({ SignupDto, Profile });
+applyUtilitiesGenerated({ SignupDto, Profile, Coord });
 
 @Singleton
 class UserService {
@@ -130,6 +130,7 @@ const phase5 = await demoPhase5Utilities();
 console.info('phase5 status', phase5.status, phase5.signupEmail, phase5.frozen);
 console.info('synchronized balance (0 = no interleaving)', phase5.synchronizedBalance);
 console.info('cleanup teardown order (LIFO)', phase5.cleanupOrder);
+console.info('all-args coord', phase5.coord);
 console.info('phase6 markers', describeMarkers());
 
 // @BuilderDefault: `role` keeps its initializer ('user') unless the builder sets it.

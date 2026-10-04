@@ -39,6 +39,7 @@ describe('emitter helpers (phase 2)', () => {
       type: 'string',
       isOptional: false,
       isReadonly: false,
+      isStatic: false,
       hasDefault: false,
       decorators: [
         { name: 'ToString.Exclude', arguments: [] },

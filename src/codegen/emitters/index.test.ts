@@ -458,6 +458,24 @@ describe('codegen emitters', () => {
     expect(ts).toContain('.builder = Order_builder');
   });
 
+  it('@AllArgsConstructor skips static fields and declare-static type shims', () => {
+    const classes = analyzeSourceString(`
+      @AllArgsConstructor({ staticName: 'of' })
+      class Coord {
+        x: number;
+        y: number;
+        static origin = 0;
+        declare static of: (x: number, y: number) => Coord;
+      }
+    `);
+    const info = classes[0]!;
+    const fn = emitAllArgsConstructorFn(info);
+    expect(fn).toContain('function Coord_allArgs(x: number, y: number): Coord');
+    expect(fn).not.toContain('origin');
+    expect(fn).not.toMatch(/instance\.of = of/);
+    expect(emitAllArgsConstructorNamespaceLines(info)).toEqual([]);
+  });
+
   it('@AllArgsConstructor + @Data is rejected at codegen time (composition)', () => {
     const classes = analyzeSourceString(`
       import { AllArgsConstructor, Data } from 'lombok-typescript/legacy';

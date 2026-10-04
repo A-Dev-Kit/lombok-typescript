@@ -1,4 +1,4 @@
-import type { ClassInfo } from '../types.js';
+import type { ClassInfo, FieldInfo } from '../types.js';
 import { formatFieldTypeForEmit, hasClassDecorator } from './helpers.js';
 
 /** Default static-factory name when `@AllArgsConstructor` is used without options. */
@@ -27,11 +27,24 @@ interface EmittedParam {
   typeAnnotation: string;
 }
 
+/** Instance fields only — Java `@AllArgsConstructor` ignores statics, including type shims. */
+function instanceFields(info: ClassInfo): FieldInfo[] {
+  return info.fields.filter((f) => !f.isStatic);
+}
+
 function emittedParams(info: ClassInfo): EmittedParam[] {
-  return info.fields.map((f) => ({
+  return instanceFields(info).map((f) => ({
     name: f.name,
     typeAnnotation: `${f.name}${f.isOptional ? '?' : ''}: ${formatFieldTypeForEmit(f.type, f.isOptional)}`,
   }));
+}
+
+/** True when the source already declares a static member with the factory name (type shim). */
+function hasStaticFactoryShim(info: ClassInfo, staticName: string): boolean {
+  return (
+    info.fields.some((f) => f.isStatic && f.name === staticName) ||
+    info.methods.some((m) => m.isStatic && m.name === staticName)
+  );
 }
 
 /**
@@ -43,11 +56,12 @@ function emittedParams(info: ClassInfo): EmittedParam[] {
 export function emitAllArgsConstructorFn(info: ClassInfo): string {
   if (!hasAllArgsConstructor(info)) return '';
 
+  const fields = instanceFields(info);
   const params = emittedParams(info)
     .map((p) => p.typeAnnotation)
     .join(', ');
-  const assigns = info.fields.map((f) => `  instance.${f.name} = ${f.name};`).join('\n');
-  const body = info.fields.length === 0 ? '' : `\n${assigns}`;
+  const assigns = fields.map((f) => `  instance.${f.name} = ${f.name};`).join('\n');
+  const body = fields.length === 0 ? '' : `\n${assigns}`;
 
   return `
 function ${info.name}_allArgs(${params}): ${info.name} {
@@ -80,6 +94,9 @@ export function emitAllArgsConstructorApplyAssignment(info: ClassInfo): string {
 export function emitAllArgsConstructorNamespaceLines(info: ClassInfo): string[] {
   if (!hasAllArgsConstructor(info)) return [];
   const staticName = getAllArgsStaticName(info);
+  // A `declare static allArgs` / `declare static of` shim already types the factory;
+  // emitting a namespace function with the same name is a TS2300 duplicate identifier.
+  if (hasStaticFactoryShim(info, staticName)) return [];
   const paramsType = emittedParams(info)
     .map((p) => p.typeAnnotation)
     .join(', ');
