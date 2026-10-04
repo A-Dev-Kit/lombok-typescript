@@ -62,6 +62,7 @@ export default defineConfig({
           { text: '@Delegate', link: '/decorators/delegate' },
           { text: 'Cleanup', link: '/decorators/cleanup' },
           { text: 'ExtensionMethod', link: '/decorators/extension-method' },
+          { text: 'AllArgsConstructor', link: '/decorators/all-args-constructor' },
         ],
       },
       {

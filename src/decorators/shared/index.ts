@@ -16,3 +16,11 @@ export {
   type ExtensionConflictPolicy,
   type ExtensionMethodOptions,
 } from './extension-method.js';
+export {
+  allArgsConstructorClassLegacy,
+  allArgsConstructorClassStage3,
+  DEFAULT_ALL_ARGS_STATIC_NAME,
+  type AllArgsConstructorOptions,
+  type AllArgsConstructorAccess,
+  type AllArgsConstructorMetadata,
+} from './all-args-constructor.js';

@@ -28,6 +28,10 @@ import {
   type ExtensionHelper,
   type ExtensionMethodOptions,
 } from '../shared/extension-method.js';
+import {
+  allArgsConstructorClassStage3,
+  type AllArgsConstructorOptions,
+} from '../shared/all-args-constructor.js';
 import { delegateFieldStage3, parseDelegateMethods } from '../shared/delegate.js';
 import { singularFieldStage3 } from '../shared/singular.js';
 import { equalsClassStage3, equalsExcludeFieldStage3 } from '../shared/equals.js';
@@ -257,6 +261,20 @@ export function ExtensionMethod(
 ) {
   return defineClassDecorator((backend, value, context) =>
     extensionMethodClassStage3(backend, value, context, helpers, options),
+  );
+}
+
+/**
+ * Codegen a static factory on the decorated class that constructs an instance
+ * and assigns all declared fields (declaration order), the TypeScript analogue
+ * of Java Lombok's `@AllArgsConstructor`. The factory is additive, so the
+ * user's own constructor stays intact and `instanceof` identity is preserved
+ * (honest divergence from Java: not a constructor rewrite). Default factory
+ * name is `allArgs`; pass `{ staticName: 'of' }` for `Class.of(...)`.
+ */
+export function AllArgsConstructor(options: AllArgsConstructorOptions = {}) {
+  return defineClassDecorator((backend, value, context) =>
+    allArgsConstructorClassStage3(backend, value, context, options),
   );
 }
 

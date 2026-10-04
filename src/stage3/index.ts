@@ -52,6 +52,7 @@ export {
   Delegate,
   Cleanup,
   ExtensionMethod,
+  AllArgsConstructor,
   EqualsExclude,
   BuilderDefault,
   Singular,
@@ -119,6 +120,10 @@ export type {
   ExtensionConflictPolicy,
   ExtensionMethodOptions,
 } from '../decorators/shared/extension-method.js';
+export type {
+  AllArgsConstructorOptions,
+  AllArgsConstructorAccess,
+} from '../decorators/shared/all-args-constructor.js';
 
 /** Read the Stage 3 `Symbol.metadata` object from a class, if present. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import {
+  AllArgsConstructor,
   Cleanup,
   Data,
   Builder,
@@ -75,6 +76,15 @@ class Box {
   declare double: () => number;
 }
 
+/** AllArgsConstructor: codegen a static factory that assigns every declared field. */
+@AllArgsConstructor({ staticName: 'of' })
+class Coord {
+  x!: number;
+  y!: number;
+  // Type shim; `lombok-ts generate` installs the real body via applyAllGenerated().
+  declare static of: (x: number, y: number) => Coord;
+}
+
 /** Synchronized: overlapping async calls queue, so read-modify-write can't interleave. */
 class Wallet {
   balance = 100;
@@ -120,6 +130,9 @@ export async function demoPhase5Utilities() {
   const box = new Box(21);
   const boxExt = { described: box.describe('n'), doubled: box.double() };
 
+  // AllArgsConstructor: Coord.of(x, y) is installed by applyAllGenerated() in main.ts.
+  const coord = Coord.of(3, 4);
+
   return {
     status,
     signupEmail: signup.email,
@@ -128,7 +141,8 @@ export async function demoPhase5Utilities() {
     cleanupOrder,
     profileJson: { name: 'Ana', internalId: 'secret' },
     boxExt,
+    coord: { x: coord.x, y: coord.y, isCoord: coord instanceof Coord },
   };
 }
 
-export { ApiClient, SignupDto, FeatureFlags, Profile, Box };
+export { ApiClient, SignupDto, FeatureFlags, Profile, Box, Coord };

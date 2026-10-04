@@ -41,6 +41,7 @@ export interface FieldInfo {
   type: string;
   isOptional: boolean;
   isReadonly: boolean;
+  isStatic: boolean;
   hasDefault: boolean;
   defaultValue?: string;
   decorators: DecoratorInfo[];
