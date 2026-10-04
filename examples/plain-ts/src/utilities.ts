@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import {
   AllArgsConstructor,
+  NoArgsConstructor,
   Cleanup,
   Data,
   Builder,
@@ -85,6 +86,13 @@ class Coord {
   declare static of: (x: number, y: number) => Coord;
 }
 
+/** NoArgsConstructor: codegen a no-arg static factory. Object.create skips field initializers. */
+@NoArgsConstructor()
+class Stamp {
+  // Type shim; `lombok-ts generate` installs the real body via applyAllGenerated().
+  declare static noArgs: () => Stamp;
+}
+
 /** Synchronized: overlapping async calls queue, so read-modify-write can't interleave. */
 class Wallet {
   balance = 100;
@@ -132,6 +140,8 @@ export async function demoPhase5Utilities() {
 
   // AllArgsConstructor: Coord.of(x, y) is installed by applyAllGenerated() in main.ts.
   const coord = Coord.of(3, 4);
+  // NoArgsConstructor: Stamp.noArgs() is installed the same way.
+  const stamp = Stamp.noArgs();
 
   return {
     status,
@@ -142,7 +152,8 @@ export async function demoPhase5Utilities() {
     profileJson: { name: 'Ana', internalId: 'secret' },
     boxExt,
     coord: { x: coord.x, y: coord.y, isCoord: coord instanceof Coord },
+    stamp: { isStamp: stamp instanceof Stamp },
   };
 }
 
-export { ApiClient, SignupDto, FeatureFlags, Profile, Box, Coord };
+export { ApiClient, SignupDto, FeatureFlags, Profile, Box, Coord, Stamp };
