@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-10-05
+
+### Added
+
+- **`@NoArgsConstructor`** (Phase 16) — codegen a static factory on the decorated class that constructs an instance via `Object.create(Class.prototype)` and assigns no fields. Default factory name is `noArgs`; pass `{ staticName: 'create' }` to rename it. `{ force: true }` allows the factory when a required instance field has no initializer; without it, codegen fails and names the class and field. Those fields stay `undefined` (no Java-style `0` / `false` / `null` zeroing). An `{ access }` option is recorded in metadata only. Honest divergence from Java: this is a **static factory alongside the user's own constructor**, not a constructor rewrite. Mutually exclusive with `@Data` and `@Value`. May stack with `@AllArgsConstructor` unless both resolve to the same `staticName`.
+
+### Changed
+
+- Dependency bumps absorbed from Dependabot: all-actions group (#61, CodeQL action 4.38.2) and all-dependencies group (#62, 15 bumps). TypeScript kept pinned at `^6.0.3` because TS 7 still breaks `pnpm lint` and `pnpm build`.
+
 ## [1.9.0] - 2026-10-03
 
 ### Added
@@ -214,7 +224,8 @@ Code-complete Phase 1 release. **Not published to npm** — batch publish deferr
 - VitePress documentation site and GitHub Pages deploy workflow
 - Release workflow placeholder (disabled until batch publish queue is full)
 
-[Unreleased]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v1.7.0...v1.8.0
 [1.0.0]: https://github.com/A-Dev-Kit/lombok-typescript/compare/v0.10.0...v1.0.0
