@@ -53,6 +53,7 @@ export {
   Cleanup,
   ExtensionMethod,
   AllArgsConstructor,
+  NoArgsConstructor,
   EqualsExclude,
   BuilderDefault,
   Singular,
@@ -124,6 +125,10 @@ export type {
   AllArgsConstructorOptions,
   AllArgsConstructorAccess,
 } from '../decorators/shared/all-args-constructor.js';
+export type {
+  NoArgsConstructorOptions,
+  NoArgsConstructorAccess,
+} from '../decorators/shared/no-args-constructor.js';
 
 /** Read the Stage 3 `Symbol.metadata` object from a class, if present. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

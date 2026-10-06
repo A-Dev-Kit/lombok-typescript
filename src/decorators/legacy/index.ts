@@ -34,6 +34,10 @@ import {
   allArgsConstructorClassLegacy,
   type AllArgsConstructorOptions,
 } from '../shared/all-args-constructor.js';
+import {
+  noArgsConstructorClassLegacy,
+  type NoArgsConstructorOptions,
+} from '../shared/no-args-constructor.js';
 import { delegateFieldLegacy, parseDelegateMethods } from '../shared/delegate.js';
 import { singularFieldLegacy } from '../shared/singular.js';
 import { equalsClassLegacy, equalsExcludeFieldLegacy } from '../shared/equals.js';
@@ -273,6 +277,20 @@ export function ExtensionMethod(
 export function AllArgsConstructor(options: AllArgsConstructorOptions = {}): ClassDecorator {
   return defineClassDecorator((backend, target) =>
     allArgsConstructorClassLegacy(backend, target, options),
+  );
+}
+
+/**
+ * Codegen a static factory on the decorated class that constructs an instance
+ * with no arguments, the TypeScript analogue of Java Lombok's
+ * `@NoArgsConstructor`. The factory uses `Object.create` and does not call the
+ * user's constructor (honest divergence from Java: not a constructor rewrite).
+ * Default factory name is `noArgs`; pass `{ staticName: 'create' }` to rename
+ * it. `{ force: true }` allows required fields that have no initializer.
+ */
+export function NoArgsConstructor(options: NoArgsConstructorOptions = {}): ClassDecorator {
+  return defineClassDecorator((backend, target) =>
+    noArgsConstructorClassLegacy(backend, target, options),
   );
 }
 

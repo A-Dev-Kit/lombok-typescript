@@ -58,6 +58,40 @@ describe('composition rules', () => {
     );
   });
 
+  it('rejects @NoArgsConstructor with @Data on the same class', () => {
+    const [info] = analyzeSourceString(`
+      @NoArgsConstructor()
+      @Data
+      class User { name: string; }
+    `);
+    expect(() => validateClassComposition(info!)).toThrow(
+      /Class "User": @NoArgsConstructor and @Data cannot be used together/,
+    );
+  });
+
+  it('rejects @NoArgsConstructor with @Value on the same class', () => {
+    const [info] = analyzeSourceString(`
+      @NoArgsConstructor()
+      @Value
+      class User { name: string; }
+    `);
+    expect(() => validateClassComposition(info!)).toThrow(
+      /Class "User": @NoArgsConstructor and @Value cannot be used together/,
+    );
+  });
+
+  it('allows @NoArgsConstructor with @AllArgsConstructor and @Builder', () => {
+    const classes = analyzeSourceString(`
+      @NoArgsConstructor()
+      @AllArgsConstructor()
+      class A { x = 0; }
+      @NoArgsConstructor({ staticName: 'create' })
+      @Builder
+      class B { y = ''; }
+    `);
+    expect(() => validateAllClassCompositions(classes)).not.toThrow();
+  });
+
   it('allows @AllArgsConstructor alone and with @Builder', () => {
     const classes = analyzeSourceString(`
       @AllArgsConstructor()

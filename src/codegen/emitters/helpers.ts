@@ -20,6 +20,7 @@ const CODEGEN_CLASS_DECORATORS = [
   'Visitable',
   'Serializable',
   'AllArgsConstructor',
+  'NoArgsConstructor',
 ] as const;
 
 export function hasCodegenClassDecorator(info: ClassInfo): boolean {

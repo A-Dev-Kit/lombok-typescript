@@ -18,6 +18,7 @@ import {
   toImportPath,
 } from './helpers.js';
 import { emitAllArgsConstructorNamespaceLines } from './all-args-constructor-emit.js';
+import { emitNoArgsConstructorNamespaceLines } from './no-args-constructor-emit.js';
 
 function emitDeclarationModuleBlock(relSource: string, classes: readonly ClassInfo[]): string {
   const lines: string[] = [`declare module '${relSource}' {`];
@@ -131,6 +132,7 @@ function emitDeclarationModuleBlock(relSource: string, classes: readonly ClassIn
     }
 
     lines.push(...emitAllArgsConstructorNamespaceLines(info));
+    lines.push(...emitNoArgsConstructorNamespaceLines(info));
   }
 
   lines.push('}');

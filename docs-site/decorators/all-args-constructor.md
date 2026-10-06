@@ -74,8 +74,8 @@ Use `@AllArgsConstructor({ staticName: 'of' })` for the Java-idiomatic `User.of(
 
 - **True constructor replacement.** Not possible from a TypeScript decorator without
   class wrapping, which breaks `instanceof` identity.
-- **`@NoArgsConstructor` and `@RequiredArgsConstructor`** — these are the next two
-  phases (16 and 17), sharing the same emitter infrastructure.
+- **`@RequiredArgsConstructor`** — Phase 17, on the same static-factory pattern.
+  `@NoArgsConstructor` already ships as `Class.noArgs()`.
 
 ## Java Lombok migrants
 
