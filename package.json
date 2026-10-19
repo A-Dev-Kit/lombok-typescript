@@ -203,9 +203,9 @@
     "rxjs": "^7.8.2",
     "yup": "^1.6.0",
     "zod": "^4.4.3",
-    "tsup": "^8.5.1",
+    "tsup": "^9.0.0",
     "tsx": "^4.22.4",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "typescript-eslint": "^8.62.0",
     "vitest": "^5.0.1"
   },
